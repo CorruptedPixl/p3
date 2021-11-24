@@ -2,527 +2,353 @@
 <html lang="en">
 
 <head>
-    <title>three.js webaudio - sandbox</title>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
-    <link type="text/css" rel="stylesheet" href="main.css">
+	<title>three.js webaudio - sandbox</title>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+	<link type="text/css" rel="stylesheet" href="main.css">
 </head>
 
 <body>
 
-    <!-- keep filesize low to avoid them from being slow -->
-    <audio id="atmos" preload="auto" style="display: none">
-        <source src="sounds/wdyf/atmos.mp3" type="audio/mpeg">
-        <source src="sounds/wdyf/atmos.wav" type="audio/wav">
-    </audio>
-    <audio id="bass" loop preload="auto" style="display: none">
-        <source src="sounds/wdyf/bass.mp3" type="audio/mpeg">
-        <source src="sounds/wdyf/bass.wav" type="audio/wav">
-    </audio>
-    <audio id="drums" preload="auto" style="display: none">
-        <source src="sounds/wdyf/drums.mp3" type="audio/mpeg">
-        <source src="sounds/wdyf/drums.wav" type="audio/wav">
-    </audio>
-    <audio id="guitars" preload="auto" style="display: none">
-        <source src="sounds/wdyf/guitars.mp3" type="audio/mpeg">
-        <source src="sounds/wdyf/guitars.wav" type="audio/wav">
-    </audio>
-    <audio id="lq" preload="auto" style="display: none">
-        <source src="sounds/wdyf/lq.mp3" type="audio/mpeg">
-        <source src="sounds/wdyf/lq.wav" type="audio/wav">
-    </audio>
-    <audio id="pads" preload="auto" style="display: none">
-        <source src="sounds/wdyf/pads.mp3" type="audio/mpeg">
-        <source src="sounds/wdyf/pads.wav" type="audio/wav">
-    </audio>
-    <audio id="plucks" preload="auto" style="display: none">
-        <source src="sounds/wdyf/plucks.mp3" type="audio/mpeg">
-        <source src="sounds/wdyf/plucks.wav" type="audio/wav">
-    </audio>
-    <audio id="tags" loop preload="auto" style="display: none">
-        <source src="sounds/wdyf/tags.mp3" type="audio/mpeg">
-        <source src="sounds/wdyf/tags.wav" type="audio/wav">
-    </audio>
-    <audio id="vocals" loop preload="auto" style="display: none">
-        <source src="sounds/wdyf/vocals.mp3" type="audio/mpeg">
-        <source src="sounds/wdyf/vocals.wav" type="audio/wav">
-    </audio>
-
-    <div id="overlay">
-        <button id="startButton">Play</button>
-    </div>
-
-    <script type="module">
-
-        import * as THREE from '../build/three.module.js';
-        import { GUI } from './jsm/libs/lil-gui.module.min.js';
-        import { FirstPersonControls } from './jsm/controls/FirstPersonControls.js';
-        import { VRButton } from './jsm/webxr/VRButton.js';
-        import { XRControllerModelFactory } from './jsm/webxr/XRControllerModelFactory.js';
-        let camera, controls, scene, raycaster, renderer, light;
-
-        let controller, controllerGrip;
-        let INTERSECTED;
-        const tempMatrix = new THREE.Matrix4();
-
-
-        let mats = [];
-        let meshes = [];
-        let sounds = [];
-        let analysers = [];
-        // let mat1, mat2, mat3, mat4, mat5, mat6, mat7, mat8, mat9;
-        // let analyser1, analyser2, analyser3, analyser4, analyser5, analyser6, analyser7, analyser8, analyser9;
-
-        const clock = new THREE.Clock();
-
-        const startButton = document.getElementById('startButton');
-        startButton.addEventListener('click', init);
-
-        function init() {
-
-            const refDist = 50; // distance from where to start applying volume reduction 
-            const objConfig = [
-
-                { name: 'atmos', color: 0xDDD3C3, sound: 'atmos', },
-                { name: 'bass', color: 0x812ADE, sound: 'bass', },
-                { name: 'drums', color: 0x3444E3, sound: 'drums', },
-                { name: 'guitars', color: 0xC714D6, sound: 'guitars', },
-                { name: 'lq', color: 0xE4406E, sound: 'lq', },
-                { name: 'pads', color: 0xFFA211, sound: 'pads', },
-                { name: 'plucks', color: 0xFFDE4A, sound: 'plucks', },
-                { name: 'tags', color: 0x02D37A, sound: 'tags', },
-                { name: 'vocals', color: 0x51C5C5, sound: 'vocals', },]
-
-
-
-            const overlay = document.getElementById('overlay');
-            overlay.remove();
-
-            camera = new THREE.PerspectiveCamera(70, window.innerWidth / window.innerHeight, .1, 10000);
-            camera.position.set(0, 30, 200);
-
-            const listener = new THREE.AudioListener();
-            camera.add(listener);
-
-            scene = new THREE.Scene();
-            scene.fog = new THREE.FogExp2(0x000000, 0.0025);
-
-
-            const light = new THREE.DirectionalLight(0xffffff);
-            light.position.set(1, 1, 1).normalize();
-            scene.add(light);
+	<!-- keep filesize low to avoid them from being slow -->
+	<audio id="atmos" preload="auto" style="display: none">
+		<source src="sounds/wdyf/atmos.mp3" type="audio/mpeg">
+		<source src="sounds/wdyf/atmos.wav" type="audio/wav">
+	</audio>
+	<audio id="bass" loop preload="auto" style="display: none">
+		<source src="sounds/wdyf/bass.mp3" type="audio/mpeg">
+		<source src="sounds/wdyf/bass.wav" type="audio/wav">
+	</audio>
+	<audio id="drums" preload="auto" style="display: none">
+		<source src="sounds/wdyf/drums.mp3" type="audio/mpeg">
+		<source src="sounds/wdyf/drums.wav" type="audio/wav">
+	</audio>
+	<audio id="guitars" preload="auto" style="display: none">
+		<source src="sounds/wdyf/guitars.mp3" type="audio/mpeg">
+		<source src="sounds/wdyf/guitars.wav" type="audio/wav">
+	</audio>
+	<audio id="lq" preload="auto" style="display: none">
+		<source src="sounds/wdyf/lq.mp3" type="audio/mpeg">
+		<source src="sounds/wdyf/lq.wav" type="audio/wav">
+	</audio>
+	<audio id="pads" preload="auto" style="display: none">
+		<source src="sounds/wdyf/pads.mp3" type="audio/mpeg">
+		<source src="sounds/wdyf/pads.wav" type="audio/wav">
+	</audio>
+	<audio id="plucks" preload="auto" style="display: none">
+		<source src="sounds/wdyf/plucks.mp3" type="audio/mpeg">
+		<source src="sounds/wdyf/plucks.wav" type="audio/wav">
+	</audio>
+	<audio id="tags" loop preload="auto" style="display: none">
+		<source src="sounds/wdyf/tags.mp3" type="audio/mpeg">
+		<source src="sounds/wdyf/tags.wav" type="audio/wav">
+	</audio>
+	<audio id="vocals" loop preload="auto" style="display: none">
+		<source src="sounds/wdyf/vocals.mp3" type="audio/mpeg">
+		<source src="sounds/wdyf/vocals.wav" type="audio/wav">
+	</audio>
+
+	<div id="overlay">
+		<button id="startButton">Play</button>
+	</div>
+
+	<script type="module">
+
+		import * as THREE from '../build/three.module.js';
+		import { GUI } from './jsm/libs/lil-gui.module.min.js';
+		import { FirstPersonControls } from './jsm/controls/FirstPersonControls.js';
+		import { VRButton } from './jsm/webxr/VRButton.js';
+		import { XRControllerModelFactory } from './jsm/webxr/XRControllerModelFactory.js';
+		let camera, controls, scene, raycaster, renderer, light;
+
+		let controller, controllerGrip;
+		let INTERSECTED;
+		const tempMatrix = new THREE.Matrix4();
+
+
+		let mats = [];
+		let meshes = [];
+		let sounds = [];
+		let analysers = [];
+		// let mat1, mat2, mat3, mat4, mat5, mat6, mat7, mat8, mat9;
+		// let analyser1, analyser2, analyser3, analyser4, analyser5, analyser6, analyser7, analyser8, analyser9;
+
+		const clock = new THREE.Clock();
+
+		const startButton = document.getElementById('startButton');
+		startButton.addEventListener('click', init);
+
+		const refDist = 50; // distance from where to start applying volume reduction 
+		const objConfig = [
+			{ name: 'atmos', color: 0xDDD3C3, sound: 'atmos', },
+			{ name: 'bass', color: 0x812ADE, sound: 'bass', },
+			{ name: 'drums', color: 0x3444E3, sound: 'drums', },
+			{ name: 'guitars', color: 0xC714D6, sound: 'guitars', },
+			{ name: 'lq', color: 0xE4406E, sound: 'lq', },
+			{ name: 'pads', color: 0xFFA211, sound: 'pads', },
+			{ name: 'plucks', color: 0xFFDE4A, sound: 'plucks', },
+			{ name: 'tags', color: 0x02D37A, sound: 'tags', },
+			{ name: 'vocals', color: 0x51C5C5, sound: 'vocals', },]
+
+		function init() {
+
+			const overlay = document.getElementById('overlay');
+			overlay.remove();
+
+			camera = new THREE.PerspectiveCamera(70, window.innerWidth / window.innerHeight, .1, 10000);
+			camera.position.set(0, 30, 200);
+
+			const listener = new THREE.AudioListener();
+			camera.add(listener);
+
+			scene = new THREE.Scene();
+			scene.fog = new THREE.FogExp2(0x000000, 0.0025);
+
+
+			const light = new THREE.DirectionalLight(0xffffff);
+			light.position.set(1, 1, 1).normalize();
+			scene.add(light);
+
+
+			const sphere = new THREE.SphereGeometry(20, 32, 16);
+
+
+			// init mats, sounds and analysers
+
+			console.log(mats['atmos'])
+
+			objConfig.forEach(obj => {
+				// create a new material with the color of the object
+				mats[obj.name] = new THREE.MeshPhongMaterial({ color: obj.color, flatShading: true, shininess: 0 });
+				// create a new mesh with that material
+				meshes[obj.name] = new THREE.Mesh(sphere, mats[obj.name])
+				scene.add(meshes[obj.name]);
 
+				// create audio sources, load from html and add to objects
+				sounds[obj.name] = new THREE.PositionalAudio(listener);
+				const currentSound = document.querySelector(`#${obj.name}`)
+				sounds[obj.name].setMediaElementSource(currentSound).setRefDistance(refDist);
+				currentSound.play();
+				meshes[obj.name].add(sounds[obj.name]);
 
-            const sphere = new THREE.SphereGeometry(20, 32, 16);
+				// start analysers
+				analysers[obj.name] = new THREE.AudioAnalyser(sounds[obj.name], 32);
+			})
 
-
-            // init mats, sounds and analysers
-
-            console.log(mats['atmos'])
-
-            objConfig.forEach(obj => {
-                // create a new material with the color of the object
-                mats[obj.name] = new THREE.MeshPhongMaterial({ color: obj.color, flatShading: true, shininess: 0 });
-                // create a new mesh with that material
-                meshes[obj.name] = new THREE.Mesh(sphere, mats[obj.name])
-                scene.add(meshes[obj.name]);
-                sounds[obj.name] = new THREE.PositionalAudio(listener);
-
-                const currentSound = document.querySelector(`#${obj.name}`)
-                sounds[obj.name].setMediaElementSource(currentSound).setRefDistance(refDist);
-                currentSound.play();
-                meshes[obj.name].add(sounds[obj.name]);
-            })
-
-
-            meshes['atmos'].position.set(- 250, 30, 0);
-            meshes['bass'].position.set(- 200, 30, 0);
-            meshes['drums'].position.set(- 150, 30, 0);
-            meshes['guitars'].position.set(- 100, 30, 0);
-            meshes['lq'].position.set(- 50, 30, 0);
-            meshes['pads'].position.set(0, 30, 0);
-            meshes['plucks'].position.set(50, 30, 0);
-            meshes['tags'].position.set(100, 30, 0);
-            meshes['vocals'].position.set(150, 30, 0);
-
-
-            console.log(mats['atmos'])
-            console.log({ mats })
-            console.log({ meshes })
-            console.log({ sounds })
-            console.log({ analysers })
-
-
-            // mat1 = new THREE.MeshPhongMaterial({ color: 0xDDD3C3, flatShading: true, shininess: 0 });
-            // mat2 = new THREE.MeshPhongMaterial({ color: 0x812ADE, flatShading: true, shininess: 0 });
-            // mat3 = new THREE.MeshPhongMaterial({ color: 0x3444E3, flatShading: true, shininess: 0 });
-            // mat4 = new THREE.MeshPhongMaterial({ color: 0xC714D6, flatShading: true, shininess: 0 });
-            // mat5 = new THREE.MeshPhongMaterial({ color: 0xE4406E, flatShading: true, shininess: 0 });
-            // mat6 = new THREE.MeshPhongMaterial({ color: 0xFFA211, flatShading: true, shininess: 0 });
-            // mat7 = new THREE.MeshPhongMaterial({ color: 0xFFDE4A, flatShading: true, shininess: 0 });
-            // mat8 = new THREE.MeshPhongMaterial({ color: 0x02D37A, flatShading: true, shininess: 0 });
-            // mat9 = new THREE.MeshPhongMaterial({ color: 0x51C5C5, flatShading: true, shininess: 0 });
-
-            // /// stem objects
-
-            // const mesh1 = new THREE.Mesh(sphere, mat1);
-            // mesh1.position.set(- 250, 30, 0);
-            // scene.add(mesh1);
-
-            // const sound1 = new THREE.PositionalAudio(listener);
-            // const atmos = document.getElementById('atmos');
-            // sound1.setMediaElementSource(atmos).setRefDistance(refDist);
-            // atmos.play();
-            // mesh1.add(sound1);
-
-            // ///
-
-            // const mesh2 = new THREE.Mesh(sphere, mat2);
-            // mesh2.position.set(- 200, 30, 0);
-            // scene.add(mesh2);
-
-            // const sound2 = new THREE.PositionalAudio(listener);
-            // const bass = document.getElementById('bass');
-            // sound2.setMediaElementSource(bass).setRefDistance(refDist);
-            // bass.play();
-            // mesh2.add(sound2);
-
-            // //
-
-            // const mesh3 = new THREE.Mesh(sphere, mat3);
-            // mesh3.position.set(- 150, 30, 0);
-            // scene.add(mesh3);
-
-            // const sound3 = new THREE.PositionalAudio(listener);
-            // const drums = document.getElementById('drums');
-            // sound3.setMediaElementSource(drums).setRefDistance(refDist);
-
-            // drums.play();
-            // mesh3.add(sound3);
-
-            // //
-            // const mesh4 = new THREE.Mesh(sphere, mat4);
-            // mesh4.position.set(- 100, 30, 0);
-            // scene.add(mesh4);
-
-            // const sound4 = new THREE.PositionalAudio(listener);
-            // const guitars = document.getElementById('guitars');
-            // sound4.setMediaElementSource(guitars).setRefDistance(refDist);
-            // guitars.play();
-            // mesh4.add(sound4);
-
-            // ///
-            // const mesh5 = new THREE.Mesh(sphere, mat5);
-            // mesh5.position.set(- 50, 30, 0);
-            // scene.add(mesh5);
-            // const sound5 = new THREE.PositionalAudio(listener);
-            // const lq = document.getElementById('lq');
-            // sound5.setMediaElementSource(lq).setRefDistance(refDist);
-            // lq.play();
-            // mesh5.add(sound5);
-            // ///
-            // ///
-            // const mesh6 = new THREE.Mesh(sphere, mat6);
-            // mesh6.position.set(0, 30, 0);
-            // scene.add(mesh6);
-            // const sound6 = new THREE.PositionalAudio(listener);
-            // const pads = document.getElementById('pads');
-            // sound6.setMediaElementSource(pads).setRefDistance(refDist);
-            // pads.play();
-            // mesh6.add(sound6);
-            // ///
-            // ///
-            // const mesh7 = new THREE.Mesh(sphere, mat7);
-            // mesh7.position.set(50, 30, 0);
-            // scene.add(mesh7);
-            // const sound7 = new THREE.PositionalAudio(listener);
-            // const plucks = document.getElementById('plucks');
-            // sound7.setMediaElementSource(plucks).setRefDistance(refDist);
-            // plucks.play();
-            // mesh7.add(sound7);
-            // ///
-            // ///
-            // const mesh8 = new THREE.Mesh(sphere, mat8);
-            // mesh8.position.set(100, 30, 0);
-            // scene.add(mesh8);
-            // const sound8 = new THREE.PositionalAudio(listener);
-            // const tags = document.getElementById('tags');
-            // sound8.setMediaElementSource(tags).setRefDistance(refDist);
-            // tags.play();
-            // mesh8.add(sound8);
-            // ///
-            // ///
-            // const mesh9 = new THREE.Mesh(sphere, mat9);
-            // mesh9.position.set(150, 30, 0);
-            // scene.add(mesh9);
-            // const sound9 = new THREE.PositionalAudio(listener);
-            // const vocals = document.getElementById('vocals');
-            // sound9.setMediaElementSource(vocals).setRefDistance(refDist);
-            // vocals.play();
-            // mesh9.add(sound9);
-            // ///
-
-            // analysers
-
-            // analyser1 = new THREE.AudioAnalyser(sound1, 32);
-            // analyser2 = new THREE.AudioAnalyser(sound2, 32);
-            // analyser3 = new THREE.AudioAnalyser(sound3, 32);
-            // analyser4 = new THREE.AudioAnalyser(sound4, 32);
-            // analyser5 = new THREE.AudioAnalyser(sound5, 32);
-            // analyser6 = new THREE.AudioAnalyser(sound6, 32);
-            // analyser7 = new THREE.AudioAnalyser(sound7, 32);
-            // analyser8 = new THREE.AudioAnalyser(sound8, 32);
-            // analyser9 = new THREE.AudioAnalyser(sound9, 32);
-
-            // global ambient audio
-
-            // const sound5 = new THREE.Audio(listener);
-            // const utopiaElement = document.getElementById('utopia');
-            // sound5.setMediaElementSource(utopiaElement);
-            // sound5.setVolume(0.5);
-            // utopiaElement.play();
-
-            // ground
-
-            const helper = new THREE.GridHelper(1000, 10, 0x444444, 0x444444);
-            helper.position.y = 0.1;
-            scene.add(helper);
-
-            //
-
-            const SoundControls = function () {
-
-                this.master = listener.getMasterVolume();
-                this.atmos = sound1.getVolume();
-                this.bass = sound2.getVolume();
-                this.drums = sound3.getVolume();
-                this.guitars = sound4.getVolume();
-                this.lq = sound5.getVolume();
-                this.pads = sound6.getVolume();
-                this.plucks = sound7.getVolume();
-                this.tags = sound8.getVolume();
-                this.vocals = sound9.getVolume();
-
-            };
-
-            // const GeneratorControls = function () {
-
-            // 	this.frequency = oscillator.frequency.value;
-            // 	this.wavetype = oscillator.type;
-
-            // };
-
-            const gui = new GUI();
-            const soundControls = new SoundControls();
-            // const generatorControls = new GeneratorControls();
-            const volumeFolder = gui.addFolder('sound volume');
-            // const generatorFolder = gui.addFolder('sound generator');
-
-            volumeFolder.add(soundControls, 'master').min(0.0).max(1.0).step(0.01).onChange(function () {
-                listener.setMasterVolume(soundControls.master);
-            });
-            volumeFolder.add(soundControls, 'atmos').min(0.0).max(1.0).step(0.01).onChange(function () {
-                sound1.setVolume(soundControls.atmos);
-            });
-            volumeFolder.add(soundControls, 'bass').min(0.0).max(1.0).step(0.01).onChange(function () {
-                sound2.setVolume(soundControls.bass);
-            });
-            volumeFolder.add(soundControls, 'drums').min(0.0).max(1.0).step(0.01).onChange(function () {
-                sound3.setVolume(soundControls.drums);
-            });
-            volumeFolder.add(soundControls, 'guitars').min(0.0).max(1.0).step(0.01).onChange(function () {
-                sound4.setVolume(soundControls.guitars);
-            });
-            volumeFolder.add(soundControls, 'lq').min(0.0).max(1.0).step(0.01).onChange(function () {
-                sound5.setVolume(soundControls.lq);
-            });
-            volumeFolder.add(soundControls, 'pads').min(0.0).max(1.0).step(0.01).onChange(function () {
-                sound6.setVolume(soundControls.pads);
-            });
-            volumeFolder.add(soundControls, 'plucks').min(0.0).max(1.0).step(0.01).onChange(function () {
-                sound7.setVolume(soundControls.plucks);
-            });
-            volumeFolder.add(soundControls, 'tags').min(0.0).max(1.0).step(0.01).onChange(function () {
-                sound8.setVolume(soundControls.tags);
-            });
-            volumeFolder.add(soundControls, 'vocals').min(0.0).max(1.0).step(0.01).onChange(function () {
-                sound9.setVolume(soundControls.vocals);
-            });
-
-
-            volumeFolder.open();
-
-            ///
-            raycaster = new THREE.Raycaster();
-            ///
-            renderer = new THREE.WebGLRenderer({ antialias: true });
-            renderer.setPixelRatio(window.devicePixelRatio);
-            renderer.setSize(window.innerWidth, window.innerHeight);
-            /// webxr
-            renderer.outputEncoding = THREE.sRGBEncoding;
-            renderer.xr.enabled = true;
-
-            document.body.appendChild(renderer.domElement);
-            //
-
-            controls = new FirstPersonControls(camera, renderer.domElement);
+			// set positions of objects
+			meshes['atmos'].position.set(- 250, 30, 0);
+			meshes['bass'].position.set(- 200, 30, 0);
+			meshes['drums'].position.set(- 150, 30, 0);
+			meshes['guitars'].position.set(- 100, 30, 0);
+			meshes['lq'].position.set(- 50, 30, 0);
+			meshes['pads'].position.set(0, 30, 0);
+			meshes['plucks'].position.set(50, 30, 0);
+			meshes['tags'].position.set(100, 30, 0);
+			meshes['vocals'].position.set(150, 30, 0);
 
-            controls.movementSpeed = 150;
-            controls.lookSpeed = 0.10;
-            controls.noFly = true;
-            controls.lookVertical = true;
+			console.log({ mats })
+			console.log({ meshes })
+			console.log({ sounds })
+			console.log({ analysers })
 
-            //
 
-            window.addEventListener('resize', onWindowResize);
+			// global ambient audio
 
-            animate();
+			// const sound5 = new THREE.Audio(listener);
+			// const utopiaElement = document.getElementById('utopia');
+			// sound5.setMediaElementSource(utopiaElement);
+			// sound5.setVolume(0.5);
+			// utopiaElement.play();
 
+			// ground
 
-            /// webxr stuff
+			const helper = new THREE.GridHelper(1000, 10, 0x444444, 0x444444);
+			helper.position.y = 0.1;
+			scene.add(helper);
 
-            function onSelectStart() {
+			//
 
-                this.userData.isSelecting = true;
+			const SoundControls = function () {
+				this.master = listener.getMasterVolume();
+				objConfig.forEach(obj => {
+					this[obj.name] = sounds[obj.name].getVolume();
+				})
+			};
 
-            }
 
-            function onSelectEnd() {
 
-                this.userData.isSelecting = false;
+			const gui = new GUI();
+			const soundControls = new SoundControls();
+			// const generatorControls = new GeneratorControls();
+			const volumeFolder = gui.addFolder('sound volume');
+			// const generatorFolder = gui.addFolder('sound generator');
 
-            }
+			volumeFolder.add(soundControls, 'master').min(0.0).max(1.0).step(0.01).onChange(function () {
+				listener.setMasterVolume(soundControls.master);
+			});
 
-            controller = renderer.xr.getController(0);
-            controller.addEventListener('selectstart', onSelectStart);
-            controller.addEventListener('selectend', onSelectEnd);
-            controller.addEventListener('connected', function (event) {
+			// add controls for each sound loaded
+			objConfig.forEach(obj => {
+				volumeFolder.add(soundControls, obj.name, 0, 1, 0.01).onChange(value => {
+					sounds[obj.name].setVolume(value);
+				});
+			})
+			volumeFolder.open();
 
-                this.add(buildController(event.data));
+			///
+			raycaster = new THREE.Raycaster();
+			///
+			renderer = new THREE.WebGLRenderer({ antialias: true });
+			renderer.setPixelRatio(window.devicePixelRatio);
+			renderer.setSize(window.innerWidth, window.innerHeight);
+			/// webxr
+			renderer.outputEncoding = THREE.sRGBEncoding;
+			renderer.xr.enabled = true;
 
-            });
-            controller.addEventListener('disconnected', function () {
+			document.body.appendChild(renderer.domElement);
+			//
 
-                this.remove(this.children[0]);
+			controls = new FirstPersonControls(camera, renderer.domElement);
 
-            });
-            scene.add(controller);
+			controls.movementSpeed = 150;
+			controls.lookSpeed = 0.10;
+			controls.noFly = true;
+			controls.lookVertical = true;
 
-            const controllerModelFactory = new XRControllerModelFactory();
+			//
 
-            controllerGrip = renderer.xr.getControllerGrip(0);
-            controllerGrip.add(controllerModelFactory.createControllerModel(controllerGrip));
-            scene.add(controllerGrip);
+			window.addEventListener('resize', onWindowResize);
 
-            document.body.appendChild(VRButton.createButton(renderer));
+			animate();
 
 
-        }
+			/// webxr stuff
 
-        function buildController(data) {
+			function onSelectStart() {
+				this.userData.isSelecting = true;
+			}
 
-            let geometry, material;
+			function onSelectEnd() {
+				this.userData.isSelecting = false;
+			}
 
-            switch (data.targetRayMode) {
+			controller = renderer.xr.getController(0);
+			controller.addEventListener('selectstart', onSelectStart);
+			controller.addEventListener('selectend', onSelectEnd);
+			controller.addEventListener('connected', function (event) {
 
-                case 'tracked-pointer':
+				this.add(buildController(event.data));
 
-                    geometry = new THREE.BufferGeometry();
-                    geometry.setAttribute('position', new THREE.Float32BufferAttribute([0, 0, 0, 0, 0, - 1], 3));
-                    geometry.setAttribute('color', new THREE.Float32BufferAttribute([0.5, 0.5, 0.5, 0, 0, 0], 3));
+			});
+			controller.addEventListener('disconnected', function () {
 
-                    material = new THREE.LineBasicMaterial({ vertexColors: true, blending: THREE.AdditiveBlending });
+				this.remove(this.children[0]);
 
-                    return new THREE.Line(geometry, material);
+			});
+			scene.add(controller);
 
-                case 'gaze':
+			const controllerModelFactory = new XRControllerModelFactory();
 
-                    geometry = new THREE.RingGeometry(0.02, 0.04, 32).translate(0, 0, - 1);
-                    material = new THREE.MeshBasicMaterial({ opacity: 0.5, transparent: true });
-                    return new THREE.Mesh(geometry, material);
+			controllerGrip = renderer.xr.getControllerGrip(0);
+			controllerGrip.add(controllerModelFactory.createControllerModel(controllerGrip));
+			scene.add(controllerGrip);
 
-            }
+			document.body.appendChild(VRButton.createButton(renderer));
 
-        }
 
-        function onWindowResize() {
+		}
 
-            camera.aspect = window.innerWidth / window.innerHeight;
-            camera.updateProjectionMatrix();
+		function buildController(data) {
 
-            renderer.setSize(window.innerWidth, window.innerHeight);
+			let geometry, material;
 
-            controls.handleResize();
+			switch (data.targetRayMode) {
 
-        }
+				case 'tracked-pointer':
 
-        function animate() {
+					geometry = new THREE.BufferGeometry();
+					geometry.setAttribute('position', new THREE.Float32BufferAttribute([0, 0, 0, 0, 0, - 1], 3));
+					geometry.setAttribute('color', new THREE.Float32BufferAttribute([0.5, 0.5, 0.5, 0, 0, 0], 3));
 
-            // requestAnimationFrame(animate);
-            // render();
+					material = new THREE.LineBasicMaterial({ vertexColors: true, blending: THREE.AdditiveBlending });
 
-            renderer.setAnimationLoop(render);
+					return new THREE.Line(geometry, material);
 
-        }
+				case 'gaze':
 
+					geometry = new THREE.RingGeometry(0.02, 0.04, 32).translate(0, 0, - 1);
+					material = new THREE.MeshBasicMaterial({ opacity: 0.5, transparent: true });
+					return new THREE.Mesh(geometry, material);
 
-        function render() {
+			}
 
-            const delta = clock.getDelta();
+		}
 
-            controls.update(delta);
+		function onWindowResize() {
 
-            mat1.emissive.b = analyser1.getAverageFrequency() / 256 * 2;
-            mat2.emissive.b = analyser2.getAverageFrequency() / 256 * 2;
-            mat3.emissive.b = analyser3.getAverageFrequency() / 256 * 2;
-            mat4.emissive.b = analyser4.getAverageFrequency() / 256 * 2;
-            mat5.emissive.b = analyser5.getAverageFrequency() / 256 * 2;
-            mat6.emissive.b = analyser6.getAverageFrequency() / 256 * 2;
-            mat7.emissive.b = analyser7.getAverageFrequency() / 256 * 2;
-            mat8.emissive.b = analyser8.getAverageFrequency() / 256 * 2;
-            mat9.emissive.b = analyser9.getAverageFrequency() / 256 * 2;
+			camera.aspect = window.innerWidth / window.innerHeight;
+			camera.updateProjectionMatrix();
 
-            renderer.render(scene, camera);
+			renderer.setSize(window.innerWidth, window.innerHeight);
 
-            /// webxr
+			controls.handleResize();
 
-            // find intersections
+		}
 
-            tempMatrix.identity().extractRotation(controller.matrixWorld);
+		function animate() {
 
-            raycaster.ray.origin.setFromMatrixPosition(controller.matrixWorld);
-            raycaster.ray.direction.set(0, 0, - 1).applyMatrix4(tempMatrix);
+			// requestAnimationFrame(animate);
+			// render();
 
-            const intersects = raycaster.intersectObjects(mat6, false);
+			renderer.setAnimationLoop(render);
 
-            if (intersects.length > 0) {
-                console.log(INTERSECTED);
-                console.log(intersects);
+		}
 
-                if (INTERSECTED) {
 
+		function render() {
 
+			const delta = clock.getDelta();
 
+			controls.update(delta);
 
-                    // if (INTERSECTED) INTERSECTED.material.emissive.setHex(INTERSECTED.currentHex);
+			objConfig.forEach(obj => {
+				mats[obj.name].emissive.r = analysers[obj.name].getAverageFrequency() / 256 * 2;
+				// mats[obj.name].emissive.g = analysers[obj.name].getAverageFrequency() / 256 * 2;
+				// mats[obj.name].emissive.b = analysers[obj.name].getAverageFrequency() / 256 * 2;
+			})
 
-                    // INTERSECTED = intersects[0].object;
-                    // INTERSECTED.currentHex = INTERSECTED.material.emissive.getHex();
-                    // INTERSECTED.material.emissive.setHex(0xff0000);
+			renderer.render(scene, camera);
 
-                }
+			// find intersections
 
-            } else {
+			tempMatrix.identity().extractRotation(controller.matrixWorld);
 
-                if (INTERSECTED) INTERSECTED.material.emissive.setHex(INTERSECTED.currentHex);
+			raycaster.ray.origin.setFromMatrixPosition(controller.matrixWorld);
+			raycaster.ray.direction.set(0, 0, - 1).applyMatrix4(tempMatrix);
 
-                INTERSECTED = undefined;
+			const intersects = raycaster.intersectObjects(mats['atmos'], false);
 
-            }
+			if (intersects.length > 0) {
+				console.log(INTERSECTED);
+				console.log(intersects);
 
-        }
+				if (INTERSECTED) {
+					// if (INTERSECTED) INTERSECTED.material.emissive.setHex(INTERSECTED.currentHex);
+					// INTERSECTED = intersects[0].object;
+					// INTERSECTED.currentHex = INTERSECTED.material.emissive.getHex();
+					// INTERSECTED.material.emissive.setHex(0xff0000);
+				}
 
-    </script>
+			} else {
+
+				if (INTERSECTED) INTERSECTED.material.emissive.setHex(INTERSECTED.currentHex);
+				INTERSECTED = undefined;
+
+			}
+
+		}
+
+	</script>
 
 </body>
 
