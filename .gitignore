@@ -34,3 +34,5 @@ yarn-error.log*
 
 # vscode history extension
 *.history
+
+exp/three.js-dev
