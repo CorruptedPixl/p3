@@ -48,6 +48,10 @@
 		<source src="sounds/wdyf/vocals.wav" type="audio/wav">
 	</audio>
 
+	<video id="video" preload="auto" style="display: none" crossorigin="anonymous">
+		<source src="https://cdn.cpixl.com/other/projectie_3.mp4" type="video/mp4" crossorigin="*">
+	</video>
+
 	<div id="overlay">
 		<button id="startButton">Play</button>
 	</div>
@@ -64,6 +68,7 @@
 		let camera, controls, scene, raycaster, renderer, light;
 		let controller, controllerGrip;
 		let INTERSECTED;
+		let isHolding = false;
 		const tempMatrix = new THREE.Matrix4();
 
 
@@ -98,7 +103,8 @@
 			overlay.remove();
 
 			camera = new THREE.PerspectiveCamera(70, window.innerWidth / window.innerHeight, .1, 10000);
-			camera.position.set(0, 30, 200);
+			// camera.position.set(0, 30, 200);
+			camera.position.set(0, 30, 0);
 
 			const listener = new THREE.AudioListener();
 			camera.add(listener);
@@ -115,10 +121,32 @@
 			const sphere = new THREE.SphereGeometry(20, 32, 16);
 
 
+			// VIDEOooo
+
+			const video = document.querySelector('#video');
+			const vidTex = new THREE.VideoTexture(video);
+			vidTex.needsUpdate;
+			vidTex.minFilter = THREE.LinearFilter;
+			vidTex.magFilter = THREE.LinearFilter;
+			vidTex.format = THREE.RGBFormat;
+			// video.crossOrigin = 'anonymous';
+
+			let vidMesh = new THREE.Mesh(
+				new THREE.PlaneGeometry(20, 10),
+				new THREE.MeshBasicMaterial({ map: vidTex }));
+
+			vidMesh.position.set(0, 5, -10);
+			scene.add(vidMesh)
+
+			// 
+			// video.src = 'https://cdn.cpixl.com/other/projectie_3.mp4';
+			// video.crossOrigin = 'anonymous';
+			video.load();
+			video.play();
+
+
+
 			// init mats, sounds and analysers
-
-			console.log(mats['atmos'])
-
 			objConfig.forEach(obj => {
 				// create a new material with the color of the object
 				mats[obj.name] = new THREE.MeshPhongMaterial({ color: obj.color, flatShading: true, shininess: 0 });
@@ -140,15 +168,15 @@
 			})
 
 			// set positions of objects
-			meshes['atmos'].position.set(- 250, 30, 0);
-			meshes['bass'].position.set(- 200, 30, 0);
-			meshes['drums'].position.set(- 150, 30, 0);
-			meshes['guitars'].position.set(- 100, 30, 0);
-			meshes['lq'].position.set(- 50, 30, 0);
-			meshes['pads'].position.set(0, 30, 0);
-			meshes['plucks'].position.set(50, 30, 0);
-			meshes['tags'].position.set(100, 30, 0);
-			meshes['vocals'].position.set(150, 30, 0);
+			meshes['atmos'].position.set(- 250, 30, 100);
+			meshes['bass'].position.set(- 200, 30, 100);
+			meshes['drums'].position.set(- 150, 30, 100);
+			meshes['guitars'].position.set(- 100, 30, 100);
+			meshes['lq'].position.set(- 50, 30, 100);
+			meshes['pads'].position.set(0, 30, 100);
+			meshes['plucks'].position.set(50, 30, 100);
+			meshes['tags'].position.set(100, 30, 100);
+			meshes['vocals'].position.set(150, 30, 100);
 
 			scene.add(stemsGroup); // ADD STEMS GROUP TO THE SCENE
 
@@ -350,8 +378,8 @@
 
 			// }
 
-			// find intersections
 
+			// find intersections
 			tempMatrix.identity().extractRotation(controller.matrixWorld);
 
 			raycaster.ray.origin.setFromMatrixPosition(controller.matrixWorld);
@@ -359,22 +387,6 @@
 
 			const intersects = raycaster.intersectObjects(stemsGroup.children, false);
 
-			// if (intersects.length > 0) {
-			// 	console.log(intersects);
-
-			// 	if (INTERSECTED) {
-			// 		// if (INTERSECTED) INTERSECTED.material.emissive.setHex(INTERSECTED.currentHex);
-			// 		// INTERSECTED = intersects[0].object;
-			// 		// INTERSECTED.currentHex = INTERSECTED.material.emissive.getHex();
-			// 		// INTERSECTED.material.emissive.setHex(0xff0000);
-			// 	}
-
-			// } else {
-
-			// 	if (INTERSECTED) INTERSECTED.material.emissive.setHex(INTERSECTED.currentHex);
-			// 	INTERSECTED = undefined;
-
-			// }
 
 			if (intersects.length > 0) {
 				console.log(intersects);
@@ -387,10 +399,31 @@
 
 					INTERSECTED = intersects[0].object;
 					INTERSECTED.currentHex = INTERSECTED.material.emissive.getHex();
-					INTERSECTED.material.emissive.setHex(0xff0000);
+					INTERSECTED.material.emissive.setHex(0xffbb00);
 
 					INTERSECTED.isHighlighted = true;
 
+				}
+
+				if (controller.userData.isSelecting && !isHolding) {
+					// sounds[obj.name].setVolume(value);
+					isHolding = true;
+
+					const volume = sounds[INTERSECTED.name].getVolume();
+
+					switch (volume) {
+						case 0:
+							sounds[INTERSECTED.name].setVolume(1);
+							break;
+						case 1:
+							sounds[INTERSECTED.name].setVolume(0);
+							break;
+						default:
+							sounds[INTERSECTED.name].setVolume(0);
+							break;
+					}
+				} else if (!controller.userData.isSelecting && isHolding) {
+					isHolding = false;
 				}
 
 			} else {
