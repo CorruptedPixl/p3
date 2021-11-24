@@ -36,3 +36,4 @@ yarn-error.log*
 *.history
 
 exp/three.js-dev
+exp/three.js-dev.zip
