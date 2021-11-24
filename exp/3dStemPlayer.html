@@ -59,8 +59,9 @@
 		import { FirstPersonControls } from './jsm/controls/FirstPersonControls.js';
 		import { VRButton } from './jsm/webxr/VRButton.js';
 		import { XRControllerModelFactory } from './jsm/webxr/XRControllerModelFactory.js';
-		let camera, controls, scene, raycaster, renderer, light;
 
+
+		let camera, controls, scene, raycaster, renderer, light;
 		let controller, controllerGrip;
 		let INTERSECTED;
 		const tempMatrix = new THREE.Matrix4();
@@ -70,8 +71,9 @@
 		let meshes = [];
 		let sounds = [];
 		let analysers = [];
-		// let mat1, mat2, mat3, mat4, mat5, mat6, mat7, mat8, mat9;
-		// let analyser1, analyser2, analyser3, analyser4, analyser5, analyser6, analyser7, analyser8, analyser9;
+
+		// groups
+		let stemsGroup = new THREE.Group();
 
 		const clock = new THREE.Clock();
 
@@ -122,7 +124,9 @@
 				mats[obj.name] = new THREE.MeshPhongMaterial({ color: obj.color, flatShading: true, shininess: 0 });
 				// create a new mesh with that material
 				meshes[obj.name] = new THREE.Mesh(sphere, mats[obj.name])
-				scene.add(meshes[obj.name]);
+				meshes[obj.name].name = obj.name;
+				// scene.add(meshes[obj.name]); // DONT ADD EACH OBJECT INDIVIDUALLY
+				stemsGroup.add(meshes[obj.name]);
 
 				// create audio sources, load from html and add to objects
 				sounds[obj.name] = new THREE.PositionalAudio(listener);
@@ -146,6 +150,8 @@
 			meshes['tags'].position.set(100, 30, 0);
 			meshes['vocals'].position.set(150, 30, 0);
 
+			scene.add(stemsGroup); // ADD STEMS GROUP TO THE SCENE
+
 			console.log({ mats })
 			console.log({ meshes })
 			console.log({ sounds })
@@ -160,8 +166,13 @@
 			// sound5.setVolume(0.5);
 			// utopiaElement.play();
 
-			// ground
 
+			/// Raycaster
+			raycaster = new THREE.Raycaster();
+			///
+
+
+			// ground
 			const helper = new THREE.GridHelper(1000, 10, 0x444444, 0x444444);
 			helper.position.y = 0.1;
 			scene.add(helper);
@@ -195,8 +206,6 @@
 			})
 			volumeFolder.open();
 
-			///
-			raycaster = new THREE.Raycaster();
 			///
 			renderer = new THREE.WebGLRenderer({ antialias: true });
 			renderer.setPixelRatio(window.devicePixelRatio);
@@ -311,13 +320,35 @@
 
 			controls.update(delta);
 
-			objConfig.forEach(obj => {
-				mats[obj.name].emissive.r = analysers[obj.name].getAverageFrequency() / 256 * 2;
-				// mats[obj.name].emissive.g = analysers[obj.name].getAverageFrequency() / 256 * 2;
-				// mats[obj.name].emissive.b = analysers[obj.name].getAverageFrequency() / 256 * 2;
+			stemsGroup.children.forEach(obj => {
+				console.log(obj)
+				if (!obj?.isHighlighted) {
+					mats[obj.name].emissive.r = analysers[obj.name].getAverageFrequency() / 256 * 2;
+					// mats[obj.name].emissive.g = analysers[obj.name].getAverageFrequency() / 256 * 2;
+					// mats[obj.name].emissive.b = analysers[obj.name].getAverageFrequency() / 256 * 2;
+				}
 			})
 
-			renderer.render(scene, camera);
+
+			/////////////////////////////////////////// WEBXR
+
+			// if (controller.userData.isSelecting === true) {
+
+			// 	console.log(scene.children)
+			// 	console.log(meshes)
+
+			// 	const 
+			// 	const cube = room.children[0];
+			// 	room.remove(cube);
+
+			// 	cube.position.copy(controller.position);
+			// 	cube.userData.velocity.x = (Math.random() - 0.5) * 0.02 * delta;
+			// 	cube.userData.velocity.y = (Math.random() - 0.5) * 0.02 * delta;
+			// 	cube.userData.velocity.z = (Math.random() * 0.01 - 0.05) * delta;
+			// 	cube.userData.velocity.applyQuaternion(controller.quaternion);
+			// 	room.add(cube);
+
+			// }
 
 			// find intersections
 
@@ -326,26 +357,51 @@
 			raycaster.ray.origin.setFromMatrixPosition(controller.matrixWorld);
 			raycaster.ray.direction.set(0, 0, - 1).applyMatrix4(tempMatrix);
 
-			const intersects = raycaster.intersectObjects(mats['atmos'], false);
+			const intersects = raycaster.intersectObjects(stemsGroup.children, false);
+
+			// if (intersects.length > 0) {
+			// 	console.log(intersects);
+
+			// 	if (INTERSECTED) {
+			// 		// if (INTERSECTED) INTERSECTED.material.emissive.setHex(INTERSECTED.currentHex);
+			// 		// INTERSECTED = intersects[0].object;
+			// 		// INTERSECTED.currentHex = INTERSECTED.material.emissive.getHex();
+			// 		// INTERSECTED.material.emissive.setHex(0xff0000);
+			// 	}
+
+			// } else {
+
+			// 	if (INTERSECTED) INTERSECTED.material.emissive.setHex(INTERSECTED.currentHex);
+			// 	INTERSECTED = undefined;
+
+			// }
 
 			if (intersects.length > 0) {
-				console.log(INTERSECTED);
 				console.log(intersects);
 
-				if (INTERSECTED) {
-					// if (INTERSECTED) INTERSECTED.material.emissive.setHex(INTERSECTED.currentHex);
-					// INTERSECTED = intersects[0].object;
-					// INTERSECTED.currentHex = INTERSECTED.material.emissive.getHex();
-					// INTERSECTED.material.emissive.setHex(0xff0000);
+				if (INTERSECTED != intersects[0].object) {
+					if (INTERSECTED != undefined) { INTERSECTED.isHighlighted = false; }
+
+
+					if (INTERSECTED) INTERSECTED.material.emissive.setHex(INTERSECTED.currentHex);
+
+					INTERSECTED = intersects[0].object;
+					INTERSECTED.currentHex = INTERSECTED.material.emissive.getHex();
+					INTERSECTED.material.emissive.setHex(0xff0000);
+
+					INTERSECTED.isHighlighted = true;
+
 				}
 
 			} else {
-
+				if (INTERSECTED != undefined) { INTERSECTED.isHighlighted = false; }
 				if (INTERSECTED) INTERSECTED.material.emissive.setHex(INTERSECTED.currentHex);
+
 				INTERSECTED = undefined;
 
 			}
 
+			renderer.render(scene, camera);
 		}
 
 	</script>
