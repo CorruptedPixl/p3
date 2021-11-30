@@ -163,124 +163,31 @@
 			triangle.lineTo(10 * triangleSize, 0); // back to start to close the shape
 
 
-			const plane = new THREE.PlaneGeometry(20, 20);
-			const testPlane = new THREE.Mesh(plane, vidTextures[2]);
+			let vidMesh = new THREE.Mesh(
+				// new THREE.PlaneGeometry(20, 10),
+				new THREE.ExtrudeGeometry(triangle, { steps: 1, depth: 30, }), // extrude triangle
+				// new THREE.MeshBasicMaterial({ map: vidTex }));
+				// extrudedTriangle,
+				[
+					// new THREE.MeshBasicMaterial({ map: new THREE.VideoTexture(video) }),
+					// new THREE.MeshBasicMaterial({ map: new THREE.VideoTexture(video2) }),
+					// new THREE.MeshBasicMaterial({ map: new THREE.VideoTexture(video3) }),
+					// new THREE.MeshBasicMaterial({ map: new THREE.VideoTexture(video3) }),
+					// new THREE.MeshBasicMaterial({ map: new THREE.VideoTexture(video3) }),
+					new THREE.MeshBasicMaterial({ color: 0xffbb00 }),
+					new THREE.MeshBasicMaterial({ color: 0x00bb00 }),
+					new THREE.MeshBasicMaterial({ color: 0x00ff00 }),
+					new THREE.MeshBasicMaterial({ color: 0x0000ff }),
+					new THREE.MeshBasicMaterial({ color: 0xffffff }),
+				]);
+			// new THREE.MeshFaceMaterial(vidTextures));
+			// new THREE.MeshBasicMaterial({ color: 0xffbb00 }));
 
-			scene.add(testPlane);
-			testPlane.position.set(30, 30, 30);
-			console.log(testPlane)
-
-			// const extrudedTriangle = new THREE.ExtrudeGeometry(triangle, { steps: 1, depth: 30, });
-
-			let extrudedTriangle;
-			const loader = new GLTFLoader().setPath('models/');
-			loader.load('e-triangle-v3.gltf', (gltf) => {
-				console.log('loaded');
-				extrudedTriangle = gltf.scene.children[0];
-
-				extrudedTriangle.userData.isDraggable = true;
-				extrudedTriangle.name = 'e-triangle'
-
-				// extrudedTriangle.children[4].material = vidTextures[2];
-
-				// scene.add(extrudedTriangle);
-				scene.add(extrudedTriangle);
-				console.log(extrudedTriangle)
-
-
-				// extrudedTriangle.children[0].material = [
-				// 	new THREE.MeshBasicMaterial({ color: 0xffbb00, side: THREE.DoubleSide }),
-				// 	new THREE.MeshBasicMaterial({ color: 0x00bb00, side: THREE.DoubleSide }),
-				// 	new THREE.MeshBasicMaterial({ color: 0x00ff00, side: THREE.DoubleSide }),
-				// 	new THREE.MeshBasicMaterial({ color: 0x0000ff, side: THREE.DoubleSide }),
-				// 	new THREE.MeshBasicMaterial({ color: 0xffffff, side: THREE.DoubleSide }),
-				// ]
-
-				//old
-				// extrudedTriangle.children[0].children.forEach(side => {
-
-				//new
-				extrudedTriangle.children.forEach(side => {
-					switch (side.material.name) {
-						case 'one':
-							// side.material = vidTextures[0];
-							side.material = vidTextures[2];
-							// side.material = new THREE.MeshBasicMaterial({ map: vidTex, side: THREE.DoubleSide });
-							// side.material = new THREE.MeshBasicMaterial({ color: 0xffffff, side: THREE.DoubleSide });
-							break;
-						case 'two':
-							// side.material = vidTextures[1];
-							side.material = new THREE.MeshBasicMaterial({ color: 0xff0000, side: THREE.DoubleSide });
-							break;
-						case 'three':
-							// side.material = vidTextures[2];
-							side.material = new THREE.MeshBasicMaterial({ color: 0x0000ff, side: THREE.DoubleSide });
-							break;
-						case 'sides':
-							side.material = new THREE.MeshBasicMaterial({ color: 0xffbb00, side: THREE.DoubleSide })
-							break;
-
-						default:
-							break;
-					}
-				})
-
-				// [
-				// 	new THREE.MeshBasicMaterial({ color: 0xffbb00, side: THREE.DoubleSide }),
-				// 	new THREE.MeshBasicMaterial({ color: 0x00bb00, side: THREE.DoubleSide }),
-				// 	new THREE.MeshBasicMaterial({ color: 0x00ff00, side: THREE.DoubleSide }),
-				// 	new THREE.MeshBasicMaterial({ color: 0x0000ff, side: THREE.DoubleSide }),
-				// 	new THREE.MeshBasicMaterial({ color: 0xffffff, side: THREE.DoubleSide }),
-				// ]
-
-
-				// scene.add(new THREE.Mesh(
-				// 	extrudedTriangle.children[0],
-				// [
-				// 	new THREE.MeshBasicMaterial({ color: 0xffbb00 }),
-				// 	new THREE.MeshBasicMaterial({ color: 0x00bb00 }),
-				// 	new THREE.MeshBasicMaterial({ color: 0x00ff00 }),
-				// 	new THREE.MeshBasicMaterial({ color: 0x0000ff }),
-				// 	new THREE.MeshBasicMaterial({ color: 0xffffff }),
-				// ]
-				// ));
-
-			});
-			// console.log(extrudedTriangle)
-			// console.log(extrudedTriangle.toNonIndexed())
-			// console.log(extrudedTriangle.getIndexed())
-
-			// for (var i = 0, len = extrudedTriangle.faces.length; i < len; i++) {
-			// 	var face = extrudedTriangle.faces[i].clone();
-			// 	face.materialIndex = 1;
-			// 	extrudedTriangle.faces.push(face);
-			// 	extrudedTriangle.faceVertexUvs[0].push(extrudedTriangle.faceVertexUvs[0][i].slice(0));
-			// }
-
-			// let vidMesh = new THREE.Mesh(
-			// 	// new THREE.PlaneGeometry(20, 10),
-			// 	// new THREE.ExtrudeGeometry(triangle, { steps: 1, depth: 30, }), // extrude triangle
-			// 	// new THREE.MeshBasicMaterial({ map: vidTex }));
-			// 	extrudedTriangle,
-			// 	[
-			// 		// new THREE.MeshBasicMaterial({ map: new THREE.VideoTexture(video) }),
-			// 		// new THREE.MeshBasicMaterial({ map: new THREE.VideoTexture(video2) }),
-			// 		// new THREE.MeshBasicMaterial({ map: new THREE.VideoTexture(video3) }),
-			// 		// new THREE.MeshBasicMaterial({ map: new THREE.VideoTexture(video3) }),
-			// 		// new THREE.MeshBasicMaterial({ map: new THREE.VideoTexture(video3) }),
-			// 		new THREE.MeshBasicMaterial({ color: 0xffbb00 }),
-			// 		new THREE.MeshBasicMaterial({ color: 0x00bb00 }),
-			// 		new THREE.MeshBasicMaterial({ color: 0x00ff00 }),
-			// 		new THREE.MeshBasicMaterial({ color: 0x0000ff }),
-			// 		new THREE.MeshBasicMaterial({ color: 0xffffff }),
-			// 	]);
-			// // new THREE.MeshFaceMaterial(vidTextures));
-			// // new THREE.MeshBasicMaterial({ color: 0xffbb00 }));
-
-			// vidMesh.position.set(0, 0, -50);
-			// vidMesh.userData.isDraggable = true;
-			// vidMesh.name = 'e-triangle'
-			// scene.add(vidMesh)
+			vidMesh.position.set(0, 0, -4);
+			vidMesh.userData.isDraggable = true;
+			vidMesh.name = 'e-triangle'
+			vidMesh.scale.set(.05, .05, .05);
+			scene.add(vidMesh)
 
 			/// Video mesh group
 			// let vidSideAlpha = new THREE.Mesh(
