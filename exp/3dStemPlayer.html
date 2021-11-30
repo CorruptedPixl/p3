@@ -76,7 +76,7 @@
 		let camera, controls, scene, raycaster, renderer, light;
 		let controller, controllerGrip;
 		// let INTERSECTED;
-		let isHolding = false;
+		// let isHolding = false;
 		const tempMatrix = new THREE.Matrix4();
 
 
@@ -567,9 +567,9 @@
 					}
 
 					/// is this the first time we're clicking on the object?
-					if (controller.userData.isSelecting && !isHolding) {
+					if (controller.userData.isSelecting && !controller.userData.isHolding) {
 						/// set for next frame
-						isHolding = true;
+						controller.userData.isHolding = true;
 
 						const volume = sounds[controller.userData.INTERSECTED.name].getVolume();
 
@@ -584,8 +584,8 @@
 								sounds[controller.userData.INTERSECTED.name].setVolume(0);
 								break;
 						}
-					} else if (!controller.userData.isSelecting && isHolding) {
-						isHolding = false;
+					} else if (!controller.userData.isSelecting && controller.userData.isHolding) {
+						controller.userData.isHolding = false;
 					}
 
 				} else {
