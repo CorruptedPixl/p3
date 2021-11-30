@@ -75,7 +75,7 @@
 
 		let camera, controls, scene, raycaster, renderer, light;
 		let controller, controllerGrip;
-		let INTERSECTED;
+		// let INTERSECTED;
 		let isHolding = false;
 		const tempMatrix = new THREE.Matrix4();
 
@@ -84,6 +84,9 @@
 		let meshes = [];
 		let sounds = [];
 		let analysers = [];
+
+		let controllers = [];
+		let controllerGrips = [];
 
 		// groups
 		let stemsGroup = new THREE.Group();
@@ -348,6 +351,7 @@
 			function onSelectStart(e) {
 				this.userData.isSelecting = true;
 
+
 				const controller = e.target;
 
 				tempMatrix.identity().extractRotation(controller.matrixWorld);
@@ -355,6 +359,7 @@
 				raycaster.ray.origin.setFromMatrixPosition(controller.matrixWorld);
 				raycaster.ray.direction.set(0, 0, - 1).applyMatrix4(tempMatrix);
 
+				///! could be optimized slightly by adding all draggable objects to a group and only checking intersections on that group instead of the whole scene
 				const intersects = raycaster.intersectObjects(scene.children, false);
 
 				console.log({ intersects })
@@ -364,6 +369,7 @@
 						if (!obj.object.userData?.isDraggable) { return }
 						else {
 							console.log('Dragging', { obj })
+							// controller.userData.isDragging = true;
 							// const intersection = obj;
 							// const object = intersection.object;
 
@@ -379,6 +385,7 @@
 			}
 
 			function onSelectEnd(e) {
+				/// 'this' is the controller group
 				this.userData.isSelecting = false;
 
 				const controller = e.target;
@@ -393,26 +400,46 @@
 				}
 			}
 
-			controller = renderer.xr.getController(0);
-			controller.addEventListener('selectstart', onSelectStart);
-			controller.addEventListener('selectend', onSelectEnd);
-			controller.addEventListener('connected', function (event) {
-
-				this.add(buildController(event.data));
-
-			});
-			controller.addEventListener('disconnected', function () {
-
-				this.remove(this.children[0]);
-
-			});
-			scene.add(controller);
-
+			/// init & render controller models
+			/// populate the groups
+			controllers = [renderer.xr.getController(0), renderer.xr.getController(1)]
+			controllerGrips = [renderer.xr.getControllerGrip(0), renderer.xr.getControllerGrip(1)]
 			const controllerModelFactory = new XRControllerModelFactory();
+			// controller = renderer.xr.getController(0);
 
-			controllerGrip = renderer.xr.getControllerGrip(0);
-			controllerGrip.add(controllerModelFactory.createControllerModel(controllerGrip));
-			scene.add(controllerGrip);
+			/// adding event listeners
+			controllers.forEach(controller => {
+				controller.addEventListener('selectstart', onSelectStart);
+				controller.addEventListener('selectend', onSelectEnd);
+				controller.addEventListener('connected', function (event) {
+					this.add(buildController(event.data));
+				});
+				controller.addEventListener('disconnected', function () {
+					this.remove(this.children[0]);
+				});
+				scene.add(controller);
+			})
+
+			/// adding models so they're visible
+			controllerGrips.forEach(controllerGrip => {
+				controllerGrip.add(controllerModelFactory.createControllerModel(controllerGrip));
+				scene.add(controllerGrip);
+			});
+
+			// controller.addEventListener('selectstart', onSelectStart);
+			// controller.addEventListener('selectend', onSelectEnd);
+			// controller.addEventListener('connected', function (event) {
+			// 	this.add(buildController(event.data));
+			// });
+			// controller.addEventListener('disconnected', function () {
+			// 	this.remove(this.children[0]);
+			// });
+			// scene.add(controller);
+
+
+			// controllerGrip = renderer.xr.getControllerGrip(0);
+			// controllerGrip.add(controllerModelFactory.createControllerModel(controllerGrip));
+			// scene.add(controllerGrip);
 
 			document.body.appendChild(VRButton.createButton(renderer));
 
@@ -504,59 +531,71 @@
 
 
 			// find intersections
-			tempMatrix.identity().extractRotation(controller.matrixWorld);
+			controllers.forEach(controller => {
+				/// 'controller' is the controller object aka 'this' in the event listeners
 
-			raycaster.ray.origin.setFromMatrixPosition(controller.matrixWorld);
-			raycaster.ray.direction.set(0, 0, - 1).applyMatrix4(tempMatrix);
+				tempMatrix.identity().extractRotation(controller.matrixWorld);
 
-			const intersects = raycaster.intersectObjects(stemsGroup.children, false);
+				raycaster.ray.origin.setFromMatrixPosition(controller.matrixWorld);
+				raycaster.ray.direction.set(0, 0, - 1).applyMatrix4(tempMatrix);
 
+				const intersects = raycaster.intersectObjects(stemsGroup.children, false);
 
-			if (intersects.length > 0) {
-				console.log(intersects);
+				// console.log(controller)
 
-				if (INTERSECTED != intersects[0].object) {
-					if (INTERSECTED != undefined) { INTERSECTED.isHighlighted = false; }
+				if (intersects.length > 0) {
+					console.log(intersects);
+					console.log(controller);
 
+					/// is the object we're pointing at the same as the previous frame?
+					if (controller.userData.INTERSECTED != intersects[0].object) {
+						/// if not, remove the highlight from the previous object (if it exists)
+						if (controller.userData.INTERSECTED != undefined) { controller.userData.INTERSECTED.isHighlighted = false; }
 
-					if (INTERSECTED) INTERSECTED.material.emissive.setHex(INTERSECTED.currentHex);
+						/// set the color of the old object back to what it was
+						if (controller.userData.INTERSECTED) controller.userData.INTERSECTED.material.emissive.setHex(controller.userData.INTERSECTED.currentHex);
 
-					INTERSECTED = intersects[0].object;
-					INTERSECTED.currentHex = INTERSECTED.material.emissive.getHex();
-					INTERSECTED.material.emissive.setHex(0xffbb00);
+						/// set the current object to be the new INTERSECTED object
+						controller.userData.INTERSECTED = intersects[0].object;
+						/// get the current color to revert to later when deselecting
+						controller.userData.INTERSECTED.currentHex = controller.userData.INTERSECTED.material.emissive.getHex();
+						/// modify the color of the object (apply highlight)
+						controller.userData.INTERSECTED.material.emissive.setHex(0xffbb00);
+						/// finally set object state to be highlighted
+						controller.userData.INTERSECTED.isHighlighted = true;
 
-					INTERSECTED.isHighlighted = true;
-
-				}
-
-				if (controller.userData.isSelecting && !isHolding) {
-					// sounds[obj.name].setVolume(value);
-					isHolding = true;
-
-					const volume = sounds[INTERSECTED.name].getVolume();
-
-					switch (volume) {
-						case 0:
-							sounds[INTERSECTED.name].setVolume(1);
-							break;
-						case 1:
-							sounds[INTERSECTED.name].setVolume(0);
-							break;
-						default:
-							sounds[INTERSECTED.name].setVolume(0);
-							break;
 					}
-				} else if (!controller.userData.isSelecting && isHolding) {
-					isHolding = false;
+
+					/// is this the first time we're clicking on the object?
+					if (controller.userData.isSelecting && !isHolding) {
+						/// set for next frame
+						isHolding = true;
+
+						const volume = sounds[controller.userData.INTERSECTED.name].getVolume();
+
+						switch (volume) {
+							case 0:
+								sounds[controller.userData.INTERSECTED.name].setVolume(1);
+								break;
+							case 1:
+								sounds[controller.userData.INTERSECTED.name].setVolume(0);
+								break;
+							default:
+								sounds[controller.userData.INTERSECTED.name].setVolume(0);
+								break;
+						}
+					} else if (!controller.userData.isSelecting && isHolding) {
+						isHolding = false;
+					}
+
+				} else {
+					/// clean up and reset currently highlighted objects to their original color/state
+					if (controller.userData.INTERSECTED != undefined) { controller.userData.INTERSECTED.isHighlighted = false; }
+					if (controller.userData.INTERSECTED) controller.userData.INTERSECTED.material.emissive.setHex(controller.userData.INTERSECTED.currentHex);
+					controller.userData.INTERSECTED = undefined;
 				}
+			})
 
-			} else {
-				if (INTERSECTED != undefined) { INTERSECTED.isHighlighted = false; }
-				if (INTERSECTED) INTERSECTED.material.emissive.setHex(INTERSECTED.currentHex);
-
-				INTERSECTED = undefined;
-
-			}
 
 			renderer.render(scene, camera);
 		}
