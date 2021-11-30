@@ -75,8 +75,6 @@
 
 		let camera, controls, scene, raycaster, renderer, light;
 		let controller, controllerGrip;
-		// let INTERSECTED;
-		// let isHolding = false;
 		const tempMatrix = new THREE.Matrix4();
 
 
@@ -566,8 +564,8 @@
 
 					}
 
-					/// is this the first time we're clicking on the object?
-					if (controller.userData.isSelecting && !controller.userData.isHolding) {
+					/// is this the first time we're clicking on the object? (and are we not dragging an object)
+					if (controller.userData.isSelecting && !controller.userData.isHolding && !controller.userData.selected) {
 						/// set for next frame
 						controller.userData.isHolding = true;
 
