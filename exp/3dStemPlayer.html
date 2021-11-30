@@ -48,13 +48,14 @@
 		<source src="sounds/wdyf/vocals.wav" type="audio/wav">
 	</audio>
 
-	<video id="video" preload="auto" style="display: none" crossorigin="anonymous" muted controls>
-		<source src="https://cdn.cpixl.com/other/projectie_3.mp4" type="video/mp4" crossorigin="*">
+	<video id="video" preload="auto" style="display: none" crossorigin="anonymous" muted controls loop>
+		<source src="https://cdn.cpixl.com/other/tv-test.mp4" type="video/mp4" crossorigin="*">
+		<!-- <source src="https://cdn.cpixl.com/other/projectie_3.mp4" type="video/mp4" crossorigin="*"> -->
 	</video>
-	<video id="video2" preload="auto" style="display: none" crossorigin="anonymous" muted controls>
+	<video id="video2" preload="auto" style="display: none" crossorigin="anonymous" muted controls loop>
 		<source src="https://cdn.cpixl.com/other/V1-short.mp4" type="video/mp4" crossorigin="*">
 	</video>
-	<video id="video3" preload="auto" style="display: none" crossorigin="anonymous" muted controls>
+	<video id="video3" preload="auto" style="display: none" crossorigin="anonymous" muted controls loop>
 		<source src="https://cdn.cpixl.com/other/google-doodle.mp4" type="video/mp4" crossorigin="*">
 	</video>
 
@@ -135,10 +136,12 @@
 			const video2 = document.querySelector('#video2');
 			const video3 = document.querySelector('#video3');
 
+
+
 			const vidTextures = [
-				new THREE.MeshBasicMaterial({ map: new THREE.VideoTexture(video) }),
-				new THREE.MeshBasicMaterial({ map: new THREE.VideoTexture(video2) }),
-				new THREE.MeshBasicMaterial({ map: new THREE.VideoTexture(video3) }),
+				new THREE.MeshBasicMaterial({ map: new THREE.VideoTexture(video), side: THREE.DoubleSide }),
+				new THREE.MeshBasicMaterial({ map: new THREE.VideoTexture(video2), side: THREE.DoubleSide }),
+				new THREE.MeshBasicMaterial({ map: new THREE.VideoTexture(video3), side: THREE.DoubleSide }),
 			];
 
 			const vidTex = new THREE.VideoTexture(video);
@@ -148,7 +151,8 @@
 			vidTex.format = THREE.RGBFormat;
 			// vidTex.wrapS = THREE.CubeReflectionMapping;
 			// vidTex.wrapT = THREE.CubeReflectionMapping;
-			// vidTex.repeat.set(.1, .1);
+			THREE.RepeatWrapping
+			vidTex.repeat.set(100, 100);
 			// video.crossOrigin = 'anonymous';
 
 			const triangleSize = 1.3;
@@ -159,28 +163,86 @@
 			triangle.lineTo(10 * triangleSize, 0); // back to start to close the shape
 
 
-			var geometry = new THREE.PlaneGeometry(20, 20);
+			const plane = new THREE.PlaneGeometry(20, 20);
+			const testPlane = new THREE.Mesh(plane, vidTextures[2]);
+
+			scene.add(testPlane);
+			testPlane.position.set(30, 30, 30);
+			console.log(testPlane)
 
 			// const extrudedTriangle = new THREE.ExtrudeGeometry(triangle, { steps: 1, depth: 30, });
 
 			let extrudedTriangle;
 			const loader = new GLTFLoader().setPath('models/');
-			loader.load('e-triangle.gltf', (gltf) => {
+			loader.load('e-triangle-v3.gltf', (gltf) => {
 				console.log('loaded');
-				console.log(gltf)
-				extrudedTriangle = gltf.scene;
+				extrudedTriangle = gltf.scene.children[0];
 
+				extrudedTriangle.userData.isDraggable = true;
+				extrudedTriangle.name = 'e-triangle'
+
+				// extrudedTriangle.children[4].material = vidTextures[2];
+
+				// scene.add(extrudedTriangle);
 				scene.add(extrudedTriangle);
+				console.log(extrudedTriangle)
+
+
+				// extrudedTriangle.children[0].material = [
+				// 	new THREE.MeshBasicMaterial({ color: 0xffbb00, side: THREE.DoubleSide }),
+				// 	new THREE.MeshBasicMaterial({ color: 0x00bb00, side: THREE.DoubleSide }),
+				// 	new THREE.MeshBasicMaterial({ color: 0x00ff00, side: THREE.DoubleSide }),
+				// 	new THREE.MeshBasicMaterial({ color: 0x0000ff, side: THREE.DoubleSide }),
+				// 	new THREE.MeshBasicMaterial({ color: 0xffffff, side: THREE.DoubleSide }),
+				// ]
+
+				//old
+				// extrudedTriangle.children[0].children.forEach(side => {
+
+				//new
+				extrudedTriangle.children.forEach(side => {
+					switch (side.material.name) {
+						case 'one':
+							// side.material = vidTextures[0];
+							side.material = vidTextures[2];
+							// side.material = new THREE.MeshBasicMaterial({ map: vidTex, side: THREE.DoubleSide });
+							// side.material = new THREE.MeshBasicMaterial({ color: 0xffffff, side: THREE.DoubleSide });
+							break;
+						case 'two':
+							// side.material = vidTextures[1];
+							side.material = new THREE.MeshBasicMaterial({ color: 0xff0000, side: THREE.DoubleSide });
+							break;
+						case 'three':
+							// side.material = vidTextures[2];
+							side.material = new THREE.MeshBasicMaterial({ color: 0x0000ff, side: THREE.DoubleSide });
+							break;
+						case 'sides':
+							side.material = new THREE.MeshBasicMaterial({ color: 0xffbb00, side: THREE.DoubleSide })
+							break;
+
+						default:
+							break;
+					}
+				})
+
+				// [
+				// 	new THREE.MeshBasicMaterial({ color: 0xffbb00, side: THREE.DoubleSide }),
+				// 	new THREE.MeshBasicMaterial({ color: 0x00bb00, side: THREE.DoubleSide }),
+				// 	new THREE.MeshBasicMaterial({ color: 0x00ff00, side: THREE.DoubleSide }),
+				// 	new THREE.MeshBasicMaterial({ color: 0x0000ff, side: THREE.DoubleSide }),
+				// 	new THREE.MeshBasicMaterial({ color: 0xffffff, side: THREE.DoubleSide }),
+				// ]
+
 
 				// scene.add(new THREE.Mesh(
-				// 	gltf.scene,
-				// 	[
-				// 		new THREE.MeshBasicMaterial({ color: 0xffbb00 }),
-				// 		new THREE.MeshBasicMaterial({ color: 0x00bb00 }),
-				// 		new THREE.MeshBasicMaterial({ color: 0x00ff00 }),
-				// 		new THREE.MeshBasicMaterial({ color: 0x0000ff }),
-				// 		new THREE.MeshBasicMaterial({ color: 0xffffff }),
-				// 	]
+				// 	extrudedTriangle.children[0],
+				// [
+				// 	new THREE.MeshBasicMaterial({ color: 0xffbb00 }),
+				// 	new THREE.MeshBasicMaterial({ color: 0x00bb00 }),
+				// 	new THREE.MeshBasicMaterial({ color: 0x00ff00 }),
+				// 	new THREE.MeshBasicMaterial({ color: 0x0000ff }),
+				// 	new THREE.MeshBasicMaterial({ color: 0xffffff }),
+				// ]
 				// ));
 
 			});
@@ -251,6 +313,12 @@
 			// video.crossOrigin = 'anonymous';
 			video.load();
 			video.play();
+			video2.load();
+			video2.play();
+			video3.load();
+			video3.play();
+
+
 
 
 
