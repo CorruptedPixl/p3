@@ -215,7 +215,12 @@
 			vidGroup.add(vidSideBeta);
 			vidGroup.add(vidSideGamma);
 			vidGroup.userData.isDraggable = true;
+			vidGroup.name = 'vidGroup';
+			// vidSideAlpha.userData.isDraggable = true;
+			// vidSideBeta.userData.isDraggable = true;
+			// vidSideGamma.userData.isDraggable = true;
 			scene.add(vidGroup)
+			console.log(vidGroup)
 
 
 
@@ -363,21 +368,44 @@
 
 				///! could be optimized slightly by adding all draggable objects to a group and only checking intersections on that group instead of the whole scene
 				const intersects = raycaster.intersectObjects(scene.children, false);
+				const intersectsVidGroup = raycaster.intersectObjects(vidGroup.children, false);
+				// console.log({ intersectsVidGroup })
 
-				console.log({ intersects })
-
+				/// standalone objects
 				if (intersects.length > 0) {
 					intersects.forEach(obj => {
 						if (!obj.object.userData?.isDraggable) { return }
-						else {
-							console.log('Dragging', { obj })
-							// controller.userData.isDragging = true;
-							// const intersection = obj;
-							// const object = intersection.object;
-
+						else if (obj.object.parent.userData?.isDraggable) {
 							const object = obj.object;
 							controller.attach(object);
 
+							controller.userData.selected = object;
+						}
+						else {
+							console.log('Dragging', { obj })
+							const object = obj.object;
+							controller.attach(object);
+							controller.userData.selected = object;
+						}
+					})
+
+				}
+
+				/// video group obj
+				if (intersectsVidGroup.length > 0) {
+					intersectsVidGroup.forEach(obj => {
+						console.log(obj)
+						if (!obj.object.parent.userData?.isDraggable) { return }
+						else if (obj.object.parent.userData?.isDraggable) {
+							const object = obj.object.parent;
+							controller.attach(object);
+
+							controller.userData.selected = object;
+						}
+						else {
+							console.log('Dragging', { obj })
+							const object = obj.object;
+							controller.attach(object);
 							controller.userData.selected = object;
 						}
 					})
