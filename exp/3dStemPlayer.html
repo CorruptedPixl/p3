@@ -164,54 +164,58 @@
 			triangle.lineTo(10 * triangleSize, 0); // back to start to close the shape
 
 
-			let vidMesh = new THREE.Mesh(
-				// new THREE.PlaneGeometry(20, 10),
-				new THREE.ExtrudeGeometry(triangle, { steps: 1, depth: 30, }), // extrude triangle
-				// new THREE.MeshBasicMaterial({ map: vidTex }));
-				// extrudedTriangle,
-				[
-					// new THREE.MeshBasicMaterial({ map: new THREE.VideoTexture(video) }),
-					// new THREE.MeshBasicMaterial({ map: new THREE.VideoTexture(video2) }),
-					// new THREE.MeshBasicMaterial({ map: new THREE.VideoTexture(video3) }),
-					// new THREE.MeshBasicMaterial({ map: new THREE.VideoTexture(video3) }),
-					// new THREE.MeshBasicMaterial({ map: new THREE.VideoTexture(video3) }),
-					new THREE.MeshBasicMaterial({ color: 0xffbb00 }),
-					new THREE.MeshBasicMaterial({ color: 0x00bb00 }),
-					new THREE.MeshBasicMaterial({ color: 0x00ff00 }),
-					new THREE.MeshBasicMaterial({ color: 0x0000ff }),
-					new THREE.MeshBasicMaterial({ color: 0xffffff }),
-				]);
-			// new THREE.MeshFaceMaterial(vidTextures));
-			// new THREE.MeshBasicMaterial({ color: 0xffbb00 }));
+			// let vidMesh = new THREE.Mesh(
+			// 	// new THREE.PlaneGeometry(20, 10),
+			// 	new THREE.ExtrudeGeometry(triangle, { steps: 1, depth: 30, }), // extrude triangle
+			// 	// new THREE.MeshBasicMaterial({ map: vidTex }));
+			// 	// extrudedTriangle,
+			// 	[
+			// 		// new THREE.MeshBasicMaterial({ map: new THREE.VideoTexture(video) }),
+			// 		// new THREE.MeshBasicMaterial({ map: new THREE.VideoTexture(video2) }),
+			// 		// new THREE.MeshBasicMaterial({ map: new THREE.VideoTexture(video3) }),
+			// 		// new THREE.MeshBasicMaterial({ map: new THREE.VideoTexture(video3) }),
+			// 		// new THREE.MeshBasicMaterial({ map: new THREE.VideoTexture(video3) }),
+			// 		new THREE.MeshBasicMaterial({ color: 0xffbb00 }),
+			// 		new THREE.MeshBasicMaterial({ color: 0x00bb00 }),
+			// 		new THREE.MeshBasicMaterial({ color: 0x00ff00 }),
+			// 		new THREE.MeshBasicMaterial({ color: 0x0000ff }),
+			// 		new THREE.MeshBasicMaterial({ color: 0xffffff }),
+			// 	]);
+			// // new THREE.MeshFaceMaterial(vidTextures));
+			// // new THREE.MeshBasicMaterial({ color: 0xffbb00 }));
 
-			vidMesh.position.set(0, 0, -4);
-			vidMesh.userData.isDraggable = true;
-			vidMesh.name = 'e-triangle'
-			vidMesh.scale.set(.05, .05, .05);
-			scene.add(vidMesh)
+			// vidMesh.position.set(0, 0, -4);
+			// vidMesh.userData.isDraggable = true;
+			// vidMesh.name = 'e-triangle'
+			// vidMesh.scale.set(.05, .05, .05);
+			// scene.add(vidMesh)
 
 			/// Video mesh group
-			// let vidSideAlpha = new THREE.Mesh(
-			// 	new THREE.PlaneGeometry(20, 10),
-			// 	new THREE.MeshBasicMaterial({ map: vidTex }));
-			// vidSideAlpha.position.set(0, 15, -17.5);
-			// vidSideAlpha.rotateY(Math.PI); // 180° radians
-			// vidSideAlpha.rotateX(-0.523599); // 30° in radians (formula deg to rad: angle * π / 180)
-			// vidSideAlpha.material.side = THREE.DoubleSide; // render both sides
-			// let vidSideBeta = new THREE.Mesh(
-			// 	new THREE.PlaneGeometry(20, 10),
-			// 	new THREE.MeshBasicMaterial({ color: 0xff0000 }));
-			// vidSideBeta.position.set(0, 10, -15);
-			// vidSideBeta.rotateX(1.5708); // 90° in radians
-			// let vidSideGamma = new THREE.Mesh(
-			// 	new THREE.PlaneGeometry(20, 10),
-			// 	new THREE.MeshBasicMaterial({ color: 0xffbb00 }));
-			// vidSideGamma.position.set(0, 15, -10);
-			// vidSideGamma.rotateX(-0.523599); // 30° in radians (formula deg to rad: angle * π / 180)
-			// vidGroup.add(vidSideAlpha);
-			// vidGroup.add(vidSideBeta);
-			// vidGroup.add(vidSideGamma);
-			// scene.add(vidGroup)
+			let vidSideAlpha = new THREE.Mesh(
+				new THREE.PlaneGeometry(20, 10),
+				vidTextures[0]);
+			// new THREE.MeshBasicMaterial({ map: vidTex }));
+			vidSideAlpha.position.set(0, 15, -17.5);
+			vidSideAlpha.rotateY(Math.PI); // 180° radians
+			vidSideAlpha.rotateX(-0.523599); // 30° in radians (formula deg to rad: angle * π / 180)
+			vidSideAlpha.material.side = THREE.DoubleSide; // render both sides
+			let vidSideBeta = new THREE.Mesh(
+				new THREE.PlaneGeometry(20, 10),
+				vidTextures[1]);
+			// new THREE.MeshBasicMaterial({ color: 0xff0000 }));
+			vidSideBeta.position.set(0, 10, -15);
+			vidSideBeta.rotateX(1.5708); // 90° in radians
+			let vidSideGamma = new THREE.Mesh(
+				new THREE.PlaneGeometry(20, 10),
+				vidTextures[2]);
+			// new THREE.MeshBasicMaterial({ color: 0xffbb00 }));
+			vidSideGamma.position.set(0, 15, -10);
+			vidSideGamma.rotateX(-0.523599); // 30° in radians (formula deg to rad: angle * π / 180)
+			vidGroup.add(vidSideAlpha);
+			vidGroup.add(vidSideBeta);
+			vidGroup.add(vidSideGamma);
+			vidGroup.userData.isDraggable = true;
+			scene.add(vidGroup)
 
 
 
@@ -542,8 +546,8 @@
 				// console.log(controller)
 
 				if (intersects.length > 0) {
-					console.log(intersects);
-					console.log(controller);
+					// console.log(intersects);
+					// console.log(controller);
 
 					/// is the object we're pointing at the same as the previous frame?
 					if (controller.userData.INTERSECTED != intersects[0].object) {
@@ -568,12 +572,15 @@
 					if (controller.userData.isSelecting && !controller.userData.isHolding && !controller.userData.selected) {
 						/// set for next frame
 						controller.userData.isHolding = true;
+						controller.userData.intent = { holdLog: [], action: 0 };
 
 						const volume = sounds[controller.userData.INTERSECTED.name].getVolume();
 
 						switch (volume) {
 							case 0:
 								sounds[controller.userData.INTERSECTED.name].setVolume(1);
+								controller.userData.intent.action = 1; /// update action if unmuting
+
 								break;
 							case 1:
 								sounds[controller.userData.INTERSECTED.name].setVolume(0);
@@ -584,6 +591,20 @@
 						}
 					} else if (!controller.userData.isSelecting && controller.userData.isHolding) {
 						controller.userData.isHolding = false;
+					}
+
+					/// checks for user intent
+					if (controller.userData.isSelecting && controller.userData.isHolding && !controller.userData.selected) {
+
+						if (controller.userData.intent?.holdLog.at(-1) != intersects[0].object) {
+							if (controller.userData.intent.holdLog == undefined) {
+								controller.userData.intent.holdLog = [];
+							}
+							controller.userData.intent.holdLog.push(intersects[0].object)
+						} else {
+							sounds[controller.userData.INTERSECTED.name].setVolume(controller.userData.intent.action);
+
+						}
 					}
 
 				} else {
