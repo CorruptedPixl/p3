@@ -6,6 +6,7 @@
 	<meta charset="utf-8">
 	<meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
 	<link type="text/css" rel="stylesheet" href="main.css">
+	<link rel="shortcut icon" href="https://p3-blog.corruptedpixl.com/assets/favicons/favicon.svg">
 </head>
 
 <body>
@@ -72,6 +73,7 @@
 		import { XRControllerModelFactory } from './jsm/webxr/XRControllerModelFactory.js';
 		import { GLTFLoader } from './jsm/loaders/GLTFLoader.js';
 
+		const lyrics = await fetch('../../../lyrics/forest-spirit-sound.json').then(response => response.json());
 
 		let camera, controls, scene, raycaster, renderer, light;
 		let controller, controllerGrip;
@@ -473,6 +475,12 @@
 
 			document.body.appendChild(VRButton.createButton(renderer));
 
+			lyrics.startTime = performance.now();
+			lyrics.lineIndex = 0;
+			lyrics.ended = false;
+			lyrics.timeOffset = 0;
+
+			console.log(lyrics)
 
 		}
 
@@ -529,6 +537,8 @@
 
 			controls.update(delta);
 
+
+			/// analysers
 			stemsGroup.children.forEach(obj => {
 				// console.log(obj)
 				if (!obj?.isHighlighted) {
@@ -539,27 +549,40 @@
 			})
 
 
-			/////////////////////////////////////////// WEBXR
+			/// lyrics
 
-			// if (controller.userData.isSelecting === true) {
+			lyrics.currentTime = performance.now();
+			lyrics.timeDelta = parseInt(lyrics.currentTime - lyrics.startTime);
 
-			// 	console.log(scene.children)
-			// 	console.log(meshes)
+			// console.log(lyrics.timeDelta)
+			// console.log(!lyrics?.lastLine)
+			// console.log(lyrics.timeDelta >= lyrics.lines[0].startTimeMs)
 
-			// 	const 
-			// 	const cube = room.children[0];
-			// 	room.remove(cube);
-
-			// 	cube.position.copy(controller.position);
-			// 	cube.userData.velocity.x = (Math.random() - 0.5) * 0.02 * delta;
-			// 	cube.userData.velocity.y = (Math.random() - 0.5) * 0.02 * delta;
-			// 	cube.userData.velocity.z = (Math.random() * 0.01 - 0.05) * delta;
-			// 	cube.userData.velocity.applyQuaternion(controller.quaternion);
-			// 	room.add(cube);
-
+			// if (!lyrics?.lastLine) {
+			// 	lyrics.lineIndex = 0;
+			// 	if (lyrics.lines[0].startTimeMs >= lyrics.timeDelta) {
+			// 		lyrics.lastLine = lyrics.lines[lyrics.lineIndex].words;
+			// 		console.log(lyrics.lastLine);
+			// 	}
+			// }
+			// else {
+			// 	if (lyrics.currentTime - lyrics.lastLine.endTimeMs > lyrics.lineIntervalMs) {
+			// 		lyrics.lineIndex++;
+			// 		if (lyrics.lineIndex < lyrics.lines.length) {
+			// 			console.log(lyrics.lines[lyrics.lineIndex].words);
+			// 		}
+			// 	}
 			// }
 
 
+			if ((lyrics.timeDelta + lyrics.timeOffset) >= lyrics.lines[lyrics.lineIndex]?.startTimeMs && !lyrics.ended) {
+				console.log(lyrics.lines[lyrics.lineIndex].words);
+				lyrics.lineIndex++;
+			}
+			if (typeof lyrics.lines[lyrics.lineIndex] == 'undefined') { lyrics.ended = true }
+
+
+			/// controller code
 			// find intersections
 			controllers.forEach(controller => {
 				/// 'controller' is the controller object aka 'this' in the event listeners
