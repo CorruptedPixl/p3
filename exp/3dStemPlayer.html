@@ -50,14 +50,17 @@
 	</audio>
 
 	<video id="video" preload="auto" style="display: none" crossorigin="anonymous" muted controls loop>
-		<source src="https://cdn.cpixl.com/other/tv-test.mp4" type="video/mp4" crossorigin="*">
+		<source src="https://cdn.cpixl.com/other/PhenomenaTV/PTVEP1-drums.mp4" type="video/mp4" crossorigin="*">
+		<!-- <source src="https://cdn.cpixl.com/other/tv-test.mp4" type="video/mp4" crossorigin="*"> -->
 		<!-- <source src="https://cdn.cpixl.com/other/projectie_3.mp4" type="video/mp4" crossorigin="*"> -->
 	</video>
 	<video id="video2" preload="auto" style="display: none" crossorigin="anonymous" muted controls loop>
-		<source src="https://cdn.cpixl.com/other/futuresonus-parva-kickstarter.mp4" type="video/mp4" crossorigin="*">
+		<source src="https://cdn.cpixl.com/other/PhenomenaTV/PTVEP2-synths.mp4" type="video/mp4" crossorigin="*">
+		<!-- <source src="https://cdn.cpixl.com/other/futuresonus-parva-kickstarter.mp4" type="video/mp4" crossorigin="*"> -->
 	</video>
 	<video id="video3" preload="auto" style="display: none" crossorigin="anonymous" muted controls loop>
-		<source src="https://cdn.cpixl.com/other/google-doodle.mp4" type="video/mp4" crossorigin="*">
+		<source src="https://cdn.cpixl.com/other/PhenomenaTV/PTVEP3-guitars.mp4" type="video/mp4" crossorigin="*">
+		<!-- <source src="https://cdn.cpixl.com/other/google-doodle.mp4" type="video/mp4" crossorigin="*"> -->
 	</video>
 
 	<div id="overlay">
@@ -151,24 +154,37 @@
 				new THREE.MeshBasicMaterial({ map: new THREE.VideoTexture(video3), side: THREE.DoubleSide }),
 			];
 
-			const vidTex = new THREE.VideoTexture(video);
-			// vidTex.needsUpdate;
-			vidTex.minFilter = THREE.LinearFilter;
-			vidTex.magFilter = THREE.LinearFilter;
-			vidTex.format = THREE.RGBFormat;
-			// vidTex.wrapS = THREE.CubeReflectionMapping;
-			// vidTex.wrapT = THREE.CubeReflectionMapping;
-			THREE.RepeatWrapping
-			vidTex.repeat.set(100, 100);
-			// video.crossOrigin = 'anonymous';
+			// const vidTex = new THREE.VideoTexture(video);
+			// // vidTex.needsUpdate;
+			// vidTex.minFilter = THREE.LinearFilter;
+			// vidTex.magFilter = THREE.LinearFilter;
+			// vidTex.format = THREE.RGBFormat;
+			// // vidTex.wrapS = THREE.CubeReflectionMapping;
+			// // vidTex.wrapT = THREE.CubeReflectionMapping;
+			// vidTex.repeat.set(100, 100);
+			// // video.crossOrigin = 'anonymous';
 
-			const triangleSize = 1.3;
+			const triangleSize = .5;
 			const triangle = new THREE.Shape(); // create a triangle
 			triangle.moveTo(10 * triangleSize, 0); // right point
-			triangle.lineTo(-10 * triangleSize, 0); // left point
-			triangle.lineTo(0, 15 * triangleSize); // top point
+			triangle.lineTo(-9.4 * triangleSize, 0); // left point
+			triangle.lineTo(0.16, 16.8 * triangleSize); // top point
 			triangle.lineTo(10 * triangleSize, 0); // back to start to close the shape
 
+			const vidShapeSideOne = new THREE.Mesh(
+				new THREE.ExtrudeGeometry(triangle, { steps: 1, depth: .1, }),
+				new THREE.MeshBasicMaterial({ color: 0xffbb00 })
+			)
+			const vidShapeSideTwo = new THREE.Mesh(
+				new THREE.ExtrudeGeometry(triangle, { steps: 1, depth: .1, }),
+				new THREE.MeshBasicMaterial({ color: 0xffbb00 })
+			)
+			vidShapeSideOne.position.set(10, 10.08, -14.85);
+			vidShapeSideTwo.position.set(-10, 10.08, -14.85);
+			vidShapeSideOne.rotateY(Math.PI / 2); // 180° radians
+			vidShapeSideTwo.rotateY(Math.PI / 2); // 180° radians
+			// scene.add(vidShapeSideOne);
+			// scene.add(vidShapeSideTwo);
 
 			// let vidMesh = new THREE.Mesh(
 			// 	// new THREE.PlaneGeometry(20, 10),
@@ -200,33 +216,30 @@
 			let vidSideAlpha = new THREE.Mesh(
 				new THREE.PlaneGeometry(20, 10),
 				vidTextures[0]);
-			// new THREE.MeshBasicMaterial({ map: vidTex }));
-			vidSideAlpha.position.set(0, 15, -17.5);
+			vidSideAlpha.position.set(0, 14.33, -17.5);
 			vidSideAlpha.rotateY(Math.PI); // 180° radians
-			vidSideAlpha.rotateX(-0.523599); // 30° in radians (formula deg to rad: angle * π / 180)
+			vidSideAlpha.rotateZ(Math.PI); // 180° radians
+			vidSideAlpha.rotateX(0.523599); // 30° in radians (formula deg to rad: angle * π / 180)
 			vidSideAlpha.material.side = THREE.DoubleSide; // render both sides
 			let vidSideBeta = new THREE.Mesh(
 				new THREE.PlaneGeometry(20, 10),
 				vidTextures[1]);
-			// new THREE.MeshBasicMaterial({ color: 0xff0000 }));
 			vidSideBeta.position.set(0, 10, -15);
 			vidSideBeta.rotateX(1.5708); // 90° in radians
 			let vidSideGamma = new THREE.Mesh(
 				new THREE.PlaneGeometry(20, 10),
 				vidTextures[2]);
-			// new THREE.MeshBasicMaterial({ color: 0xffbb00 }));
-			vidSideGamma.position.set(0, 15, -10);
+			vidSideGamma.position.set(0, 14.33, -12.5);
 			vidSideGamma.rotateX(-0.523599); // 30° in radians (formula deg to rad: angle * π / 180)
 			vidGroup.add(vidSideAlpha);
 			vidGroup.add(vidSideBeta);
 			vidGroup.add(vidSideGamma);
+			vidGroup.add(vidShapeSideOne);
+			vidGroup.add(vidShapeSideTwo);
 			vidGroup.userData.isDraggable = true;
 			vidGroup.name = 'vidGroup';
-			// vidSideAlpha.userData.isDraggable = true;
-			// vidSideBeta.userData.isDraggable = true;
-			// vidSideGamma.userData.isDraggable = true;
 			scene.add(vidGroup)
-			console.log(vidGroup)
+			// console.log(vidGroup)
 
 
 
@@ -347,7 +360,7 @@
 
 			controls = new FirstPersonControls(camera, renderer.domElement);
 
-			controls.movementSpeed = 150;
+			controls.movementSpeed = 20;
 			controls.lookSpeed = 0.30;
 			controls.noFly = false;
 			controls.lookVertical = true;
@@ -490,8 +503,9 @@
 
 			// Set properties to configure:
 			text.text = 'Hi there!'
-			text.fontSize = 10
-			text.position.set(0, 150, 0)
+			text.fontSize = 4
+			text.position.set(0, 10, 30)
+			text.rotateY(Math.PI)
 			text.color = 0xffbb00
 			text.anchorX = 'center';
 
