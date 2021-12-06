@@ -2,7 +2,7 @@
 <html lang="en">
 
 <head>
-	<title>three.js webaudio - sandbox</title>
+	<title>The virtual soundscape - Phenomena</title>
 	<meta charset="utf-8">
 	<meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
 	<link type="text/css" rel="stylesheet" href="main.css">
@@ -66,18 +66,22 @@
 
 	<script type="module">
 
-		import * as THREE from '../build/three.module.js';
-		import { GUI } from './jsm/libs/lil-gui.module.min.js';
-		import { FirstPersonControls } from './jsm/controls/FirstPersonControls.js';
-		import { VRButton } from './jsm/webxr/VRButton.js';
-		import { XRControllerModelFactory } from './jsm/webxr/XRControllerModelFactory.js';
-		import { GLTFLoader } from './jsm/loaders/GLTFLoader.js';
+		import { Text } from 'https://cdn.skypack.dev/troika-three-text';
+
+		import * as THREE from 'https://cdn.skypack.dev/three';
+		import { GUI } from 'https://cdn.skypack.dev/three/examples/jsm/libs/lil-gui.module.min.js';
+		import { FirstPersonControls } from 'https://cdn.skypack.dev/three/examples//jsm/controls/FirstPersonControls.js';
+		import { VRButton } from 'https://cdn.skypack.dev/three/examples//jsm/webxr/VRButton.js';
+		import { XRControllerModelFactory } from 'https://cdn.skypack.dev/three/examples//jsm/webxr/XRControllerModelFactory.js';
+		import { GLTFLoader } from 'https://cdn.skypack.dev/three/examples//jsm/loaders/GLTFLoader.js';
 
 		const lyrics = await fetch('../../../lyrics/forest-spirit-sound.json').then(response => response.json());
+		// const lyrics = await fetch('../../../lyrics/temporary-nothing.json').then(response => response.json());
 
 		let camera, controls, scene, raycaster, renderer, light;
 		let controller, controllerGrip;
 		const tempMatrix = new THREE.Matrix4();
+		const text = new Text();
 
 
 		let mats = [];
@@ -482,6 +486,18 @@
 
 			console.log(lyrics)
 
+			scene.add(text)
+
+			// Set properties to configure:
+			text.text = 'Hi there!'
+			text.fontSize = 10
+			text.position.set(0, 150, 0)
+			text.color = 0xffbb00
+			text.anchorX = 'center';
+
+			// Update the rendering:
+			text.sync()
+
 		}
 
 		function buildController(data) {
@@ -577,6 +593,9 @@
 
 			if ((lyrics.timeDelta + lyrics.timeOffset) >= lyrics.lines[lyrics.lineIndex]?.startTimeMs && !lyrics.ended) {
 				console.log(lyrics.lines[lyrics.lineIndex].words);
+
+				text.text = lyrics.lines[lyrics.lineIndex].words;
+				text.sync();
 				lyrics.lineIndex++;
 			}
 			if (typeof lyrics.lines[lyrics.lineIndex] == 'undefined') { lyrics.ended = true }
