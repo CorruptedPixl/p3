@@ -81,7 +81,7 @@
 		const lyrics = await fetch('../../../lyrics/forest-spirit-sound.json').then(response => response.json());
 		// const lyrics = await fetch('../../../lyrics/temporary-nothing.json').then(response => response.json());
 
-		let camera, controls, scene, raycaster, renderer, light;
+		let camera, controls, scene, raycaster, renderer, light, listener;
 		let controller, controllerGrip;
 		const tempMatrix = new THREE.Matrix4();
 		const text = new Text();
@@ -121,177 +121,9 @@
 			const overlay = document.getElementById('overlay');
 			overlay.remove();
 
-			camera = new THREE.PerspectiveCamera(70, window.innerWidth / window.innerHeight, .1, 10000);
-			// camera.position.set(0, 30, 200);
-			camera.position.set(0, 30, 0);
-
-			const listener = new THREE.AudioListener();
-			camera.add(listener);
-
-			scene = new THREE.Scene();
-			scene.fog = new THREE.FogExp2(0x000000, 0.0025);
-
-
-			const light = new THREE.DirectionalLight(0xffffff);
-			light.position.set(1, 1, 1).normalize();
-			scene.add(light);
-
-
-			const sphere = new THREE.SphereGeometry(20, 32, 16);
-
-
-			// VIDEOooo
-
-			const video = document.querySelector('#video');
-			const video2 = document.querySelector('#video2');
-			const video3 = document.querySelector('#video3');
-
-
-
-			const vidTextures = [
-				new THREE.MeshBasicMaterial({ map: new THREE.VideoTexture(video), side: THREE.DoubleSide }),
-				new THREE.MeshBasicMaterial({ map: new THREE.VideoTexture(video2), side: THREE.DoubleSide }),
-				new THREE.MeshBasicMaterial({ map: new THREE.VideoTexture(video3), side: THREE.DoubleSide }),
-			];
-
-			// const vidTex = new THREE.VideoTexture(video);
-			// // vidTex.needsUpdate;
-			// vidTex.minFilter = THREE.LinearFilter;
-			// vidTex.magFilter = THREE.LinearFilter;
-			// vidTex.format = THREE.RGBFormat;
-			// // vidTex.wrapS = THREE.CubeReflectionMapping;
-			// // vidTex.wrapT = THREE.CubeReflectionMapping;
-			// vidTex.repeat.set(100, 100);
-			// // video.crossOrigin = 'anonymous';
-
-			const triangleSize = .5;
-			const triangle = new THREE.Shape(); // create a triangle
-			triangle.moveTo(10 * triangleSize, 0); // right point
-			triangle.lineTo(-9.4 * triangleSize, 0); // left point
-			triangle.lineTo(0.16, 16.8 * triangleSize); // top point
-			triangle.lineTo(10 * triangleSize, 0); // back to start to close the shape
-
-			const vidShapeSideOne = new THREE.Mesh(
-				new THREE.ExtrudeGeometry(triangle, { steps: 1, depth: .1, }),
-				new THREE.MeshBasicMaterial({ color: 0xffbb00 })
-			)
-			const vidShapeSideTwo = new THREE.Mesh(
-				new THREE.ExtrudeGeometry(triangle, { steps: 1, depth: .1, }),
-				new THREE.MeshBasicMaterial({ color: 0xffbb00 })
-			)
-			vidShapeSideOne.position.set(10, 10.08, -14.85);
-			vidShapeSideTwo.position.set(-10, 10.08, -14.85);
-			vidShapeSideOne.rotateY(Math.PI / 2); // 180° radians
-			vidShapeSideTwo.rotateY(Math.PI / 2); // 180° radians
-			// scene.add(vidShapeSideOne);
-			// scene.add(vidShapeSideTwo);
-
-			// let vidMesh = new THREE.Mesh(
-			// 	// new THREE.PlaneGeometry(20, 10),
-			// 	new THREE.ExtrudeGeometry(triangle, { steps: 1, depth: 30, }), // extrude triangle
-			// 	// new THREE.MeshBasicMaterial({ map: vidTex }));
-			// 	// extrudedTriangle,
-			// 	[
-			// 		// new THREE.MeshBasicMaterial({ map: new THREE.VideoTexture(video) }),
-			// 		// new THREE.MeshBasicMaterial({ map: new THREE.VideoTexture(video2) }),
-			// 		// new THREE.MeshBasicMaterial({ map: new THREE.VideoTexture(video3) }),
-			// 		// new THREE.MeshBasicMaterial({ map: new THREE.VideoTexture(video3) }),
-			// 		// new THREE.MeshBasicMaterial({ map: new THREE.VideoTexture(video3) }),
-			// 		new THREE.MeshBasicMaterial({ color: 0xffbb00 }),
-			// 		new THREE.MeshBasicMaterial({ color: 0x00bb00 }),
-			// 		new THREE.MeshBasicMaterial({ color: 0x00ff00 }),
-			// 		new THREE.MeshBasicMaterial({ color: 0x0000ff }),
-			// 		new THREE.MeshBasicMaterial({ color: 0xffffff }),
-			// 	]);
-			// // new THREE.MeshFaceMaterial(vidTextures));
-			// // new THREE.MeshBasicMaterial({ color: 0xffbb00 }));
-
-			// vidMesh.position.set(0, 0, -4);
-			// vidMesh.userData.isDraggable = true;
-			// vidMesh.name = 'e-triangle'
-			// vidMesh.scale.set(.05, .05, .05);
-			// scene.add(vidMesh)
-
-			/// Video mesh group
-			let vidSideAlpha = new THREE.Mesh(
-				new THREE.PlaneGeometry(20, 10),
-				vidTextures[0]);
-			vidSideAlpha.position.set(0, 14.33, -17.5);
-			vidSideAlpha.rotateY(Math.PI); // 180° radians
-			vidSideAlpha.rotateZ(Math.PI); // 180° radians
-			vidSideAlpha.rotateX(0.523599); // 30° in radians (formula deg to rad: angle * π / 180)
-			vidSideAlpha.material.side = THREE.DoubleSide; // render both sides
-			let vidSideBeta = new THREE.Mesh(
-				new THREE.PlaneGeometry(20, 10),
-				vidTextures[1]);
-			vidSideBeta.position.set(0, 10, -15);
-			vidSideBeta.rotateX(1.5708); // 90° in radians
-			let vidSideGamma = new THREE.Mesh(
-				new THREE.PlaneGeometry(20, 10),
-				vidTextures[2]);
-			vidSideGamma.position.set(0, 14.33, -12.5);
-			vidSideGamma.rotateX(-0.523599); // 30° in radians (formula deg to rad: angle * π / 180)
-			vidGroup.add(vidSideAlpha);
-			vidGroup.add(vidSideBeta);
-			vidGroup.add(vidSideGamma);
-			vidGroup.add(vidShapeSideOne);
-			vidGroup.add(vidShapeSideTwo);
-			vidGroup.userData.isDraggable = true;
-			vidGroup.name = 'vidGroup';
-			vidGroup.scale.set(.3, .3, .3);
-			scene.add(vidGroup)
-			// console.log(vidGroup)
-
-
-
-
-			// 
-			// video.src = 'https://cdn.cpixl.com/other/projectie_3.mp4';
-			// video.crossOrigin = 'anonymous';
-			video.load();
-			video.play();
-			video2.load();
-			video2.play();
-			video3.load();
-			video3.play();
-
-
-
-
-
-			// init mats, sounds and analysers
-			objConfig.forEach(obj => {
-				// create a new material with the color of the object
-				mats[obj.name] = new THREE.MeshPhongMaterial({ color: obj.color, flatShading: true, shininess: 0 });
-				// create a new mesh with that material
-				meshes[obj.name] = new THREE.Mesh(sphere, mats[obj.name])
-				meshes[obj.name].name = obj.name;
-				// scene.add(meshes[obj.name]); // DONT ADD EACH OBJECT INDIVIDUALLY
-				stemsGroup.add(meshes[obj.name]);
-
-				// create audio sources, load from html and add to objects
-				sounds[obj.name] = new THREE.PositionalAudio(listener);
-				const currentSound = document.querySelector(`#${obj.name}`)
-				sounds[obj.name].setMediaElementSource(currentSound).setRefDistance(refDist);
-				currentSound.play();
-				meshes[obj.name].add(sounds[obj.name]);
-
-				// start analysers
-				analysers[obj.name] = new THREE.AudioAnalyser(sounds[obj.name], 32);
-			})
-
-			// set positions of objects
-			meshes['atmos'].position.set(- 250, 30, 100);
-			meshes['bass'].position.set(- 200, 30, 100);
-			meshes['drums'].position.set(- 150, 30, 100);
-			meshes['guitars'].position.set(- 100, 30, 100);
-			meshes['lq'].position.set(- 50, 30, 100);
-			meshes['pads'].position.set(0, 30, 100);
-			meshes['plucks'].position.set(50, 30, 100);
-			meshes['tags'].position.set(100, 30, 100);
-			meshes['vocals'].position.set(150, 30, 100);
-
-			scene.add(stemsGroup); // ADD STEMS GROUP TO THE SCENE
+			initScene()
+			initVideoGroup()
+			initStems(objConfig)
 
 			console.log({ mats })
 			console.log({ meshes })
@@ -307,26 +139,12 @@
 			// sound5.setVolume(0.5);
 			// utopiaElement.play();
 
-
-			/// Raycaster
-			raycaster = new THREE.Raycaster();
-			///
-
-
-			// ground
-			const helper = new THREE.GridHelper(1000, 10, 0x444444, 0x444444);
-			helper.position.y = 0.1;
-			scene.add(helper);
-
-			//
-
 			const SoundControls = function () {
 				this.master = listener.getMasterVolume();
 				objConfig.forEach(obj => {
 					this[obj.name] = sounds[obj.name].getVolume();
 				})
 			};
-
 
 
 			const gui = new GUI();
@@ -515,7 +333,179 @@
 
 		}
 
-		function buildController(data) {
+		const initScene = () => {
+			camera = new THREE.PerspectiveCamera(70, window.innerWidth / window.innerHeight, .1, 10000);
+			// camera.position.set(0, 30, 200);
+			camera.position.set(0, 30, 0);
+
+			listener = new THREE.AudioListener();
+			camera.add(listener);
+
+			scene = new THREE.Scene();
+			scene.fog = new THREE.FogExp2(0x000000, 0.0025);
+
+			const light = new THREE.DirectionalLight(0xffffff);
+			light.position.set(1, 1, 1).normalize();
+			scene.add(light);
+
+			/// ground
+			const helper = new THREE.GridHelper(1000, 10, 0x444444, 0x444444);
+			helper.position.y = 0.1;
+			scene.add(helper);
+
+			/// Raycaster
+			raycaster = new THREE.Raycaster();
+		}
+
+		const initStems = (objConfig) => {
+			const sphere = new THREE.SphereGeometry(20, 32, 16);
+
+			// init mats, sounds and analysers
+			objConfig.forEach(obj => {
+				// create a new material with the color of the object
+				mats[obj.name] = new THREE.MeshPhongMaterial({ color: obj.color, flatShading: true, shininess: 0 });
+				// create a new mesh with that material
+				meshes[obj.name] = new THREE.Mesh(sphere, mats[obj.name])
+				meshes[obj.name].name = obj.name;
+				// scene.add(meshes[obj.name]); // DONT ADD EACH OBJECT INDIVIDUALLY
+				stemsGroup.add(meshes[obj.name]);
+
+				// create audio sources, load from html and add to objects
+				sounds[obj.name] = new THREE.PositionalAudio(listener);
+				const currentSound = document.querySelector(`#${obj.name}`)
+				sounds[obj.name].setMediaElementSource(currentSound).setRefDistance(refDist);
+				currentSound.play();
+				meshes[obj.name].add(sounds[obj.name]);
+
+				// start analysers
+				analysers[obj.name] = new THREE.AudioAnalyser(sounds[obj.name], 32);
+			})
+
+			// set positions of objects
+			meshes['atmos'].position.set(- 250, 30, 100);
+			meshes['bass'].position.set(- 200, 30, 100);
+			meshes['drums'].position.set(- 150, 30, 100);
+			meshes['guitars'].position.set(- 100, 30, 100);
+			meshes['lq'].position.set(- 50, 30, 100);
+			meshes['pads'].position.set(0, 30, 100);
+			meshes['plucks'].position.set(50, 30, 100);
+			meshes['tags'].position.set(100, 30, 100);
+			meshes['vocals'].position.set(150, 30, 100);
+
+			scene.add(stemsGroup); // ADD STEMS GROUP TO THE SCENE
+		}
+
+		const initVideoGroup = () => {
+			// VIDEOooo
+
+			const video = document.querySelector('#video');
+			const video2 = document.querySelector('#video2');
+			const video3 = document.querySelector('#video3');
+
+
+
+			const vidTextures = [
+				new THREE.MeshBasicMaterial({ map: new THREE.VideoTexture(video), }), /// side: THREE.DoubleSide  can prob be omitted (NEEDS TESTING)
+				new THREE.MeshBasicMaterial({ map: new THREE.VideoTexture(video2), }), ///  side: THREE.DoubleSide can prob be omitted (NEEDS TESTING)
+				new THREE.MeshBasicMaterial({ map: new THREE.VideoTexture(video3), }), ///  side: THREE.DoubleSide can prob be omitted (NEEDS TESTING)
+			];
+
+			// const vidTex = new THREE.VideoTexture(video);
+			// // vidTex.needsUpdate;
+			// vidTex.minFilter = THREE.LinearFilter;
+			// vidTex.magFilter = THREE.LinearFilter;
+			// vidTex.format = THREE.RGBFormat;
+			// // vidTex.wrapS = THREE.CubeReflectionMapping;
+			// // vidTex.wrapT = THREE.CubeReflectionMapping;
+			// vidTex.repeat.set(100, 100);
+			// // video.crossOrigin = 'anonymous';
+
+			const triangleSize = .5;
+			const triangle = new THREE.Shape(); // create a triangle
+			triangle.moveTo(10 * triangleSize, 0); // right point
+			triangle.lineTo(-9.4 * triangleSize, 0); // left point
+			triangle.lineTo(0.16, 16.8 * triangleSize); // top point
+			triangle.lineTo(10 * triangleSize, 0); // back to start to close the shape
+
+			const vidShapeSideOne = new THREE.Mesh(
+				new THREE.ExtrudeGeometry(triangle, { steps: 1, depth: .1, }),
+				new THREE.MeshBasicMaterial({ color: 0xffbb00 })
+			)
+			const vidShapeSideTwo = new THREE.Mesh(
+				new THREE.ExtrudeGeometry(triangle, { steps: 1, depth: .1, }),
+				new THREE.MeshBasicMaterial({ color: 0xffbb00 })
+			)
+			vidShapeSideOne.position.set(10, 10.08, -14.85);
+			vidShapeSideTwo.position.set(-10, 10.08, -14.85);
+			vidShapeSideOne.rotateY(Math.PI / 2); // 180° radians
+			vidShapeSideTwo.rotateY(Math.PI / 2); // 180° radians
+			// scene.add(vidShapeSideOne);
+			// scene.add(vidShapeSideTwo);
+
+			// let vidMesh = new THREE.Mesh(
+			// 	// new THREE.PlaneGeometry(20, 10),
+			// 	new THREE.ExtrudeGeometry(triangle, { steps: 1, depth: 30, }), // extrude triangle
+			// 	// new THREE.MeshBasicMaterial({ map: vidTex }));
+			// 	// extrudedTriangle,
+			// 	[
+			// 		// new THREE.MeshBasicMaterial({ map: new THREE.VideoTexture(video) }),
+			// 		// new THREE.MeshBasicMaterial({ map: new THREE.VideoTexture(video2) }),
+			// 		// new THREE.MeshBasicMaterial({ map: new THREE.VideoTexture(video3) }),
+			// 		// new THREE.MeshBasicMaterial({ map: new THREE.VideoTexture(video3) }),
+			// 		// new THREE.MeshBasicMaterial({ map: new THREE.VideoTexture(video3) }),
+			// 		new THREE.MeshBasicMaterial({ color: 0xffbb00 }),
+			// 		new THREE.MeshBasicMaterial({ color: 0x00bb00 }),
+			// 		new THREE.MeshBasicMaterial({ color: 0x00ff00 }),
+			// 		new THREE.MeshBasicMaterial({ color: 0x0000ff }),
+			// 		new THREE.MeshBasicMaterial({ color: 0xffffff }),
+			// 	]);
+			// // new THREE.MeshFaceMaterial(vidTextures));
+			// // new THREE.MeshBasicMaterial({ color: 0xffbb00 }));
+
+			// vidMesh.position.set(0, 0, -4);
+			// vidMesh.userData.isDraggable = true;
+			// vidMesh.name = 'e-triangle'
+			// vidMesh.scale.set(.05, .05, .05);
+			// scene.add(vidMesh)
+
+			/// Video mesh group
+			let vidSideAlpha = new THREE.Mesh(
+				new THREE.PlaneGeometry(20, 10),
+				vidTextures[0]);
+			vidSideAlpha.position.set(0, 14.33, -17.5);
+			vidSideAlpha.rotateY(Math.PI); // 180° radians
+			vidSideAlpha.rotateZ(Math.PI); // 180° radians
+			vidSideAlpha.rotateX(0.523599); // 30° in radians (formula deg to rad: angle * π / 180)
+			vidSideAlpha.material.side = THREE.DoubleSide; // render both sides
+			let vidSideBeta = new THREE.Mesh(
+				new THREE.PlaneGeometry(20, 10),
+				vidTextures[1]);
+			vidSideBeta.position.set(0, 10, -15);
+			vidSideBeta.rotateX(1.5708); // 90° in radians
+			let vidSideGamma = new THREE.Mesh(
+				new THREE.PlaneGeometry(20, 10),
+				vidTextures[2]);
+			vidSideGamma.position.set(0, 14.33, -12.5);
+			vidSideGamma.rotateX(-0.523599); // 30° in radians (formula deg to rad: angle * π / 180)
+			vidGroup.add(vidSideAlpha);
+			vidGroup.add(vidSideBeta);
+			vidGroup.add(vidSideGamma);
+			vidGroup.add(vidShapeSideOne);
+			vidGroup.add(vidShapeSideTwo);
+			vidGroup.userData.isDraggable = true;
+			vidGroup.name = 'vidGroup';
+			vidGroup.scale.set(.1, .1, .1);
+			scene.add(vidGroup)
+
+			video.load();
+			video.play();
+			video2.load();
+			video2.play();
+			video3.load();
+			video3.play();
+		}
+
+		const buildController = (data) => {
 
 			let geometry, material;
 
@@ -541,7 +531,7 @@
 
 		}
 
-		function onWindowResize() {
+		const onWindowResize = () => {
 
 			camera.aspect = window.innerWidth / window.innerHeight;
 			camera.updateProjectionMatrix();
@@ -552,7 +542,7 @@
 
 		}
 
-		function animate() {
+		const animate = () => {
 
 			// requestAnimationFrame(animate);
 			// render();
@@ -562,7 +552,7 @@
 		}
 
 
-		function render() {
+		const render = () => {
 
 			const delta = clock.getDelta();
 
