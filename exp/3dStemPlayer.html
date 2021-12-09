@@ -90,6 +90,7 @@
 		let mats = [];
 		let meshes = [];
 		let sounds = [];
+		let videos = [];
 		let analysers = [];
 
 		let controllers = [];
@@ -103,6 +104,8 @@
 
 		const startButton = document.getElementById('startButton');
 		startButton.addEventListener('click', init);
+
+		const vidConfig = ['video', 'video2', 'video3']
 
 		const refDist = 50; // distance from where to start applying volume reduction 
 		const objConfig = [
@@ -122,7 +125,7 @@
 			overlay.remove();
 
 			initScene()
-			initVideoGroup()
+			initVideoGroup(vidConfig)
 			initStems(objConfig)
 
 			console.log({ mats })
@@ -395,20 +398,26 @@
 			scene.add(stemsGroup); // ADD STEMS GROUP TO THE SCENE
 		}
 
-		const initVideoGroup = () => {
+		const initVideoGroup = (vidConfig) => {
 			// VIDEOooo
+			const vidTextures = [];
 
-			const video = document.querySelector('#video');
-			const video2 = document.querySelector('#video2');
-			const video3 = document.querySelector('#video3');
+			vidConfig.forEach(video => {
+				const currentVid = document.querySelector(`#${video}`);
+				videos[video] = currentVid;
+				vidTextures.push(new THREE.MeshBasicMaterial({ map: new THREE.VideoTexture(currentVid), }));
+			});
+			// const video = document.querySelector('#video');
+			// const video2 = document.querySelector('#video2');
+			// const video3 = document.querySelector('#video3');
 
 
 
-			const vidTextures = [
-				new THREE.MeshBasicMaterial({ map: new THREE.VideoTexture(video), }), /// side: THREE.DoubleSide  can prob be omitted (NEEDS TESTING)
-				new THREE.MeshBasicMaterial({ map: new THREE.VideoTexture(video2), }), ///  side: THREE.DoubleSide can prob be omitted (NEEDS TESTING)
-				new THREE.MeshBasicMaterial({ map: new THREE.VideoTexture(video3), }), ///  side: THREE.DoubleSide can prob be omitted (NEEDS TESTING)
-			];
+			// const vidTextures = [
+			// 	new THREE.MeshBasicMaterial({ map: new THREE.VideoTexture(video), }), /// side: THREE.DoubleSide  can prob be omitted (NEEDS TESTING)
+			// 	new THREE.MeshBasicMaterial({ map: new THREE.VideoTexture(video2), }), ///  side: THREE.DoubleSide can prob be omitted (NEEDS TESTING)
+			// 	new THREE.MeshBasicMaterial({ map: new THREE.VideoTexture(video3), }), ///  side: THREE.DoubleSide can prob be omitted (NEEDS TESTING)
+			// ];
 
 			// const vidTex = new THREE.VideoTexture(video);
 			// // vidTex.needsUpdate;
