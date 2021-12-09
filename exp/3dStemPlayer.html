@@ -238,6 +238,7 @@
 			vidGroup.add(vidShapeSideTwo);
 			vidGroup.userData.isDraggable = true;
 			vidGroup.name = 'vidGroup';
+			vidGroup.scale.set(.3, .3, .3);
 			scene.add(vidGroup)
 			// console.log(vidGroup)
 
@@ -360,7 +361,7 @@
 
 			controls = new FirstPersonControls(camera, renderer.domElement);
 
-			controls.movementSpeed = 20;
+			controls.movementSpeed = 100;
 			controls.lookSpeed = 0.30;
 			controls.noFly = false;
 			controls.lookVertical = true;
