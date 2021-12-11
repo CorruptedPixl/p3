@@ -83,9 +83,9 @@
 
 		let camera, controls, scene, raycaster, renderer, light, listener;
 		let controller, controllerGrip;
+		let globalTime = { value: 0 };
 		const tempMatrix = new THREE.Matrix4();
 		const text = new Text();
-
 
 		let mats = [];
 		let meshes = [];
@@ -119,222 +119,6 @@
 			{ name: 'tags', color: 0x02D37A, sound: 'tags', },
 			{ name: 'vocals', color: 0x51C5C5, sound: 'vocals', },]
 
-		function init() {
-
-			const overlay = document.getElementById('overlay');
-			overlay.remove();
-
-			initScene()
-			initVideoGroup(vidConfig)
-			initStems(objConfig)
-
-			console.log({ mats })
-			console.log({ meshes })
-			console.log({ sounds })
-			console.log({ analysers })
-
-
-			// global ambient audio
-
-			// const sound5 = new THREE.Audio(listener);
-			// const utopiaElement = document.getElementById('utopia');
-			// sound5.setMediaElementSource(utopiaElement);
-			// sound5.setVolume(0.5);
-			// utopiaElement.play();
-
-			const SoundControls = function () {
-				this.master = listener.getMasterVolume();
-				objConfig.forEach(obj => {
-					this[obj.name] = sounds[obj.name].getVolume();
-				})
-			};
-
-
-			const gui = new GUI();
-			const soundControls = new SoundControls();
-			// const generatorControls = new GeneratorControls();
-			const volumeFolder = gui.addFolder('sound volume');
-			// const generatorFolder = gui.addFolder('sound generator');
-
-			volumeFolder.add(soundControls, 'master').min(0.0).max(1.0).step(0.01).onChange(function () {
-				listener.setMasterVolume(soundControls.master);
-			});
-
-			// add controls for each sound loaded
-			objConfig.forEach(obj => {
-				volumeFolder.add(soundControls, obj.name, 0, 1, 0.01).onChange(value => {
-					sounds[obj.name].setVolume(value);
-				});
-			})
-			volumeFolder.open();
-
-			///
-			renderer = new THREE.WebGLRenderer({ antialias: true });
-			renderer.setPixelRatio(window.devicePixelRatio);
-			renderer.setSize(window.innerWidth, window.innerHeight);
-			/// webxr
-			renderer.outputEncoding = THREE.sRGBEncoding;
-			renderer.shadowMap.enabled = true;
-			renderer.xr.enabled = true;
-
-			document.body.appendChild(renderer.domElement);
-			//
-
-			controls = new FirstPersonControls(camera, renderer.domElement);
-
-			controls.movementSpeed = 100;
-			controls.lookSpeed = 0.30;
-			controls.noFly = false;
-			controls.lookVertical = true;
-
-			//
-
-			window.addEventListener('resize', onWindowResize);
-
-			animate();
-
-
-			/// webxr stuff
-
-			function onSelectStart(e) {
-				this.userData.isSelecting = true;
-
-
-				const controller = e.target;
-
-				tempMatrix.identity().extractRotation(controller.matrixWorld);
-
-				raycaster.ray.origin.setFromMatrixPosition(controller.matrixWorld);
-				raycaster.ray.direction.set(0, 0, - 1).applyMatrix4(tempMatrix);
-
-				///! could be optimized slightly by adding all draggable objects to a group and only checking intersections on that group instead of the whole scene
-				const intersects = raycaster.intersectObjects(scene.children, false);
-				const intersectsVidGroup = raycaster.intersectObjects(vidGroup.children, false);
-				// console.log({ intersectsVidGroup })
-
-				/// standalone objects
-				if (intersects.length > 0) {
-					intersects.forEach(obj => {
-						if (!obj.object.userData?.isDraggable) { return }
-						else if (obj.object.parent.userData?.isDraggable) {
-							const object = obj.object;
-							controller.attach(object);
-
-							controller.userData.selected = object;
-						}
-						else {
-							console.log('Dragging', { obj })
-							const object = obj.object;
-							controller.attach(object);
-							controller.userData.selected = object;
-						}
-					})
-
-				}
-
-				/// video group obj
-				if (intersectsVidGroup.length > 0) {
-					intersectsVidGroup.forEach(obj => {
-						console.log(obj)
-						if (!obj.object.parent.userData?.isDraggable) { return }
-						else if (obj.object.parent.userData?.isDraggable) {
-							const object = obj.object.parent;
-							controller.attach(object);
-
-							controller.userData.selected = object;
-						}
-						else {
-							console.log('Dragging', { obj })
-							const object = obj.object;
-							controller.attach(object);
-							controller.userData.selected = object;
-						}
-					})
-
-				}
-
-			}
-
-			function onSelectEnd(e) {
-				/// 'this' is the controller group
-				this.userData.isSelecting = false;
-
-				const controller = e.target;
-
-				if (controller.userData.selected !== undefined) {
-
-					const object = controller.userData.selected;
-					scene.attach(object);
-
-					controller.userData.selected = undefined;
-
-				}
-			}
-
-			/// init & render controller models
-			/// populate the groups
-			controllers = [renderer.xr.getController(0), renderer.xr.getController(1)]
-			controllerGrips = [renderer.xr.getControllerGrip(0), renderer.xr.getControllerGrip(1)]
-			const controllerModelFactory = new XRControllerModelFactory();
-			// controller = renderer.xr.getController(0);
-
-			/// adding event listeners
-			controllers.forEach(controller => {
-				controller.addEventListener('selectstart', onSelectStart);
-				controller.addEventListener('selectend', onSelectEnd);
-				controller.addEventListener('connected', function (event) {
-					this.add(buildController(event.data));
-				});
-				controller.addEventListener('disconnected', function () {
-					this.remove(this.children[0]);
-				});
-				scene.add(controller);
-			})
-
-			/// adding models so they're visible
-			controllerGrips.forEach(controllerGrip => {
-				controllerGrip.add(controllerModelFactory.createControllerModel(controllerGrip));
-				scene.add(controllerGrip);
-			});
-
-			// controller.addEventListener('selectstart', onSelectStart);
-			// controller.addEventListener('selectend', onSelectEnd);
-			// controller.addEventListener('connected', function (event) {
-			// 	this.add(buildController(event.data));
-			// });
-			// controller.addEventListener('disconnected', function () {
-			// 	this.remove(this.children[0]);
-			// });
-			// scene.add(controller);
-
-
-			// controllerGrip = renderer.xr.getControllerGrip(0);
-			// controllerGrip.add(controllerModelFactory.createControllerModel(controllerGrip));
-			// scene.add(controllerGrip);
-
-			document.body.appendChild(VRButton.createButton(renderer));
-
-			lyrics.startTime = performance.now();
-			lyrics.lineIndex = 0;
-			lyrics.ended = false;
-			lyrics.timeOffset = 0;
-
-			console.log(lyrics)
-
-			scene.add(text)
-
-			// Set properties to configure:
-			text.text = 'Hi there!'
-			text.fontSize = 4
-			text.position.set(0, 10, 30)
-			text.rotateY(Math.PI)
-			text.color = 0xffbb00
-			text.anchorX = 'center';
-
-			// Update the rendering:
-			text.sync()
-
-		}
 
 		const initScene = () => {
 			camera = new THREE.PerspectiveCamera(70, window.innerWidth / window.innerHeight, .1, 10000);
@@ -358,6 +142,16 @@
 
 			/// Raycaster
 			raycaster = new THREE.Raycaster();
+
+			///////////////////////
+			renderer = new THREE.WebGLRenderer({ antialias: true });
+			renderer.setPixelRatio(window.devicePixelRatio);
+			renderer.setSize(window.innerWidth, window.innerHeight);
+			/// enable webxr
+			renderer.outputEncoding = THREE.sRGBEncoding;
+			renderer.shadowMap.enabled = true;
+			renderer.xr.enabled = true;
+			document.body.appendChild(renderer.domElement);
 		}
 
 		const initStems = (objConfig) => {
@@ -514,6 +308,176 @@
 			video3.play();
 		}
 
+		const initGui = () => {
+			const SoundControls = function () {
+				this.master = listener.getMasterVolume();
+				objConfig.forEach(obj => {
+					this[obj.name] = sounds[obj.name].getVolume();
+				})
+			};
+
+
+			const gui = new GUI();
+			const soundControls = new SoundControls();
+			// const generatorControls = new GeneratorControls();
+			const volumeFolder = gui.addFolder('sound volume');
+			// const generatorFolder = gui.addFolder('sound generator');
+
+			volumeFolder.add(soundControls, 'master').min(0.0).max(1.0).step(0.01).onChange(function () {
+				listener.setMasterVolume(soundControls.master);
+			});
+
+			// add controls for each sound loaded
+			objConfig.forEach(obj => {
+				volumeFolder.add(soundControls, obj.name, 0, 1, 0.01).onChange(value => {
+					sounds[obj.name].setVolume(value);
+				});
+			})
+			volumeFolder.open();
+		}
+
+		const initControllers = () => {
+			/// webxr stuff
+			function onSelectStart(e) {
+				this.userData.isSelecting = true;
+
+
+				const controller = e.target;
+
+				tempMatrix.identity().extractRotation(controller.matrixWorld);
+
+				raycaster.ray.origin.setFromMatrixPosition(controller.matrixWorld);
+				raycaster.ray.direction.set(0, 0, - 1).applyMatrix4(tempMatrix);
+
+				///! could be optimized slightly by adding all draggable objects to a group and only checking intersections on that group instead of the whole scene
+				const intersects = raycaster.intersectObjects(scene.children, false);
+				const intersectsVidGroup = raycaster.intersectObjects(vidGroup.children, false);
+				// console.log({ intersectsVidGroup })
+
+				/// standalone objects
+				if (intersects.length > 0) {
+					intersects.forEach(obj => {
+						if (!obj.object.userData?.isDraggable) { return }
+						else if (obj.object.parent.userData?.isDraggable) {
+							const object = obj.object;
+							controller.attach(object);
+
+							controller.userData.selected = object;
+						}
+						else {
+							console.log('Dragging', { obj })
+							const object = obj.object;
+							controller.attach(object);
+							controller.userData.selected = object;
+						}
+					})
+
+				}
+
+				/// video group obj
+				if (intersectsVidGroup.length > 0) {
+					intersectsVidGroup.forEach(obj => {
+						console.log(obj)
+						if (!obj.object.parent.userData?.isDraggable) { return }
+						else if (obj.object.parent.userData?.isDraggable) {
+							const object = obj.object.parent;
+							controller.attach(object);
+
+							controller.userData.selected = object;
+						}
+						else {
+							console.log('Dragging', { obj })
+							const object = obj.object;
+							controller.attach(object);
+							controller.userData.selected = object;
+						}
+					})
+
+				}
+
+			}
+
+			function onSelectEnd(e) {
+				/// 'this' is the controller group
+				this.userData.isSelecting = false;
+
+				const controller = e.target;
+
+				if (controller.userData.selected !== undefined) {
+
+					const object = controller.userData.selected;
+					scene.attach(object);
+
+					controller.userData.selected = undefined;
+
+				}
+			}
+
+			/// init & render controller models
+			/// populate the groups
+			controllers = [renderer.xr.getController(0), renderer.xr.getController(1)]
+			controllerGrips = [renderer.xr.getControllerGrip(0), renderer.xr.getControllerGrip(1)]
+			const controllerModelFactory = new XRControllerModelFactory();
+			// controller = renderer.xr.getController(0);
+
+			/// adding event listeners
+			controllers.forEach(controller => {
+				controller.addEventListener('selectstart', onSelectStart);
+				controller.addEventListener('selectend', onSelectEnd);
+				controller.addEventListener('connected', function (event) {
+					this.add(buildController(event.data));
+				});
+				controller.addEventListener('disconnected', function () {
+					this.remove(this.children[0]);
+				});
+				scene.add(controller);
+			})
+
+			/// adding models so they're visible
+			controllerGrips.forEach(controllerGrip => {
+				controllerGrip.add(controllerModelFactory.createControllerModel(controllerGrip));
+				scene.add(controllerGrip);
+			});
+
+			// controller.addEventListener('selectstart', onSelectStart);
+			// controller.addEventListener('selectend', onSelectEnd);
+			// controller.addEventListener('connected', function (event) {
+			// 	this.add(buildController(event.data));
+			// });
+			// controller.addEventListener('disconnected', function () {
+			// 	this.remove(this.children[0]);
+			// });
+			// scene.add(controller);
+
+
+			// controllerGrip = renderer.xr.getControllerGrip(0);
+			// controllerGrip.add(controllerModelFactory.createControllerModel(controllerGrip));
+			// scene.add(controllerGrip);
+		}
+
+		const initLyrics = () => {
+			lyrics.startTime = performance.now();
+			lyrics.lineIndex = 0;
+			lyrics.ended = false;
+			lyrics.timeOffset = 0;
+
+			console.log(lyrics)
+
+			scene.add(text)
+
+			// Set properties to configure:
+			text.text = 'Hi there!'
+			text.fontSize = 3
+			text.font = 'https://cdn.cpixl.com/fonts/next/OTF/Next%20Book/NextBook-Medium.otf'
+			text.position.set(0, 10, 30)
+			text.rotateY(Math.PI)
+			text.color = 0xffbb00
+			text.anchorX = 'center';
+
+			// Update the rendering:
+			text.sync()
+		}
+
 		const buildController = (data) => {
 
 			let geometry, material;
@@ -560,13 +524,11 @@
 
 		}
 
-
 		const render = () => {
-
 			const delta = clock.getDelta();
-
 			controls.update(delta);
 
+			globalTime.value = clock.elapsedTime;
 
 			/// analysers
 			stemsGroup.children.forEach(obj => {
@@ -578,32 +540,9 @@
 				}
 			})
 
-
 			/// lyrics
-
 			lyrics.currentTime = performance.now();
 			lyrics.timeDelta = parseInt(lyrics.currentTime - lyrics.startTime);
-
-			// console.log(lyrics.timeDelta)
-			// console.log(!lyrics?.lastLine)
-			// console.log(lyrics.timeDelta >= lyrics.lines[0].startTimeMs)
-
-			// if (!lyrics?.lastLine) {
-			// 	lyrics.lineIndex = 0;
-			// 	if (lyrics.lines[0].startTimeMs >= lyrics.timeDelta) {
-			// 		lyrics.lastLine = lyrics.lines[lyrics.lineIndex].words;
-			// 		console.log(lyrics.lastLine);
-			// 	}
-			// }
-			// else {
-			// 	if (lyrics.currentTime - lyrics.lastLine.endTimeMs > lyrics.lineIntervalMs) {
-			// 		lyrics.lineIndex++;
-			// 		if (lyrics.lineIndex < lyrics.lines.length) {
-			// 			console.log(lyrics.lines[lyrics.lineIndex].words);
-			// 		}
-			// 	}
-			// }
-
 
 			if ((lyrics.timeDelta + lyrics.timeOffset) >= lyrics.lines[lyrics.lineIndex]?.startTimeMs && !lyrics.ended) {
 				console.log(lyrics.lines[lyrics.lineIndex].words);
@@ -613,13 +552,12 @@
 				lyrics.lineIndex++;
 			}
 			if (typeof lyrics.lines[lyrics.lineIndex] == 'undefined') { lyrics.ended = true }
-
+			///
 
 			/// controller code
-			// find intersections
+			/// find intersections
 			controllers.forEach(controller => {
 				/// 'controller' is the controller object aka 'this' in the event listeners
-
 				tempMatrix.identity().extractRotation(controller.matrixWorld);
 
 				raycaster.ray.origin.setFromMatrixPosition(controller.matrixWorld);
@@ -627,12 +565,7 @@
 
 				const intersects = raycaster.intersectObjects(stemsGroup.children, false);
 
-				// console.log(controller)
-
 				if (intersects.length > 0) {
-					// console.log(intersects);
-					// console.log(controller);
-
 					/// is the object we're pointing at the same as the previous frame?
 					if (controller.userData.INTERSECTED != intersects[0].object) {
 						/// if not, remove the highlight from the previous object (if it exists)
@@ -649,7 +582,6 @@
 						controller.userData.INTERSECTED.material.emissive.setHex(0xffbb00);
 						/// finally set object state to be highlighted
 						controller.userData.INTERSECTED.isHighlighted = true;
-
 					}
 
 					/// is this the first time we're clicking on the object? (and are we not dragging an object)
@@ -664,7 +596,6 @@
 							case 0:
 								sounds[controller.userData.INTERSECTED.name].setVolume(1);
 								controller.userData.intent.action = 1; /// update action if unmuting
-
 								break;
 							case 1:
 								sounds[controller.userData.INTERSECTED.name].setVolume(0);
@@ -699,10 +630,108 @@
 				}
 			})
 
-
 			renderer.render(scene, camera);
 		}
 
+		function init() {
+			const overlay = document.getElementById('overlay');
+			overlay.remove();
+
+			initScene()
+			initVideoGroup(vidConfig)
+			initStems(objConfig)
+			initControllers()
+			initGui()
+			initLyrics()
+
+			const shader = `
+			
+			#define PI 3.14159
+			#define magic 1000.0
+
+			uniform float time;
+			varying vec2 vUv;
+
+			void main( void ) {
+
+				float v = 0.0;
+
+				// vec2 position = ( gl_FragCoord.xy / resolution.xy );
+				vec2 position = - 1.0 + 2.0 * vUv;
+
+				// 'moving left effect'
+				v += sin(position.x * 10.0 + time);
+
+
+				// 'rotation effect' thingy (changes angle with time)
+				v += sin(10.0 * (position.x * sin(time / 2.0)+position.y*cos(time/3.0))+time);
+
+				// ???
+				position.x = position.x + 0.5 * sin (time / 5.0);
+				position.y = position.y + 0.5 * cos (time / 3.0);
+				v += sin(sqrt(magic * (pow(position.x, 2.0) + pow(position.y, 2.0)) + 1.0 + time));	
+
+
+				//	v = v / 2.0;
+
+				// 'color palette' except not really
+				// rgb-ish
+				vec3 col = vec3(sin(v*PI), sin(v*PI + 2.0*PI/3.0), sin(v*PI + 4.0 * PI / 3.0));
+
+				// experiment
+				// vec3 col = vec3(v * 5.0 * PI, v * 5.0 * PI, v * 5.0 * PI);
+
+
+				gl_FragColor = vec4(col*0.5 + 0.5, 1);
+				
+				// vec2 position = - 1.0 + 2.0 * vUv;
+				// float red = abs( sin( position.x * position.y + time / 5.0 ) );
+				// float green = abs( sin( position.x * position.y + time / 4.0 ) );
+				// float blue = abs( sin( position.x * position.y + time / 3.0 ) );
+				// gl_FragColor = vec4( red, green, blue, 1.0 );
+
+			}
+						`
+
+			const material = new THREE.ShaderMaterial({
+				uniforms: {
+
+					time: globalTime,
+					resolution: { value: new THREE.Vector2(window.innerWidth, window.innerHeight) }
+
+				},
+				vertexShader: `varying vec2 vUv;
+								void main(){
+								vUv = uv;
+								gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+								}`,
+				fragmentShader: shader
+			});
+
+			const testPlane = new THREE.Mesh(
+				new THREE.PlaneGeometry(2000, 2000),
+				material
+			);
+
+			scene.add(testPlane);
+			testPlane.rotateX(- Math.PI / 2)
+
+			controls = new FirstPersonControls(camera, renderer.domElement);
+			controls.movementSpeed = 100;
+			controls.lookSpeed = 0.30;
+			controls.noFly = false;
+			controls.lookVertical = true;
+
+			console.log({ mats })
+			console.log({ meshes })
+			console.log({ sounds })
+			console.log({ analysers })
+
+			window.addEventListener('resize', onWindowResize);
+			document.body.appendChild(VRButton.createButton(renderer));
+
+			animate();
+		}
 	</script>
 
 </body>
