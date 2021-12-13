@@ -717,13 +717,28 @@
 			testPlane.rotateX(- Math.PI / 2)
 			////////////////
 
+			/////////////// HDRI
 			const textureLoader = new THREE.TextureLoader();
-
 			textureEquirec = textureLoader.load('textures/hdri-edited.png');
 			textureEquirec.mapping = THREE.EquirectangularReflectionMapping;
 			textureEquirec.encoding = THREE.sRGBEncoding;
 			scene.background = textureEquirec;
+			///////////////
 
+			/////////////// GLTF
+			const loader = new GLTFLoader().setPath('models/');
+			loader.load('note_gold.gltf', (gltf) => {
+				console.log('loaded');
+				console.log(gltf)
+				const noteModel = gltf.scene;
+				// const noteModel = new THREE.Mesh(gltf.scene.children[0], new THREE.MeshLambertMaterial({ color: 0xDDD3C3, envMap: textureEquirec, reflectivity: 1 }));
+				noteModel.envMap = textureEquirec;
+				// noteModel.children[0].material = new THREE.MeshLambertMaterial({ color: 0xDDD3C3, envMap: textureEquirec, reflectivity: 1 });
+				noteModel.children[0].material.envMap = textureEquirec;
+				// noteModel.needsUpdate = true;
+				scene.add(noteModel);
+			});
+			///////////////
 
 			controls = new FirstPersonControls(camera, renderer.domElement);
 			controls.movementSpeed = 100;
