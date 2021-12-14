@@ -198,8 +198,11 @@
 
 			vidConfig.forEach(video => {
 				const currentVid = document.querySelector(`#${video}`);
-				videos[video] = currentVid;
+				// videos[video] = currentVid;
+				videos.push(currentVid);
 				vidTextures.push(new THREE.MeshBasicMaterial({ map: new THREE.VideoTexture(currentVid), }));
+				// console.log(currentVid)
+				// console.log(videos)
 			});
 			// const video = document.querySelector('#video');
 			// const video2 = document.querySelector('#video2');
@@ -275,6 +278,7 @@
 			let vidSideAlpha = new THREE.Mesh(
 				new THREE.PlaneGeometry(20, 10),
 				vidTextures[0]);
+			vidSideAlpha.name = 'vidSideAlpha';
 			vidSideAlpha.position.set(0, 14.33, -17.5);
 			vidSideAlpha.rotateY(Math.PI); // 180° radians
 			vidSideAlpha.rotateZ(Math.PI); // 180° radians
@@ -283,11 +287,13 @@
 			let vidSideBeta = new THREE.Mesh(
 				new THREE.PlaneGeometry(20, 10),
 				vidTextures[1]);
+			vidSideBeta.name = 'vidSideBeta';
 			vidSideBeta.position.set(0, 10, -15);
 			vidSideBeta.rotateX(1.5708); // 90° in radians
 			let vidSideGamma = new THREE.Mesh(
 				new THREE.PlaneGeometry(20, 10),
 				vidTextures[2]);
+			vidSideGamma.name = 'vidSideGamma';
 			vidSideGamma.position.set(0, 14.33, -12.5);
 			vidSideGamma.rotateX(-0.523599); // 30° in radians (formula deg to rad: angle * π / 180)
 			vidGroup.add(vidSideAlpha);
@@ -298,14 +304,20 @@
 			vidGroup.userData.isDraggable = true;
 			vidGroup.name = 'vidGroup';
 			vidGroup.scale.set(.1, .1, .1);
-			scene.add(vidGroup)
+			scene.add(vidGroup);
 
-			video.load();
-			video.play();
-			video2.load();
-			video2.play();
-			video3.load();
-			video3.play();
+			videos.forEach(video => {
+				video.load();
+				video.play();
+			});
+
+			// video.load();
+			// video.play();
+			// video2.load();
+			// video2.play();
+			// video3.load();
+			// video3.play();
+
 		}
 
 		const initGui = () => {
@@ -376,8 +388,27 @@
 
 				/// video group obj
 				if (intersectsVidGroup.length > 0) {
+
+					if (this.userData?.videoGroup?.lastVideoObj === intersectsVidGroup[0].object && performance.now() - this.userData?.videoGroup?.lastClick <= 400) {
+						// console.log(parseInt(performance.now()))
+						// console.log(this.userData.videoGroup)
+						switch (intersectsVidGroup[0].object.name) {
+							case 'vidSideAlpha':
+								videos[0].muted = !videos[0].muted;
+								break;
+							case 'vidSideBeta':
+								videos[1].muted = !videos[1].muted;
+								break;
+							case 'vidSideGamma':
+								videos[2].muted = !videos[2].muted;
+								break;
+
+							default:
+								break;
+						}
+					}
+
 					intersectsVidGroup.forEach(obj => {
-						console.log(obj)
 						if (!obj.object.parent.userData?.isDraggable) { return }
 						else if (obj.object.parent.userData?.isDraggable) {
 							const object = obj.object.parent;
@@ -393,6 +424,10 @@
 						}
 					})
 
+					this.userData.videoGroup = {
+						lastVideoObj: intersectsVidGroup[0].object,
+						lastClick: performance.now()
+					}
 				}
 
 			}
@@ -725,20 +760,20 @@
 			scene.background = textureEquirec;
 			///////////////
 
-			/////////////// GLTF
-			const loader = new GLTFLoader().setPath('models/');
-			loader.load('note_gold.gltf', (gltf) => {
-				console.log('loaded');
-				console.log(gltf)
-				const noteModel = gltf.scene;
-				// const noteModel = new THREE.Mesh(gltf.scene.children[0], new THREE.MeshLambertMaterial({ color: 0xDDD3C3, envMap: textureEquirec, reflectivity: 1 }));
-				noteModel.envMap = textureEquirec;
-				// noteModel.children[0].material = new THREE.MeshLambertMaterial({ color: 0xDDD3C3, envMap: textureEquirec, reflectivity: 1 });
-				noteModel.children[0].material.envMap = textureEquirec;
-				// noteModel.needsUpdate = true;
-				scene.add(noteModel);
-			});
-			///////////////
+			// /////////////// GLTF
+			// const loader = new GLTFLoader().setPath('models/');
+			// loader.load('note_gold.gltf', (gltf) => {
+			// 	console.log('loaded');
+			// 	console.log(gltf)
+			// 	const noteModel = gltf.scene;
+			// 	// const noteModel = new THREE.Mesh(gltf.scene.children[0], new THREE.MeshLambertMaterial({ color: 0xDDD3C3, envMap: textureEquirec, reflectivity: 1 }));
+			// 	noteModel.envMap = textureEquirec;
+			// 	// noteModel.children[0].material = new THREE.MeshLambertMaterial({ color: 0xDDD3C3, envMap: textureEquirec, reflectivity: 1 });
+			// 	noteModel.children[0].material.envMap = textureEquirec;
+			// 	// noteModel.needsUpdate = true;
+			// 	scene.add(noteModel);
+			// });
+			// ///////////////
 
 			controls = new FirstPersonControls(camera, renderer.domElement);
 			controls.movementSpeed = 100;
