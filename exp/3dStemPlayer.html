@@ -51,20 +51,20 @@
 
 	<video id="video" preload="auto" style="display: none" crossorigin="anonymous" muted controls loop>
 		<source src="https://cdn.cpixl.com/other/PhenomenaTV/PTVEP1-drums.mp4" type="video/mp4" crossorigin="*">
-		<!-- <source src="https://cdn.cpixl.com/other/tv-test.mp4" type="video/mp4" crossorigin="*"> -->
-		<!-- <source src="https://cdn.cpixl.com/other/projectie_3.mp4" type="video/mp4" crossorigin="*"> -->
 	</video>
 	<video id="video2" preload="auto" style="display: none" crossorigin="anonymous" muted controls loop>
 		<source src="https://cdn.cpixl.com/other/PhenomenaTV/PTVEP2-synths.mp4" type="video/mp4" crossorigin="*">
-		<!-- <source src="https://cdn.cpixl.com/other/futuresonus-parva-kickstarter.mp4" type="video/mp4" crossorigin="*"> -->
 	</video>
 	<video id="video3" preload="auto" style="display: none" crossorigin="anonymous" muted controls loop>
 		<source src="https://cdn.cpixl.com/other/PhenomenaTV/PTVEP3-guitars.mp4" type="video/mp4" crossorigin="*">
-		<!-- <source src="https://cdn.cpixl.com/other/google-doodle.mp4" type="video/mp4" crossorigin="*"> -->
 	</video>
 
 	<div id="overlay">
-		<button id="startButton">Play</button>
+		<h1>Welcome to Phenomena: behind the music</h1>
+		<p>This WebXR experience will show you how Phenomena came to be and allow you to play with the songs.</p>
+		<button id="startButton">Start the experience</button>
+		<p>You can view the experience in your browser by pressing this button or in VR by pressing the "enter VR" button at the bottom once the experience is started.</p>
+		<p>Special thanks to Zanski for allowing me to use the stems, artwork and videos for this project!</p>
 	</div>
 
 	<script type="module">
@@ -81,7 +81,7 @@
 		const lyrics = await fetch('../../../lyrics/forest-spirit-sound.json').then(response => response.json());
 		// const lyrics = await fetch('../../../lyrics/temporary-nothing.json').then(response => response.json());
 
-		let camera, controls, scene, raycaster, renderer, light, listener, textureEquirec;
+		let camera, controls, scene, raycaster, renderer, light, listener, textureEquirec, waterTexture;
 		let controller, controllerGrip;
 		let globalTime = { value: 0 };
 		const tempMatrix = new THREE.Matrix4();
@@ -124,8 +124,7 @@
 
 		const initScene = () => {
 			camera = new THREE.PerspectiveCamera(70, window.innerWidth / window.innerHeight, .1, 10000);
-			// camera.position.set(0, 30, 200);
-			camera.position.set(0, 30, 0);
+			camera.position.set(0, 20, 0);
 
 			listener = new THREE.AudioListener();
 			camera.add(listener);
@@ -133,9 +132,23 @@
 			scene = new THREE.Scene();
 			scene.fog = new THREE.FogExp2(0x000000, 0.0025);
 
-			const light = new THREE.DirectionalLight(0xffffff);
-			light.position.set(1, 1, 1).normalize();
-			scene.add(light);
+			// const light = new THREE.HemisphereLight(0xffffbb, 0x080820, 1);
+			// light.position.set(0, 0, -1).normalize();
+			// scene.add(light);
+
+			const spotLight = new THREE.SpotLight(0xffffff);
+			spotLight.position.set(100, 1000, 100);
+
+			spotLight.castShadow = true;
+
+			spotLight.shadow.mapSize.width = 1024;
+			spotLight.shadow.mapSize.height = 1024;
+
+			spotLight.shadow.camera.near = 500;
+			spotLight.shadow.camera.far = 4000;
+			spotLight.shadow.camera.fov = 30;
+
+			scene.add(spotLight);
 
 			/// ground
 			const helper = new THREE.GridHelper(1000, 10, 0x444444, 0x444444);
@@ -784,29 +797,6 @@
 			testPlane.position.set(0, -150, 0)
 			////////////////
 
-			//////////////// Glass plane
-			const glassPlane = new THREE.Mesh(
-				new THREE.PlaneGeometry(2000, 2000),
-				new THREE.MeshPhysicalMaterial({
-					color: 0xffffff,
-					metalness: 0,
-					roughness: .3,
-					ior: 1.1,
-					alphaMap: HDRIS.dark_dark,
-					envMap: HDRIS.dark_dark,
-					envMapIntensity: 1,
-					transmission: 1,
-					specularIntensity: 1,
-					specularColor: 0xffffff,
-					opacity: 1,
-					thickness: 0.2,
-					side: THREE.DoubleSide,
-					transparent: true
-				}))
-
-			glassPlane.rotateX(- Math.PI / 2)
-			scene.add(glassPlane);
-			///////////////
 
 			/////////////// HDRI
 			const textureLoader = new THREE.TextureLoader();
@@ -818,11 +808,46 @@
 				HDRIS[HDRI] = currentHDRI;
 			})
 
+			/////////// WATER TEXTURE REMOVE
+			waterTexture = textureLoader.load(`textures/waternormals.jpg`);
+			waterTexture.magFilter = THREE.NearestFilter;
+			waterTexture.wrapT = THREE.RepeatWrapping;
+			waterTexture.wrapS = THREE.RepeatWrapping;
+			waterTexture.repeat.set(800, 2000.5);
+
 			// const textureLoader = new THREE.TextureLoader();
 			// textureEquirec = textureLoader.load('textures/hdri-skygone.png');
 			// textureEquirec.mapping = THREE.EquirectangularReflectionMapping;
 			// textureEquirec.encoding = THREE.sRGBEncoding;
 			scene.background = HDRIS.dark_dark;
+			///////////////
+
+			//////////////// Glass plane
+			const glassPlane = new THREE.Mesh(
+				new THREE.PlaneGeometry(2000, 2000),
+				new THREE.MeshPhysicalMaterial({
+					color: 0xffffff,
+					metalness: 0,
+					roughness: 1,
+					ior: 1.1,
+					alpha: .5,
+					alphaMap: waterTexture,
+					envMap: HDRIS.dark_white,
+					envMapIntensity: 1,
+					transmission: 1,
+					specularIntensity: 1,
+					specularColor: 0xffffff,
+					opacity: 1,
+					thickness: 2,
+					side: THREE.DoubleSide,
+					transparent: true,
+					clearcoat: 1,
+					clearcoatMap: waterTexture,
+
+				}))
+
+			glassPlane.rotateX(- Math.PI / 2)
+			scene.add(glassPlane);
 			///////////////
 
 
