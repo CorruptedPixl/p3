@@ -92,6 +92,7 @@
 		let sounds = [];
 		let videos = [];
 		let analysers = [];
+		let HDRIS = [];
 
 		let controllers = [];
 		let controllerGrips = [];
@@ -106,6 +107,7 @@
 		startButton.addEventListener('click', init);
 
 		const vidConfig = ['video', 'video2', 'video3']
+		const HDRIConfig = ['white', 'black', 'lines', 'sat', 'sat2', 'dark_white', 'dark_black',]
 
 		const refDist = 50; // distance from where to start applying volume reduction 
 		const objConfig = [
@@ -337,6 +339,10 @@
 
 			volumeFolder.add(soundControls, 'master').min(0.0).max(1.0).step(0.01).onChange(function () {
 				listener.setMasterVolume(soundControls.master);
+				////// TEMP REMOVE
+				if (soundControls.master < .3) { scene.background = HDRIS.dark_white; }
+				if (soundControls.master > .3 && soundControls.master < .6) { scene.background = HDRIS.dark_black; }
+				if (soundControls.master > .6) { scene.background = HDRIS.sat2; }
 			});
 
 			// add controls for each sound loaded
@@ -744,20 +750,54 @@
 			});
 
 			const testPlane = new THREE.Mesh(
-				new THREE.PlaneGeometry(2000, 2000),
+				new THREE.PlaneGeometry(10000, 10000),
 				material
 			);
 
 			scene.add(testPlane);
 			testPlane.rotateX(- Math.PI / 2)
+			testPlane.position.set(0, -150, 0)
 			////////////////
+
+			//////////////// Glass plane
+			const glassPlane = new THREE.Mesh(
+				new THREE.PlaneGeometry(2000, 2000),
+				new THREE.MeshPhysicalMaterial({
+					color: 0xffffff,
+					metalness: 0,
+					roughness: .3,
+					ior: 1.1,
+					alphaMap: HDRIS.dark_black,
+					envMap: HDRIS.dark_black,
+					envMapIntensity: 1,
+					transmission: 1,
+					specularIntensity: 1,
+					specularColor: 0xffffff,
+					opacity: 1,
+					thickness: 0.2,
+					side: THREE.DoubleSide,
+					transparent: true
+				}))
+
+			glassPlane.rotateX(- Math.PI / 2)
+			scene.add(glassPlane);
+			///////////////
 
 			/////////////// HDRI
 			const textureLoader = new THREE.TextureLoader();
-			textureEquirec = textureLoader.load('textures/hdri-edited.png');
-			textureEquirec.mapping = THREE.EquirectangularReflectionMapping;
-			textureEquirec.encoding = THREE.sRGBEncoding;
-			scene.background = textureEquirec;
+			HDRIConfig.forEach(HDRI => {
+				const currentHDRI = textureLoader.load(`textures/hdri-${HDRI}.png`);
+				currentHDRI.mapping = THREE.EquirectangularReflectionMapping;
+				currentHDRI.encoding = THREE.sRGBEncoding;
+
+				HDRIS[HDRI] = currentHDRI;
+			})
+
+			// const textureLoader = new THREE.TextureLoader();
+			// textureEquirec = textureLoader.load('textures/hdri-skygone.png');
+			// textureEquirec.mapping = THREE.EquirectangularReflectionMapping;
+			// textureEquirec.encoding = THREE.sRGBEncoding;
+			scene.background = HDRIS.dark_black;
 			///////////////
 
 			// /////////////// GLTF
