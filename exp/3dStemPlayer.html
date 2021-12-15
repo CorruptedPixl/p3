@@ -83,6 +83,7 @@
 
 		let camera, controls, scene, raycaster, renderer, light, listener, textureEquirec, waterTexture;
 		let controller, controllerGrip;
+		let playListJson, albumArt, albumTitle, artist;
 		let globalTime = { value: 0 };
 		const tempMatrix = new THREE.Matrix4();
 		const text = new Text();
@@ -122,6 +123,32 @@
 			{ name: 'vocals', color: 0x51C5C5, sound: 'vocals', },]
 
 
+		const getPlaylist = async (url) => {
+			// playListJson = await fetch(url).then(response => response.json());
+			// return playListJson;
+			return await fetch(url).then(response => response.json());
+		}
+		const initPlaylist = async () => {
+			playListJson = await getPlaylist('media/json/playlist.json');
+			albumArt = playListJson.albumArt;
+			albumTitle = playListJson.album;
+			artist = playListJson.artist;
+
+			preloadImgs([albumArt]);
+		}
+
+		const preloadImgs = async (imgs) => {
+			imgs.forEach(async img => {
+				const image = new Image();
+				image.src = img;
+				console.log(image)
+				document.querySelector('body').appendChild(image);
+				return image;
+			})
+		}
+
+		initPlaylist();
+
 		const initScene = () => {
 			camera = new THREE.PerspectiveCamera(70, window.innerWidth / window.innerHeight, .1, 10000);
 			camera.position.set(0, 20, 0);
@@ -133,22 +160,10 @@
 			scene.fog = new THREE.FogExp2(0x000000, 0.0025);
 
 			// const light = new THREE.HemisphereLight(0xffffbb, 0x080820, 1);
-			// light.position.set(0, 0, -1).normalize();
-			// scene.add(light);
-
-			const spotLight = new THREE.SpotLight(0xffffff);
-			spotLight.position.set(100, 1000, 100);
-
-			spotLight.castShadow = true;
-
-			spotLight.shadow.mapSize.width = 1024;
-			spotLight.shadow.mapSize.height = 1024;
-
-			spotLight.shadow.camera.near = 500;
-			spotLight.shadow.camera.far = 4000;
-			spotLight.shadow.camera.fov = 30;
-
-			scene.add(spotLight);
+			const light = new THREE.DirectionalLight(0xffffbb);
+			light.position.set(100, 30, -10).normalize();
+			light.castShadow = true;
+			scene.add(light);
 
 			/// ground
 			const helper = new THREE.GridHelper(1000, 10, 0x444444, 0x444444);
@@ -557,6 +572,136 @@
 			text.sync()
 		}
 
+		const initFloor = () => {
+			/////////////// shader
+			const shader = `
+			#define PI 3.14159
+			#define magic 1000.0
+
+			uniform float time;
+			varying vec2 vUv;
+
+			void main( void ) {
+
+				float v = 0.0;
+
+				// vec2 position = ( gl_FragCoord.xy / resolution.xy );
+				vec2 position = - 1.0 + 2.0 * vUv;
+
+				// 'moving left effect'
+				v += sin(position.x * 10.0 + time);
+
+
+				// 'rotation effect' thingy (changes angle with time)
+				v += sin(10.0 * (position.x * sin(time / 2.0)+position.y*cos(time/3.0))+time);
+
+				// ???
+				position.x = position.x + 0.5 * sin (time / 5.0);
+				position.y = position.y + 0.5 * cos (time / 3.0);
+				v += sin(sqrt(magic * (pow(position.x, 2.0) + pow(position.y, 2.0)) + 1.0 + time));	
+
+
+				//	v = v / 2.0;
+
+				// 'color palette' except not really
+				// rgb-ish
+				vec3 col = vec3(sin(v*PI), sin(v*PI + 2.0*PI/3.0), sin(v*PI + 4.0 * PI / 3.0));
+
+				// experiment
+				// vec3 col = vec3(v * 5.0 * PI, v * 5.0 * PI, v * 5.0 * PI);
+
+
+				gl_FragColor = vec4(col*0.5 + 0.5, 1);
+				
+				// vec2 position = - 1.0 + 2.0 * vUv;
+				// float red = abs( sin( position.x * position.y + time / 5.0 ) );
+				// float green = abs( sin( position.x * position.y + time / 4.0 ) );
+				// float blue = abs( sin( position.x * position.y + time / 3.0 ) );
+				// gl_FragColor = vec4( red, green, blue, 1.0 );
+
+			}
+						`
+
+			const material = new THREE.ShaderMaterial({
+				uniforms: {
+
+					time: globalTime,
+					resolution: { value: new THREE.Vector2(window.innerWidth, window.innerHeight) }
+
+				},
+				vertexShader: `varying vec2 vUv;
+								void main(){
+								vUv = uv;
+								gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+								}`,
+				fragmentShader: shader
+			});
+
+			const testPlane = new THREE.Mesh(
+				new THREE.PlaneGeometry(10000, 10000),
+				material
+			);
+
+			scene.add(testPlane);
+			testPlane.rotateX(- Math.PI / 2)
+			testPlane.position.set(0, -150, 0)
+			////////////////
+
+
+			/////////////// HDRI
+			const textureLoader = new THREE.TextureLoader();
+			HDRIConfig.forEach(HDRI => {
+				const currentHDRI = textureLoader.load(`textures/hdri-${HDRI}.png`);
+				currentHDRI.mapping = THREE.EquirectangularReflectionMapping;
+				currentHDRI.encoding = THREE.sRGBEncoding;
+
+				HDRIS[HDRI] = currentHDRI;
+			})
+
+			/////////// WATER TEXTURE
+			waterTexture = textureLoader.load(`textures/waternormals.jpg`);
+			waterTexture.magFilter = THREE.NearestFilter;
+			waterTexture.wrapT = THREE.RepeatWrapping;
+			waterTexture.wrapS = THREE.RepeatWrapping;
+			waterTexture.repeat.set(800, 2000.5);
+
+			// const textureLoader = new THREE.TextureLoader();
+			// textureEquirec = textureLoader.load('textures/hdri-skygone.png');
+			// textureEquirec.mapping = THREE.EquirectangularReflectionMapping;
+			// textureEquirec.encoding = THREE.sRGBEncoding;
+			scene.background = HDRIS.dark_dark;
+			///////////////
+
+			//////////////// Glass plane
+			const glassPlane = new THREE.Mesh(
+				new THREE.PlaneGeometry(2000, 2000),
+				new THREE.MeshPhysicalMaterial({
+					color: 0xffffff,
+					metalness: 0,
+					roughness: 1,
+					ior: 1.1,
+					alpha: .5,
+					alphaMap: waterTexture,
+					envMap: HDRIS.dark_white,
+					envMapIntensity: 1,
+					transmission: 1,
+					specularIntensity: 1,
+					specularColor: 0xffffff,
+					opacity: 1,
+					thickness: 2,
+					side: THREE.DoubleSide,
+					transparent: true,
+					clearcoat: 1,
+					clearcoatMap: waterTexture,
+
+				}))
+
+			glassPlane.rotateX(- Math.PI / 2)
+			// glassPlane.receiveShadow
+			scene.add(glassPlane);
+			///////////////
+		}
+
 		const buildController = (data) => {
 
 			let geometry, material;
@@ -723,132 +868,7 @@
 			// initGui()
 			initLyrics()
 
-			/////////////// shader
-			const shader = `
-			#define PI 3.14159
-			#define magic 1000.0
-
-			uniform float time;
-			varying vec2 vUv;
-
-			void main( void ) {
-
-				float v = 0.0;
-
-				// vec2 position = ( gl_FragCoord.xy / resolution.xy );
-				vec2 position = - 1.0 + 2.0 * vUv;
-
-				// 'moving left effect'
-				v += sin(position.x * 10.0 + time);
-
-
-				// 'rotation effect' thingy (changes angle with time)
-				v += sin(10.0 * (position.x * sin(time / 2.0)+position.y*cos(time/3.0))+time);
-
-				// ???
-				position.x = position.x + 0.5 * sin (time / 5.0);
-				position.y = position.y + 0.5 * cos (time / 3.0);
-				v += sin(sqrt(magic * (pow(position.x, 2.0) + pow(position.y, 2.0)) + 1.0 + time));	
-
-
-				//	v = v / 2.0;
-
-				// 'color palette' except not really
-				// rgb-ish
-				vec3 col = vec3(sin(v*PI), sin(v*PI + 2.0*PI/3.0), sin(v*PI + 4.0 * PI / 3.0));
-
-				// experiment
-				// vec3 col = vec3(v * 5.0 * PI, v * 5.0 * PI, v * 5.0 * PI);
-
-
-				gl_FragColor = vec4(col*0.5 + 0.5, 1);
-				
-				// vec2 position = - 1.0 + 2.0 * vUv;
-				// float red = abs( sin( position.x * position.y + time / 5.0 ) );
-				// float green = abs( sin( position.x * position.y + time / 4.0 ) );
-				// float blue = abs( sin( position.x * position.y + time / 3.0 ) );
-				// gl_FragColor = vec4( red, green, blue, 1.0 );
-
-			}
-						`
-
-			const material = new THREE.ShaderMaterial({
-				uniforms: {
-
-					time: globalTime,
-					resolution: { value: new THREE.Vector2(window.innerWidth, window.innerHeight) }
-
-				},
-				vertexShader: `varying vec2 vUv;
-								void main(){
-								vUv = uv;
-								gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
-								}`,
-				fragmentShader: shader
-			});
-
-			const testPlane = new THREE.Mesh(
-				new THREE.PlaneGeometry(10000, 10000),
-				material
-			);
-
-			scene.add(testPlane);
-			testPlane.rotateX(- Math.PI / 2)
-			testPlane.position.set(0, -150, 0)
-			////////////////
-
-
-			/////////////// HDRI
-			const textureLoader = new THREE.TextureLoader();
-			HDRIConfig.forEach(HDRI => {
-				const currentHDRI = textureLoader.load(`textures/hdri-${HDRI}.png`);
-				currentHDRI.mapping = THREE.EquirectangularReflectionMapping;
-				currentHDRI.encoding = THREE.sRGBEncoding;
-
-				HDRIS[HDRI] = currentHDRI;
-			})
-
-			/////////// WATER TEXTURE REMOVE
-			waterTexture = textureLoader.load(`textures/waternormals.jpg`);
-			waterTexture.magFilter = THREE.NearestFilter;
-			waterTexture.wrapT = THREE.RepeatWrapping;
-			waterTexture.wrapS = THREE.RepeatWrapping;
-			waterTexture.repeat.set(800, 2000.5);
-
-			// const textureLoader = new THREE.TextureLoader();
-			// textureEquirec = textureLoader.load('textures/hdri-skygone.png');
-			// textureEquirec.mapping = THREE.EquirectangularReflectionMapping;
-			// textureEquirec.encoding = THREE.sRGBEncoding;
-			scene.background = HDRIS.dark_dark;
-			///////////////
-
-			//////////////// Glass plane
-			const glassPlane = new THREE.Mesh(
-				new THREE.PlaneGeometry(2000, 2000),
-				new THREE.MeshPhysicalMaterial({
-					color: 0xffffff,
-					metalness: 0,
-					roughness: 1,
-					ior: 1.1,
-					alpha: .5,
-					alphaMap: waterTexture,
-					envMap: HDRIS.dark_white,
-					envMapIntensity: 1,
-					transmission: 1,
-					specularIntensity: 1,
-					specularColor: 0xffffff,
-					opacity: 1,
-					thickness: 2,
-					side: THREE.DoubleSide,
-					transparent: true,
-					clearcoat: 1,
-					clearcoatMap: waterTexture,
-
-				}))
-
-			glassPlane.rotateX(- Math.PI / 2)
-			scene.add(glassPlane);
-			///////////////
+			initFloor()
 
 
 			controls = new FirstPersonControls(camera, renderer.domElement);
