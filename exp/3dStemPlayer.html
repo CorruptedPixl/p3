@@ -107,7 +107,7 @@
 		startButton.addEventListener('click', init);
 
 		const vidConfig = ['video', 'video2', 'video3']
-		const HDRIConfig = ['white', 'black', 'lines', 'sat', 'sat2', 'dark_white', 'dark_black',]
+		const HDRIConfig = ['white', 'black', 'lines', 'sat', 'sat2', 'dark_white', 'dark_black', 'dark_dark',]
 
 		const refDist = 50; // distance from where to start applying volume reduction 
 		const objConfig = [
@@ -214,8 +214,8 @@
 				meshes['vocals'].position.set(150, 30, 100);
 
 				scene.add(stemsGroup); // ADD STEMS GROUP TO THE SCENE
-				initGui()
 
+				initGui()
 			}
 		}
 
@@ -366,7 +366,7 @@
 				listener.setMasterVolume(soundControls.master);
 				////// TEMP REMOVE
 				if (soundControls.master < .3) { scene.background = HDRIS.dark_white; }
-				if (soundControls.master > .3 && soundControls.master < .6) { scene.background = HDRIS.dark_black; }
+				if (soundControls.master > .3 && soundControls.master < .6) { scene.background = HDRIS.dark_dark; }
 				if (soundControls.master > .6) { scene.background = HDRIS.sat2; }
 			});
 
@@ -792,8 +792,8 @@
 					metalness: 0,
 					roughness: .3,
 					ior: 1.1,
-					alphaMap: HDRIS.dark_black,
-					envMap: HDRIS.dark_black,
+					alphaMap: HDRIS.dark_dark,
+					envMap: HDRIS.dark_dark,
 					envMapIntensity: 1,
 					transmission: 1,
 					specularIntensity: 1,
@@ -822,7 +822,7 @@
 			// textureEquirec = textureLoader.load('textures/hdri-skygone.png');
 			// textureEquirec.mapping = THREE.EquirectangularReflectionMapping;
 			// textureEquirec.encoding = THREE.sRGBEncoding;
-			scene.background = HDRIS.dark_black;
+			scene.background = HDRIS.dark_dark;
 			///////////////
 
 
