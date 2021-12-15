@@ -154,44 +154,69 @@
 			renderer.shadowMap.enabled = true;
 			renderer.xr.enabled = true;
 			document.body.appendChild(renderer.domElement);
+			// initStems(objConfig)
 		}
 
 		const initStems = (objConfig) => {
 			const sphere = new THREE.SphereGeometry(20, 32, 16);
+			let note;
+			/////////////// GLTF
+			const loader = new GLTFLoader().setPath('models/');
+			loader.load('note_gold.gltf', (gltf) => {
+				console.log('loaded');
+				console.log(gltf)
+				const noteModel = gltf.scene;
+				// const noteModel = new THREE.Mesh(gltf.scene.children[0], new THREE.MeshLambertMaterial({ color: 0xDDD3C3, envMap: textureEquirec, reflectivity: 1 }));
+				noteModel.envMap = textureEquirec;
+				// noteModel.children[0].material = new THREE.MeshLambertMaterial({ color: 0xDDD3C3, envMap: textureEquirec, reflectivity: 1 });
+				noteModel.children[0].material.envMap = textureEquirec;
+				// noteModel.needsUpdate = true;
+				// scene.add(noteModel);
+				note = noteModel.children[0].geometry;
+				loadStems()
+			});
+			///////////////
 
-			// init mats, sounds and analysers
-			objConfig.forEach(obj => {
-				// create a new material with the color of the object
-				mats[obj.name] = new THREE.MeshPhongMaterial({ color: obj.color, flatShading: true, shininess: 0 });
-				// create a new mesh with that material
-				meshes[obj.name] = new THREE.Mesh(sphere, mats[obj.name])
-				meshes[obj.name].name = obj.name;
-				// scene.add(meshes[obj.name]); // DONT ADD EACH OBJECT INDIVIDUALLY
-				stemsGroup.add(meshes[obj.name]);
+			const loadStems = () => {
 
-				// create audio sources, load from html and add to objects
-				sounds[obj.name] = new THREE.PositionalAudio(listener);
-				const currentSound = document.querySelector(`#${obj.name}`)
-				sounds[obj.name].setMediaElementSource(currentSound).setRefDistance(refDist);
-				currentSound.play();
-				meshes[obj.name].add(sounds[obj.name]);
+				// init mats, sounds and analysers
+				objConfig.forEach(obj => {
+					// create a new material with the color of the object
+					mats[obj.name] = new THREE.MeshPhongMaterial({ color: obj.color, flatShading: true, shininess: 0 });
+					// create a new mesh with that material
+					// meshes[obj.name] = new THREE.Mesh(sphere, mats[obj.name]) /// old mesh
+					meshes[obj.name] = new THREE.Mesh(note, mats[obj.name])
+					/// TODO change color of included material in gltf so the environment is reflected. 
+					meshes[obj.name].name = obj.name;
+					// scene.add(meshes[obj.name]); // DONT ADD EACH OBJECT INDIVIDUALLY
+					stemsGroup.add(meshes[obj.name]);
 
-				// start analysers
-				analysers[obj.name] = new THREE.AudioAnalyser(sounds[obj.name], 32);
-			})
+					// create audio sources, load from html and add to objects
+					sounds[obj.name] = new THREE.PositionalAudio(listener);
+					const currentSound = document.querySelector(`#${obj.name}`)
+					sounds[obj.name].setMediaElementSource(currentSound).setRefDistance(refDist);
+					currentSound.play();
+					meshes[obj.name].add(sounds[obj.name]);
 
-			// set positions of objects
-			meshes['atmos'].position.set(- 250, 30, 100);
-			meshes['bass'].position.set(- 200, 30, 100);
-			meshes['drums'].position.set(- 150, 30, 100);
-			meshes['guitars'].position.set(- 100, 30, 100);
-			meshes['lq'].position.set(- 50, 30, 100);
-			meshes['pads'].position.set(0, 30, 100);
-			meshes['plucks'].position.set(50, 30, 100);
-			meshes['tags'].position.set(100, 30, 100);
-			meshes['vocals'].position.set(150, 30, 100);
+					// start analysers
+					analysers[obj.name] = new THREE.AudioAnalyser(sounds[obj.name], 32);
+				})
 
-			scene.add(stemsGroup); // ADD STEMS GROUP TO THE SCENE
+				// set positions of objects
+				meshes['atmos'].position.set(- 250, 30, 100);
+				meshes['bass'].position.set(- 200, 30, 100);
+				meshes['drums'].position.set(- 150, 30, 100);
+				meshes['guitars'].position.set(- 100, 30, 100);
+				meshes['lq'].position.set(- 50, 30, 100);
+				meshes['pads'].position.set(0, 30, 100);
+				meshes['plucks'].position.set(50, 30, 100);
+				meshes['tags'].position.set(100, 30, 100);
+				meshes['vocals'].position.set(150, 30, 100);
+
+				scene.add(stemsGroup); // ADD STEMS GROUP TO THE SCENE
+				initGui()
+
+			}
 		}
 
 		const initVideoGroup = (vidConfig) => {
@@ -679,10 +704,10 @@
 			overlay.remove();
 
 			initScene()
-			initVideoGroup(vidConfig)
 			initStems(objConfig)
+			initVideoGroup(vidConfig)
 			initControllers()
-			initGui()
+			// initGui()
 			initLyrics()
 
 			/////////////// shader
@@ -800,20 +825,6 @@
 			scene.background = HDRIS.dark_black;
 			///////////////
 
-			// /////////////// GLTF
-			// const loader = new GLTFLoader().setPath('models/');
-			// loader.load('note_gold.gltf', (gltf) => {
-			// 	console.log('loaded');
-			// 	console.log(gltf)
-			// 	const noteModel = gltf.scene;
-			// 	// const noteModel = new THREE.Mesh(gltf.scene.children[0], new THREE.MeshLambertMaterial({ color: 0xDDD3C3, envMap: textureEquirec, reflectivity: 1 }));
-			// 	noteModel.envMap = textureEquirec;
-			// 	// noteModel.children[0].material = new THREE.MeshLambertMaterial({ color: 0xDDD3C3, envMap: textureEquirec, reflectivity: 1 });
-			// 	noteModel.children[0].material.envMap = textureEquirec;
-			// 	// noteModel.needsUpdate = true;
-			// 	scene.add(noteModel);
-			// });
-			// ///////////////
 
 			controls = new FirstPersonControls(camera, renderer.domElement);
 			controls.movementSpeed = 100;
