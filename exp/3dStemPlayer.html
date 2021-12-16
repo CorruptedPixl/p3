@@ -174,6 +174,7 @@
 		}
 
 		const loadTrack = (track) => {
+			currentStems = [];
 			const $audioContainer = document.querySelector('#audioContainer');
 			// $audioContainer.innerHTML = track.stems.map(stem => `
 			// <audio id="${stem}" loop preload="auto" style="display: none">
@@ -184,6 +185,7 @@
 			track.stems.forEach(stem => {
 				const audio = new Audio();
 				audio.src = `${track.stemsPath}${stem.name}.mp3`;
+				audio.loop = true;
 				audio.name = stem.name;
 				$audioContainer.appendChild(audio);
 				audio.oncanplaythrough = (e) => {
@@ -193,10 +195,61 @@
 					if (Object.keys(currentStems).length === track.stems.length) {
 						if ($loading) $loading.innerHTML = 'Loaded all stems!'
 						console.log('%c%s', 'color: #1F8BFF', `All stems loaded.`);
+
+						// if (!document.getElementById('overlay')) {
+						// 	console.log(currentStems);
+						// 	initStems(currentStems);
+						// }
 					}
 				};
 				// return audio;
 			})
+		}
+
+		const unloadAudio = () => {
+			const $audioContainer = document.querySelector('#audioContainer');
+			// for (const stem in currentStems) {
+			// 	currentStems[stem].audio.pause();
+			// }
+			$audioContainer.innerHTML = '';
+
+
+			// for (const mesh in meshes) {
+			// }
+			// console.log(meshes[mesh])
+			// const object = scene.getObjectByProperty('uuid', meshes[mesh].uuid);
+			const stemsGroup = scene.getObjectByProperty('name', 'stemsGroup');
+			console.log(stemsGroup)
+			let stemsToBeRemoved = [...stemsGroup.children]; /// make a clone of the children to loop over otherwise the array will shorten during the loop and this skip every 2nd item
+			for (const stem in stemsToBeRemoved) {
+				console.log(stemsToBeRemoved[stem])
+				const stemObject = stemsToBeRemoved[stem];
+				stemObject.geometry.dispose();
+				stemObject.material.dispose();
+				// stemObject.children.forEach(child => {
+				// 	child?.source?.disconnect();
+				// });
+				delete mats[stemsToBeRemoved[stem].name]
+				delete meshes[stemsToBeRemoved[stem].name]
+				delete sounds[stemsToBeRemoved[stem].name]
+				delete analysers[stemsToBeRemoved[stem].name]
+				stemObject.removeFromParent();
+			}
+			stemsToBeRemoved = [];
+
+
+			scene.remove(stemsGroup);
+			console.log(stemsGroup)
+			// mats = [];
+			// meshes = [];
+			// sounds = [];
+			// analysers = [];
+			renderer.renderLists.dispose();
+
+			console.log({ mats })
+			console.log({ meshes })
+			console.log({ sounds })
+			console.log({ analysers })
 		}
 
 		initPlaylist();
@@ -243,8 +296,7 @@
 			/////////////// GLTF
 			const loader = new GLTFLoader().setPath('models/');
 			loader.load('note_gold.gltf', (gltf) => {
-				console.log('loaded');
-				console.log(gltf)
+				// console.log(gltf)
 				const noteModel = gltf.scene;
 				// const noteModel = new THREE.Mesh(gltf.scene.children[0], new THREE.MeshLambertMaterial({ color: 0xDDD3C3, envMap: textureEquirec, reflectivity: 1 }));
 				noteModel.envMap = textureEquirec;
@@ -261,40 +313,46 @@
 
 				// init mats, sounds and analysers
 				// currentStems.forEach(stem => {
-				console.log(currentStems)
-				for (const stem in currentStems) {
-					// create a new material with the color of the object
-					mats[currentStems[stem].name] = new THREE.MeshPhongMaterial({ color: currentStems[stem].color, flatShading: true, shininess: 0 });
-					// create a new mesh with that material
-					// meshes[obj.name] = new THREE.Mesh(sphere, mats[obj.name]) /// old mesh
-					meshes[currentStems[stem].name] = new THREE.Mesh(note, mats[currentStems[stem].name])
-					/// TODO change color of included material in gltf so the environment is reflected. 
-					meshes[currentStems[stem].name].name = currentStems[stem].name;
-					// scene.add(meshes[stem.name]); // DONT ADD EACH OBJECT INDIVIDUALLY
-					stemsGroup.add(meshes[currentStems[stem].name]);
+				// console.log(currentStems)
+				const populateArrays = new Promise((resolve, reject) => {
+					for (const stem in currentStems) {
+						// create a new material with the color of the object
+						mats[currentStems[stem].name] = new THREE.MeshPhongMaterial({ color: currentStems[stem].color, flatShading: true, shininess: 0 });
+						// create a new mesh with that material
+						// meshes[obj.name] = new THREE.Mesh(sphere, mats[obj.name]) /// old mesh
+						meshes[currentStems[stem].name] = new THREE.Mesh(note, mats[currentStems[stem].name])
+						/// TODO change color of included material in gltf so the environment is reflected. 
+						meshes[currentStems[stem].name].name = currentStems[stem].name;
+						// scene.add(meshes[stem.name]); // DONT ADD EACH OBJECT INDIVIDUALLY
+						stemsGroup.add(meshes[currentStems[stem].name]);
 
-					// create audio sources, load from html and add to stemects
-					sounds[currentStems[stem].name] = new THREE.PositionalAudio(listener);
-					// const currentSound = document.querySelector(`#${currentStems[stem].name}`) /// old loading func
-					const currentSound = currentStems[stem].audio;
-					sounds[currentStems[stem].name].setMediaElementSource(currentSound).setRefDistance(refDist);
-					// currentSound.play(); /// dont play here but after everything's loaded
-					meshes[currentStems[stem].name].add(sounds[currentStems[stem].name]);
-					// start analysers
-					analysers[currentStems[stem].name] = new THREE.AudioAnalyser(sounds[currentStems[stem].name], 32);
-				}
+						// create audio sources, load from html and add to stemects
+						sounds[currentStems[stem].name] = new THREE.PositionalAudio(listener);
+						// const currentSound = document.querySelector(`#${currentStems[stem].name}`) /// old loading func
+						const currentSound = currentStems[stem].audio;
+						sounds[currentStems[stem].name].setMediaElementSource(currentSound).setRefDistance(refDist);
+						// currentSound.play(); /// dont play here but after everything's loaded
+						meshes[currentStems[stem].name].add(sounds[currentStems[stem].name]);
+						// start analysers
+						analysers[currentStems[stem].name] = new THREE.AudioAnalyser(sounds[currentStems[stem].name], 32);
+					}
+					resolve()
+				})
+				populateArrays.then(res => {
+					console.log(meshes)
+					// set positions of objects
+					meshes['atmos'].position.set(- 250, 30, 100);
+					meshes['bass'].position.set(- 200, 30, 100);
+					meshes['drums'].position.set(- 150, 30, 100);
+					meshes['guitars'].position.set(- 100, 30, 100);
+					meshes['lq'].position.set(- 50, 30, 100);
+					meshes['pads'].position.set(0, 30, 100);
+					meshes['plucks'].position.set(50, 30, 100);
+					meshes['tags'].position.set(100, 30, 100);
+					meshes['vocals'].position.set(150, 30, 100);
+				})
 
-				// set positions of objects
-				meshes['atmos'].position.set(- 250, 30, 100);
-				meshes['bass'].position.set(- 200, 30, 100);
-				meshes['drums'].position.set(- 150, 30, 100);
-				meshes['guitars'].position.set(- 100, 30, 100);
-				meshes['lq'].position.set(- 50, 30, 100);
-				meshes['pads'].position.set(0, 30, 100);
-				meshes['plucks'].position.set(50, 30, 100);
-				meshes['tags'].position.set(100, 30, 100);
-				meshes['vocals'].position.set(150, 30, 100);
-
+				stemsGroup.name = 'stemsGroup';
 				scene.add(stemsGroup); // ADD STEMS GROUP TO THE SCENE
 
 				initGui()
@@ -812,7 +870,7 @@
 			/// analysers
 			stemsGroup.children.forEach(obj => {
 				// console.log(obj)
-				if (!obj?.isHighlighted) {
+				if (!obj?.isHighlighted && mats.length > 0 && analysers.length > 0) {
 					mats[obj.name].emissive.r = analysers[obj.name].getAverageFrequency() / 256 * 2;
 					// mats[obj.name].emissive.g = analysers[obj.name].getAverageFrequency() / 256 * 2;
 					// mats[obj.name].emissive.b = analysers[obj.name].getAverageFrequency() / 256 * 2;
@@ -918,7 +976,8 @@
 			console.log(currentStems)
 
 			initScene()
-			// initStems(objConfig)
+			// unloadAudio()
+			// loadTrack(playListJson.tracks[10])
 			initStems(currentStems)
 			initVideoGroup(vidConfig)
 			initControllers()
@@ -927,6 +986,26 @@
 			// for (const stem in currentStems) { currentStems[stem].play() }
 
 			initFloor()
+
+			setTimeout(() => {
+				unloadAudio()
+				// loadTrack(playListJson.tracks[9])
+			}, 5000);
+			setTimeout(() => {
+				loadTrack(playListJson.tracks[10])
+				// initStems(currentStems)
+			}, 7000);
+			setTimeout(() => {
+				// loadTrack(playListJson.tracks[10])
+				initStems(currentStems)
+			}, 9000);
+			setTimeout(() => {
+				console.log({ mats })
+				console.log({ meshes })
+				console.log({ sounds })
+				console.log({ analysers })
+				console.log(stemsGroup)
+			}, 10000);
 
 
 			controls = new FirstPersonControls(camera, renderer.domElement);
