@@ -889,15 +889,42 @@
             "title": "Forest Spirit Sound",
             "stemsPath": "media/audio/wdyf/",
             "stems": [
-                "atmos",
-                "bass",
-                "drums",
-                "guitars",
-                "lq",
-                "pads",
-                "plucks",
-                "tags",
-                "vocals"
+                {
+                    "name": "atmos",
+                    "color": "#DDD3C3"
+                },
+                {
+                    "name": "bass",
+                    "color": "#812ADE"
+                },
+                {
+                    "name": "drums",
+                    "color": "#3444E3"
+                },
+                {
+                    "name": "guitars",
+                    "color": "#C714D6"
+                },
+                {
+                    "name": "lq",
+                    "color": "#E4406E"
+                },
+                {
+                    "name": "pads",
+                    "color": "#FFA211"
+                },
+                {
+                    "name": "plucks",
+                    "color": "#FFDE4A"
+                },
+                {
+                    "name": "tags",
+                    "color": "#02D37A"
+                },
+                {
+                    "name": "vocals",
+                    "color": "#51C5C5"
+                }
             ],
             "lyrics": {
                 "lines": [

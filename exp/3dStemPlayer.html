@@ -12,7 +12,7 @@
 <body>
 
 	<!-- keep filesize low to avoid them from being slow -->
-	<audio id="atmos" loop preload="auto" style="display: none">
+	<!-- <audio id="atmos" loop preload="auto" style="display: none">
 		<source src="media/audio/wdyf/atmos.mp3" type="audio/mpeg">
 		<source src="media/audio/wdyf/atmos.wav" type="audio/wav">
 	</audio>
@@ -47,7 +47,7 @@
 	<audio id="vocals" loop preload="auto" style="display: none">
 		<source src="media/audio/wdyf/vocals.mp3" type="audio/mpeg">
 		<source src="media/audio/wdyf/vocals.wav" type="audio/wav">
-	</audio>
+	</audio> -->
 
 
 	<div id='audioContainer'></div>
@@ -183,14 +183,15 @@
 			console.log('%c%s', 'color: #9FE3FF', `Now loading: ${track.title}`);
 			track.stems.forEach(stem => {
 				const audio = new Audio();
-				audio.src = `${track.stemsPath}${stem}.mp3`;
-				audio.name = stem;
+				audio.src = `${track.stemsPath}${stem.name}.mp3`;
+				audio.name = stem.name;
 				$audioContainer.appendChild(audio);
-				audio.oncanplaythrough = (event) => {
-					currentStems[audio.name] = audio;
+				audio.oncanplaythrough = (e) => {
+					const $loading = document.querySelector('#loading');
+					currentStems[audio.name] = { ...stem, "audio": audio };
 					console.log('%c%s', 'color: #4AF2FF', `Loaded ${audio.name}`);
 					if (Object.keys(currentStems).length === track.stems.length) {
-						loading.innerHTML = 'Loaded all stems!'
+						if ($loading) $loading.innerHTML = 'Loaded all stems!'
 						console.log('%c%s', 'color: #1F8BFF', `All stems loaded.`);
 					}
 				};
@@ -236,7 +237,7 @@
 			// initStems(objConfig)
 		}
 
-		const initStems = (objConfig) => {
+		const initStems = (currentStems) => {
 			const sphere = new THREE.SphereGeometry(20, 32, 16);
 			let note;
 			/////////////// GLTF
@@ -259,27 +260,29 @@
 			const loadStems = () => {
 
 				// init mats, sounds and analysers
-				objConfig.forEach(obj => {
+				// currentStems.forEach(stem => {
+				console.log(currentStems)
+				for (const stem in currentStems) {
 					// create a new material with the color of the object
-					mats[obj.name] = new THREE.MeshPhongMaterial({ color: obj.color, flatShading: true, shininess: 0 });
+					mats[currentStems[stem].name] = new THREE.MeshPhongMaterial({ color: currentStems[stem].color, flatShading: true, shininess: 0 });
 					// create a new mesh with that material
 					// meshes[obj.name] = new THREE.Mesh(sphere, mats[obj.name]) /// old mesh
-					meshes[obj.name] = new THREE.Mesh(note, mats[obj.name])
+					meshes[currentStems[stem].name] = new THREE.Mesh(note, mats[currentStems[stem].name])
 					/// TODO change color of included material in gltf so the environment is reflected. 
-					meshes[obj.name].name = obj.name;
-					// scene.add(meshes[obj.name]); // DONT ADD EACH OBJECT INDIVIDUALLY
-					stemsGroup.add(meshes[obj.name]);
+					meshes[currentStems[stem].name].name = currentStems[stem].name;
+					// scene.add(meshes[stem.name]); // DONT ADD EACH OBJECT INDIVIDUALLY
+					stemsGroup.add(meshes[currentStems[stem].name]);
 
-					// create audio sources, load from html and add to objects
-					sounds[obj.name] = new THREE.PositionalAudio(listener);
-					const currentSound = document.querySelector(`#${obj.name}`) /// load from new array
-					sounds[obj.name].setMediaElementSource(currentSound).setRefDistance(refDist);
-					currentSound.play(); /// dont play here but after everything's loaded
-					meshes[obj.name].add(sounds[obj.name]);
-
+					// create audio sources, load from html and add to stemects
+					sounds[currentStems[stem].name] = new THREE.PositionalAudio(listener);
+					// const currentSound = document.querySelector(`#${currentStems[stem].name}`) /// old loading func
+					const currentSound = currentStems[stem].audio;
+					sounds[currentStems[stem].name].setMediaElementSource(currentSound).setRefDistance(refDist);
+					// currentSound.play(); /// dont play here but after everything's loaded
+					meshes[currentStems[stem].name].add(sounds[currentStems[stem].name]);
 					// start analysers
-					analysers[obj.name] = new THREE.AudioAnalyser(sounds[obj.name], 32);
-				})
+					analysers[currentStems[stem].name] = new THREE.AudioAnalyser(sounds[currentStems[stem].name], 32);
+				}
 
 				// set positions of objects
 				meshes['atmos'].position.set(- 250, 30, 100);
@@ -295,6 +298,7 @@
 				scene.add(stemsGroup); // ADD STEMS GROUP TO THE SCENE
 
 				initGui()
+				for (const stem in currentStems) { currentStems[stem].audio.play() } /// Finally start playing them all (as close as possible) at the same time
 			}
 		}
 
@@ -911,15 +915,16 @@
 		function init() {
 			const overlay = document.getElementById('overlay');
 			overlay.remove();
-			// for (const stem in currentStems) { currentStems[stem].play() }
 			console.log(currentStems)
 
 			initScene()
-			initStems(objConfig)
+			// initStems(objConfig)
+			initStems(currentStems)
 			initVideoGroup(vidConfig)
 			initControllers()
 			// initGui()
 			initLyrics()
+			// for (const stem in currentStems) { currentStems[stem].play() }
 
 			initFloor()
 
