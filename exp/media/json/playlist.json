@@ -887,12 +887,17 @@
         },
         {
             "title": "Forest Spirit Sound",
-            "stemsPath": "media/audio/phenomena/forest-spirit-sound/",
+            "stemsPath": "media/audio/wdyf/",
             "stems": [
-                "drums",
-                "vocals",
+                "atmos",
                 "bass",
-                "synths"
+                "drums",
+                "guitars",
+                "lq",
+                "pads",
+                "plucks",
+                "tags",
+                "vocals"
             ],
             "lyrics": {
                 "lines": [
@@ -1448,6 +1453,20 @@
                     }
                 ]
             }
+        }
+    ],
+    "videos": [
+        {
+            "id": "video",
+            "url": "https://cdn.cpixl.com/other/PhenomenaTV/PTVEP1-drums.mp4"
+        },
+        {
+            "id": "video2",
+            "url": "https://cdn.cpixl.com/other/PhenomenaTV/PTVEP2-synths.mp4"
+        },
+        {
+            "id": "video3",
+            "url": "https://cdn.cpixl.com/other/PhenomenaTV/PTVEP3-guitars.mp4"
         }
     ]
 }

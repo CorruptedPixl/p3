@@ -13,43 +13,46 @@
 
 	<!-- keep filesize low to avoid them from being slow -->
 	<audio id="atmos" loop preload="auto" style="display: none">
-		<source src="sounds/wdyf/atmos.mp3" type="audio/mpeg">
-		<source src="sounds/wdyf/atmos.wav" type="audio/wav">
+		<source src="media/audio/wdyf/atmos.mp3" type="audio/mpeg">
+		<source src="media/audio/wdyf/atmos.wav" type="audio/wav">
 	</audio>
 	<audio id="bass" loop preload="auto" style="display: none">
-		<source src="sounds/wdyf/bass.mp3" type="audio/mpeg">
-		<source src="sounds/wdyf/bass.wav" type="audio/wav">
+		<source src="media/audio/wdyf/bass.mp3" type="audio/mpeg">
+		<source src="media/audio/wdyf/bass.wav" type="audio/wav">
 	</audio>
 	<audio id="drums" preload="auto" style="display: none">
-		<source src="sounds/wdyf/drums.mp3" type="audio/mpeg">
-		<source src="sounds/wdyf/drums.wav" type="audio/wav">
+		<source src="media/audio/wdyf/drums.mp3" type="audio/mpeg">
+		<source src="media/audio/wdyf/drums.wav" type="audio/wav">
 	</audio>
 	<audio id="guitars" loop preload="auto" style="display: none">
-		<source src="sounds/wdyf/guitars.mp3" type="audio/mpeg">
-		<source src="sounds/wdyf/guitars.wav" type="audio/wav">
+		<source src="media/audio/wdyf/guitars.mp3" type="audio/mpeg">
+		<source src="media/audio/wdyf/guitars.wav" type="audio/wav">
 	</audio>
 	<audio id="lq" loop preload="auto" style="display: none">
-		<source src="sounds/wdyf/lq.mp3" type="audio/mpeg">
-		<source src="sounds/wdyf/lq.wav" type="audio/wav">
+		<source src="media/audio/wdyf/lq.mp3" type="audio/mpeg">
+		<source src="media/audio/wdyf/lq.wav" type="audio/wav">
 	</audio>
 	<audio id="pads" loop preload="auto" style="display: none">
-		<source src="sounds/wdyf/pads.mp3" type="audio/mpeg">
-		<source src="sounds/wdyf/pads.wav" type="audio/wav">
+		<source src="media/audio/wdyf/pads.mp3" type="audio/mpeg">
+		<source src="media/audio/wdyf/pads.wav" type="audio/wav">
 	</audio>
 	<audio id="plucks" loop preload="auto" style="display: none">
-		<source src="sounds/wdyf/plucks.mp3" type="audio/mpeg">
-		<source src="sounds/wdyf/plucks.wav" type="audio/wav">
+		<source src="media/audio/wdyf/plucks.mp3" type="audio/mpeg">
+		<source src="media/audio/wdyf/plucks.wav" type="audio/wav">
 	</audio>
 	<audio id="tags" loop preload="auto" style="display: none">
-		<source src="sounds/wdyf/tags.mp3" type="audio/mpeg">
-		<source src="sounds/wdyf/tags.wav" type="audio/wav">
+		<source src="media/audio/wdyf/tags.mp3" type="audio/mpeg">
+		<source src="media/audio/wdyf/tags.wav" type="audio/wav">
 	</audio>
 	<audio id="vocals" loop preload="auto" style="display: none">
-		<source src="sounds/wdyf/vocals.mp3" type="audio/mpeg">
-		<source src="sounds/wdyf/vocals.wav" type="audio/wav">
+		<source src="media/audio/wdyf/vocals.mp3" type="audio/mpeg">
+		<source src="media/audio/wdyf/vocals.wav" type="audio/wav">
 	</audio>
 
-	<video id="video" preload="auto" style="display: none" crossorigin="anonymous" muted controls loop>
+
+	<div id='audioContainer'></div>
+	<div id='videoContainer'></div>
+	<!-- <video id="video" preload="auto" style="display: none" crossorigin="anonymous" muted controls loop>
 		<source src="https://cdn.cpixl.com/other/PhenomenaTV/PTVEP1-drums.mp4" type="video/mp4" crossorigin="*">
 	</video>
 	<video id="video2" preload="auto" style="display: none" crossorigin="anonymous" muted controls loop>
@@ -57,12 +60,13 @@
 	</video>
 	<video id="video3" preload="auto" style="display: none" crossorigin="anonymous" muted controls loop>
 		<source src="https://cdn.cpixl.com/other/PhenomenaTV/PTVEP3-guitars.mp4" type="video/mp4" crossorigin="*">
-	</video>
+	</video> -->
 
 	<div id="overlay">
 		<h1>Welcome to Phenomena: behind the music</h1>
 		<p>This WebXR experience will show you how Phenomena came to be and allow you to play with the songs.</p>
 		<button id="startButton">Start the experience</button>
+		<p id="loading">Loading...</p>
 		<p>You can view the experience in your browser by pressing this button or in VR by pressing the "enter VR" button at the bottom once the experience is started.</p>
 		<p>Special thanks to Zanski for allowing me to use the stems, artwork and videos for this project!</p>
 	</div>
@@ -78,12 +82,13 @@
 		import { XRControllerModelFactory } from 'https://cdn.skypack.dev/three/examples/jsm/webxr/XRControllerModelFactory.js';
 		import { GLTFLoader } from 'https://cdn.skypack.dev/three/examples/jsm/loaders/GLTFLoader.js';
 
-		const lyrics = await fetch('../../../lyrics/forest-spirit-sound.json').then(response => response.json());
-		// const lyrics = await fetch('../../../lyrics/temporary-nothing.json').then(response => response.json());
+		const lyrics = await fetch('lyrics/forest-spirit-sound.json').then(response => response.json());
 
 		let camera, controls, scene, raycaster, renderer, light, listener, textureEquirec, waterTexture;
 		let controller, controllerGrip;
 		let playListJson, albumArt, albumTitle, artist;
+		let currentStems = [];
+		let currentLyrics = [];
 		let globalTime = { value: 0 };
 		const tempMatrix = new THREE.Matrix4();
 		const text = new Text();
@@ -134,16 +139,62 @@
 			albumTitle = playListJson.album;
 			artist = playListJson.artist;
 
-			preloadImgs([albumArt]);
+			preloadImgs([albumArt]); /// allows to load multiple sources if needed
+			preloadVideos(playListJson.videos); /// loads all videos and appends them to the dom to access later
+			preloadAudio()
 		}
 
 		const preloadImgs = async (imgs) => {
 			imgs.forEach(async img => {
 				const image = new Image();
 				image.src = img;
-				console.log(image)
-				document.querySelector('body').appendChild(image);
 				return image;
+			})
+		}
+
+		const preloadVideos = (videos) => {
+			// videos.map(video => {
+			// 	const video = new Video();
+			// 	image.src = img;
+			// 	console.log(image)
+			// 	document.querySelector('body').appendChild(image);
+			// 	return image;
+			// })
+			const $videoContainer = document.querySelector('#videoContainer');
+			$videoContainer.innerHTML = videos.map(video => `
+			<video id="${video.id}" preload="auto" style="display: none" crossorigin="anonymous" muted controls loop>
+				<source src="${video.url}" type="video/mp4" crossorigin="*">
+			</video>`
+			).join(``)
+		}
+
+		const preloadAudio = () => {
+			const defaultTrack = 9;
+			loadTrack(playListJson.tracks[defaultTrack]);
+		}
+
+		const loadTrack = (track) => {
+			const $audioContainer = document.querySelector('#audioContainer');
+			// $audioContainer.innerHTML = track.stems.map(stem => `
+			// <audio id="${stem}" loop preload="auto" style="display: none">
+			// 	<source src="${track.stemsPath}${stem}.mp3" type="audio/mpeg">
+			// </audio>`
+			// ).join(``)
+			console.log('%c%s', 'color: #9FE3FF', `Now loading: ${track.title}`);
+			track.stems.forEach(stem => {
+				const audio = new Audio();
+				audio.src = `${track.stemsPath}${stem}.mp3`;
+				audio.name = stem;
+				$audioContainer.appendChild(audio);
+				audio.oncanplaythrough = (event) => {
+					currentStems[audio.name] = audio;
+					console.log('%c%s', 'color: #4AF2FF', `Loaded ${audio.name}`);
+					if (Object.keys(currentStems).length === track.stems.length) {
+						loading.innerHTML = 'Loaded all stems!'
+						console.log('%c%s', 'color: #1F8BFF', `All stems loaded.`);
+					}
+				};
+				// return audio;
 			})
 		}
 
@@ -221,9 +272,9 @@
 
 					// create audio sources, load from html and add to objects
 					sounds[obj.name] = new THREE.PositionalAudio(listener);
-					const currentSound = document.querySelector(`#${obj.name}`)
+					const currentSound = document.querySelector(`#${obj.name}`) /// load from new array
 					sounds[obj.name].setMediaElementSource(currentSound).setRefDistance(refDist);
-					currentSound.play();
+					currentSound.play(); /// dont play here but after everything's loaded
 					meshes[obj.name].add(sounds[obj.name]);
 
 					// start analysers
@@ -860,6 +911,8 @@
 		function init() {
 			const overlay = document.getElementById('overlay');
 			overlay.remove();
+			// for (const stem in currentStems) { currentStems[stem].play() }
+			console.log(currentStems)
 
 			initScene()
 			initStems(objConfig)
