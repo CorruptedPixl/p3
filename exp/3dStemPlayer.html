@@ -162,6 +162,9 @@
 			// 	document.querySelector('body').appendChild(image);
 			// 	return image;
 			// })
+
+			/// TODO ADD VIDEOS TO VIDCONFIG HERE
+
 			const $videoContainer = document.querySelector('#videoContainer');
 			$videoContainer.innerHTML = videos.map(video => `
 			<video id="${video.id}" preload="auto" style="display: none" crossorigin="anonymous" muted controls loop>
@@ -488,6 +491,10 @@
 			vidGroup.userData.isDraggable = true;
 			vidGroup.name = 'vidGroup';
 			vidGroup.scale.set(.1, .1, .1);
+
+			vidGroup.position.set(1.2774114085134398, 0.6355997895828723, -0.4851377603984951)
+			vidGroup.rotation.set(-0.46588650970294515, -1.1860233074386377, -0.44803679405802344)
+
 			scene.add(vidGroup);
 
 			videos.forEach(video => {
@@ -552,6 +559,7 @@
 				///! could be optimized slightly by adding all draggable objects to a group and only checking intersections on that group instead of the whole scene
 				const intersects = raycaster.intersectObjects(scene.children, false);
 				const intersectsVidGroup = raycaster.intersectObjects(vidGroup.children, false);
+				const intersectsSongSelect = raycaster.intersectObjects(songSelectGroup.children, false);
 				// console.log({ intersectsVidGroup })
 
 				/// standalone objects
@@ -615,6 +623,20 @@
 					this.userData.videoGroup = {
 						lastVideoObj: intersectsVidGroup[0].object,
 						lastClick: performance.now()
+					}
+				}
+
+
+				/// Stem selector
+				if (intersectsSongSelect.length > 0) {
+					if (!playListJson.tracks.some(track => track.title === intersectsSongSelect[0].object.name)) { return }
+					else {
+						const selectedTrack = playListJson.tracks.findIndex(track => track.title === intersectsSongSelect[0].object.name);
+						console.log('selected track', selectedTrack)
+						unloadAudio()
+							.then(() => loadTrack(playListJson.tracks[selectedTrack]))
+							.then(() => loadStems(currentStems))
+							.then(() => loadLyrics(playListJson.tracks[selectedTrack]))
 					}
 				}
 
@@ -759,7 +781,7 @@
 
 
 			songSelectGroup.name = 'songSelectGroup';
-			songSelectGroup.position.set(0, 50, -50);
+			songSelectGroup.position.set(0, 40, -50);
 			scene.add(songSelectGroup);
 			console.log(songSelectGroup)
 		}

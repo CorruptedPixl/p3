@@ -7,10 +7,42 @@
             "title": "Strange Fiction (start)",
             "stemsPath": "media/audio/phenomena/forest-spirit-sound/",
             "stems": [
-                "drums",
-                "vocals",
-                "bass",
-                "synths"
+                {
+                    "name": "atmos",
+                    "color": "#DDD3C3"
+                },
+                {
+                    "name": "bass",
+                    "color": "#812ADE"
+                },
+                {
+                    "name": "drums",
+                    "color": "#3444E3"
+                },
+                {
+                    "name": "guitars",
+                    "color": "#C714D6"
+                },
+                {
+                    "name": "lq",
+                    "color": "#E4406E"
+                },
+                {
+                    "name": "pads",
+                    "color": "#FFA211"
+                },
+                {
+                    "name": "plucks",
+                    "color": "#FFDE4A"
+                },
+                {
+                    "name": "tags",
+                    "color": "#02D37A"
+                },
+                {
+                    "name": "vocals",
+                    "color": "#51C5C5"
+                }
             ],
             "lyrics": {
                 "lines": [
@@ -101,10 +133,42 @@
             "title": "How to Breathe in Static",
             "stemsPath": "media/audio/phenomena/forest-spirit-sound/",
             "stems": [
-                "drums",
-                "vocals",
-                "bass",
-                "synths"
+                {
+                    "name": "atmos",
+                    "color": "#DDD3C3"
+                },
+                {
+                    "name": "bass",
+                    "color": "#812ADE"
+                },
+                {
+                    "name": "drums",
+                    "color": "#3444E3"
+                },
+                {
+                    "name": "guitars",
+                    "color": "#C714D6"
+                },
+                {
+                    "name": "lq",
+                    "color": "#E4406E"
+                },
+                {
+                    "name": "pads",
+                    "color": "#FFA211"
+                },
+                {
+                    "name": "plucks",
+                    "color": "#FFDE4A"
+                },
+                {
+                    "name": "tags",
+                    "color": "#02D37A"
+                },
+                {
+                    "name": "vocals",
+                    "color": "#51C5C5"
+                }
             ],
             "lyrics": {
                 "lines": [
@@ -195,10 +259,42 @@
             "title": "Just Don't",
             "stemsPath": "media/audio/phenomena/forest-spirit-sound/",
             "stems": [
-                "drums",
-                "vocals",
-                "bass",
-                "synths"
+                {
+                    "name": "atmos",
+                    "color": "#DDD3C3"
+                },
+                {
+                    "name": "bass",
+                    "color": "#812ADE"
+                },
+                {
+                    "name": "drums",
+                    "color": "#3444E3"
+                },
+                {
+                    "name": "guitars",
+                    "color": "#C714D6"
+                },
+                {
+                    "name": "lq",
+                    "color": "#E4406E"
+                },
+                {
+                    "name": "pads",
+                    "color": "#FFA211"
+                },
+                {
+                    "name": "plucks",
+                    "color": "#FFDE4A"
+                },
+                {
+                    "name": "tags",
+                    "color": "#02D37A"
+                },
+                {
+                    "name": "vocals",
+                    "color": "#51C5C5"
+                }
             ],
             "lyrics": {
                 "lines": [
@@ -289,128 +385,124 @@
             "title": "Temporary Nothing",
             "stemsPath": "media/audio/phenomena/forest-spirit-sound/",
             "stems": [
-                "drums",
-                "vocals",
-                "bass",
-                "synths"
+                {
+                    "name": "atmos",
+                    "color": "#DDD3C3"
+                },
+                {
+                    "name": "bass",
+                    "color": "#812ADE"
+                },
+                {
+                    "name": "drums",
+                    "color": "#3444E3"
+                },
+                {
+                    "name": "guitars",
+                    "color": "#C714D6"
+                },
+                {
+                    "name": "lq",
+                    "color": "#E4406E"
+                },
+                {
+                    "name": "pads",
+                    "color": "#FFA211"
+                },
+                {
+                    "name": "plucks",
+                    "color": "#FFDE4A"
+                },
+                {
+                    "name": "tags",
+                    "color": "#02D37A"
+                },
+                {
+                    "name": "vocals",
+                    "color": "#51C5C5"
+                }
             ],
             "lyrics": {
                 "lines": [
                     {
-                        "startTimeMs": "40000",
-                        "words": "Oh my mind is racing again,"
+                        "startTimeMs": "26000",
+                        "words": "Why can't I talk about it?"
                     },
                     {
-                        "startTimeMs": "44000",
-                        "words": "never settled the fog in my head."
+                        "startTimeMs": "29000",
+                        "words": "I don't even know what to say to you."
                     },
                     {
-                        "startTimeMs": "48000",
-                        "words": "Cancel calls with the utmost respect."
+                        "startTimeMs": "34000",
+                        "words": "(you)"
                     },
                     {
-                        "startTimeMs": "52000",
-                        "words": "I'll get dressed and then get into bed."
+                        "startTimeMs": "37600",
+                        "words": "All the nights I try to act."
                     },
                     {
-                        "startTimeMs": "55200",
-                        "words": "There was hopelessness latched in my hand."
+                        "startTimeMs": "40300",
+                        "words": "I don't understand my lack, of control."
                     },
                     {
-                        "startTimeMs": "60000",
-                        "words": "All these places make no fucking sense."
+                        "startTimeMs": "51200",
+                        "words": "Sorry baby I can figure this out."
                     },
                     {
-                        "startTimeMs": "63200",
-                        "words": "I got nothing but my time left to spend."
+                        "startTimeMs": "54200",
+                        "words": "Maybe I should just shut my mouth."
                     },
                     {
-                        "startTimeMs": "70200",
-                        "words": "I'm rolled up in a panic and there's nothing left."
+                        "startTimeMs": "57400",
+                        "words": "In and out I'm drifting,"
                     },
                     {
-                        "startTimeMs": "74000",
-                        "words": "Hold my breath and hope for the best."
+                        "startTimeMs": "59500",
+                        "words": "underneath the clouds."
                     },
                     {
-                        "startTimeMs": "78800",
-                        "words": "Feeling so dependant"
+                        "startTimeMs": "63400",
+                        "words": "Sorry baby, can you figure me out?"
                     },
                     {
-                        "startTimeMs": "80000",
-                        "words": "I'm rewinding to death"
+                        "startTimeMs": "66600",
+                        "words": "Psilocybin blur - I get around."
                     },
                     {
-                        "startTimeMs": "87000",
-                        "words": "Maybe I am nowhere?"
+                        "startTimeMs": "69500",
+                        "words": "In and out I drift. You kiss me [as I'm]"
                     },
                     {
-                        "startTimeMs": "88000",
-                        "words": "Maybe I'm at home."
+                        "startTimeMs": "72600",
+                        "words": "floating back down."
                     },
                     {
-                        "startTimeMs": "90000",
-                        "words": "Temporary nothing,"
+                        "startTimeMs": "75200",
+                        "words": "Crop circles carved in my chest."
                     },
                     {
-                        "startTimeMs": "93000",
-                        "words": "feeling so alone."
+                        "startTimeMs": "78400",
+                        "words": "The vines all wrap up the mess."
                     },
                     {
-                        "startTimeMs": "94500",
-                        "words": "Maybe I am nowhere,"
+                        "startTimeMs": "81200",
+                        "words": "I drive around in my head,"
                     },
                     {
-                        "startTimeMs": "96000",
-                        "words": "or maybe I'm alone."
+                        "startTimeMs": "84400",
+                        "words": "back where I began"
                     },
                     {
-                        "startTimeMs": "98000",
-                        "words": "Set in contradiction,"
+                        "startTimeMs": "87200",
+                        "words": "It's all these stupid games that I play"
                     },
                     {
-                        "startTimeMs": "100000",
-                        "words": "there's nothing that I know."
+                        "startTimeMs": "90100",
+                        "words": "Cause I don't wanna show you \n how the scars won't fade away."
                     },
                     {
-                        "startTimeMs": "102800",
-                        "words": "(nothing that I know)"
-                    },
-                    {
-                        "startTimeMs": "136500",
-                        "words": "Can you take this from me?"
-                    },
-                    {
-                        "startTimeMs": "140200",
-                        "words": "I can't seem to let this go."
-                    },
-                    {
-                        "startTimeMs": "144800",
-                        "words": "Can you tell me one thing,"
-                    },
-                    {
-                        "startTimeMs": "148800",
-                        "words": "what's it like to have control?"
-                    },
-                    {
-                        "startTimeMs": "150700",
-                        "words": "Can you take this from me?"
-                    },
-                    {
-                        "startTimeMs": "156000",
-                        "words": "I can't seem to let this go."
-                    },
-                    {
-                        "startTimeMs": "160000",
-                        "words": "Can you tell me one thing,"
-                    },
-                    {
-                        "startTimeMs": "164500",
-                        "words": "what's it like to have control?"
-                    },
-                    {
-                        "startTimeMs": "189500",
-                        "words": "[outro]"
+                        "startTimeMs": "116000",
+                        "words": "[Outro]"
                     }
                 ]
             }
@@ -419,10 +511,42 @@
             "title": "Misanthrope",
             "stemsPath": "media/audio/phenomena/forest-spirit-sound/",
             "stems": [
-                "drums",
-                "vocals",
-                "bass",
-                "synths"
+                {
+                    "name": "atmos",
+                    "color": "#DDD3C3"
+                },
+                {
+                    "name": "bass",
+                    "color": "#812ADE"
+                },
+                {
+                    "name": "drums",
+                    "color": "#3444E3"
+                },
+                {
+                    "name": "guitars",
+                    "color": "#C714D6"
+                },
+                {
+                    "name": "lq",
+                    "color": "#E4406E"
+                },
+                {
+                    "name": "pads",
+                    "color": "#FFA211"
+                },
+                {
+                    "name": "plucks",
+                    "color": "#FFDE4A"
+                },
+                {
+                    "name": "tags",
+                    "color": "#02D37A"
+                },
+                {
+                    "name": "vocals",
+                    "color": "#51C5C5"
+                }
             ],
             "lyrics": {
                 "lines": [
@@ -513,10 +637,42 @@
             "title": "I Think We're All Ghosts Now",
             "stemsPath": "media/audio/phenomena/forest-spirit-sound/",
             "stems": [
-                "drums",
-                "vocals",
-                "bass",
-                "synths"
+                {
+                    "name": "atmos",
+                    "color": "#DDD3C3"
+                },
+                {
+                    "name": "bass",
+                    "color": "#812ADE"
+                },
+                {
+                    "name": "drums",
+                    "color": "#3444E3"
+                },
+                {
+                    "name": "guitars",
+                    "color": "#C714D6"
+                },
+                {
+                    "name": "lq",
+                    "color": "#E4406E"
+                },
+                {
+                    "name": "pads",
+                    "color": "#FFA211"
+                },
+                {
+                    "name": "plucks",
+                    "color": "#FFDE4A"
+                },
+                {
+                    "name": "tags",
+                    "color": "#02D37A"
+                },
+                {
+                    "name": "vocals",
+                    "color": "#51C5C5"
+                }
             ],
             "lyrics": {
                 "lines": [
@@ -607,10 +763,42 @@
             "title": "Highrise",
             "stemsPath": "media/audio/phenomena/forest-spirit-sound/",
             "stems": [
-                "drums",
-                "vocals",
-                "bass",
-                "synths"
+                {
+                    "name": "atmos",
+                    "color": "#DDD3C3"
+                },
+                {
+                    "name": "bass",
+                    "color": "#812ADE"
+                },
+                {
+                    "name": "drums",
+                    "color": "#3444E3"
+                },
+                {
+                    "name": "guitars",
+                    "color": "#C714D6"
+                },
+                {
+                    "name": "lq",
+                    "color": "#E4406E"
+                },
+                {
+                    "name": "pads",
+                    "color": "#FFA211"
+                },
+                {
+                    "name": "plucks",
+                    "color": "#FFDE4A"
+                },
+                {
+                    "name": "tags",
+                    "color": "#02D37A"
+                },
+                {
+                    "name": "vocals",
+                    "color": "#51C5C5"
+                }
             ],
             "lyrics": {
                 "lines": [
@@ -701,10 +889,42 @@
             "title": "Girl, Are You Impressed with Me?",
             "stemsPath": "media/audio/phenomena/forest-spirit-sound/",
             "stems": [
-                "drums",
-                "vocals",
-                "bass",
-                "synths"
+                {
+                    "name": "atmos",
+                    "color": "#DDD3C3"
+                },
+                {
+                    "name": "bass",
+                    "color": "#812ADE"
+                },
+                {
+                    "name": "drums",
+                    "color": "#3444E3"
+                },
+                {
+                    "name": "guitars",
+                    "color": "#C714D6"
+                },
+                {
+                    "name": "lq",
+                    "color": "#E4406E"
+                },
+                {
+                    "name": "pads",
+                    "color": "#FFA211"
+                },
+                {
+                    "name": "plucks",
+                    "color": "#FFDE4A"
+                },
+                {
+                    "name": "tags",
+                    "color": "#02D37A"
+                },
+                {
+                    "name": "vocals",
+                    "color": "#51C5C5"
+                }
             ],
             "lyrics": {
                 "lines": [
@@ -795,10 +1015,42 @@
             "title": "Got It Used",
             "stemsPath": "media/audio/phenomena/forest-spirit-sound/",
             "stems": [
-                "drums",
-                "vocals",
-                "bass",
-                "synths"
+                {
+                    "name": "atmos",
+                    "color": "#DDD3C3"
+                },
+                {
+                    "name": "bass",
+                    "color": "#812ADE"
+                },
+                {
+                    "name": "drums",
+                    "color": "#3444E3"
+                },
+                {
+                    "name": "guitars",
+                    "color": "#C714D6"
+                },
+                {
+                    "name": "lq",
+                    "color": "#E4406E"
+                },
+                {
+                    "name": "pads",
+                    "color": "#FFA211"
+                },
+                {
+                    "name": "plucks",
+                    "color": "#FFDE4A"
+                },
+                {
+                    "name": "tags",
+                    "color": "#02D37A"
+                },
+                {
+                    "name": "vocals",
+                    "color": "#51C5C5"
+                }
             ],
             "lyrics": {
                 "lines": [
@@ -1141,10 +1393,42 @@
             "title": "Antichrist",
             "stemsPath": "media/audio/phenomena/forest-spirit-sound/",
             "stems": [
-                "drums",
-                "vocals",
-                "bass",
-                "synths"
+                {
+                    "name": "atmos",
+                    "color": "#DDD3C3"
+                },
+                {
+                    "name": "bass",
+                    "color": "#812ADE"
+                },
+                {
+                    "name": "drums",
+                    "color": "#3444E3"
+                },
+                {
+                    "name": "guitars",
+                    "color": "#C714D6"
+                },
+                {
+                    "name": "lq",
+                    "color": "#E4406E"
+                },
+                {
+                    "name": "pads",
+                    "color": "#FFA211"
+                },
+                {
+                    "name": "plucks",
+                    "color": "#FFDE4A"
+                },
+                {
+                    "name": "tags",
+                    "color": "#02D37A"
+                },
+                {
+                    "name": "vocals",
+                    "color": "#51C5C5"
+                }
             ],
             "lyrics": {
                 "lines": [
@@ -1235,10 +1519,42 @@
             "title": "Infinite Machine",
             "stemsPath": "media/audio/phenomena/forest-spirit-sound/",
             "stems": [
-                "drums",
-                "vocals",
-                "bass",
-                "synths"
+                {
+                    "name": "atmos",
+                    "color": "#DDD3C3"
+                },
+                {
+                    "name": "bass",
+                    "color": "#812ADE"
+                },
+                {
+                    "name": "drums",
+                    "color": "#3444E3"
+                },
+                {
+                    "name": "guitars",
+                    "color": "#C714D6"
+                },
+                {
+                    "name": "lq",
+                    "color": "#E4406E"
+                },
+                {
+                    "name": "pads",
+                    "color": "#FFA211"
+                },
+                {
+                    "name": "plucks",
+                    "color": "#FFDE4A"
+                },
+                {
+                    "name": "tags",
+                    "color": "#02D37A"
+                },
+                {
+                    "name": "vocals",
+                    "color": "#51C5C5"
+                }
             ],
             "lyrics": {
                 "lines": [
@@ -1329,10 +1645,42 @@
             "title": "Where Do I Start?",
             "stemsPath": "media/audio/phenomena/forest-spirit-sound/",
             "stems": [
-                "drums",
-                "vocals",
-                "bass",
-                "synths"
+                {
+                    "name": "atmos",
+                    "color": "#DDD3C3"
+                },
+                {
+                    "name": "bass",
+                    "color": "#812ADE"
+                },
+                {
+                    "name": "drums",
+                    "color": "#3444E3"
+                },
+                {
+                    "name": "guitars",
+                    "color": "#C714D6"
+                },
+                {
+                    "name": "lq",
+                    "color": "#E4406E"
+                },
+                {
+                    "name": "pads",
+                    "color": "#FFA211"
+                },
+                {
+                    "name": "plucks",
+                    "color": "#FFDE4A"
+                },
+                {
+                    "name": "tags",
+                    "color": "#02D37A"
+                },
+                {
+                    "name": "vocals",
+                    "color": "#51C5C5"
+                }
             ],
             "lyrics": {
                 "lines": [
@@ -1423,10 +1771,42 @@
             "title": "The Absurdity (end)",
             "stemsPath": "media/audio/phenomena/forest-spirit-sound/",
             "stems": [
-                "drums",
-                "vocals",
-                "bass",
-                "synths"
+                {
+                    "name": "atmos",
+                    "color": "#DDD3C3"
+                },
+                {
+                    "name": "bass",
+                    "color": "#812ADE"
+                },
+                {
+                    "name": "drums",
+                    "color": "#3444E3"
+                },
+                {
+                    "name": "guitars",
+                    "color": "#C714D6"
+                },
+                {
+                    "name": "lq",
+                    "color": "#E4406E"
+                },
+                {
+                    "name": "pads",
+                    "color": "#FFA211"
+                },
+                {
+                    "name": "plucks",
+                    "color": "#FFDE4A"
+                },
+                {
+                    "name": "tags",
+                    "color": "#02D37A"
+                },
+                {
+                    "name": "vocals",
+                    "color": "#51C5C5"
+                }
             ],
             "lyrics": {
                 "lines": [
