@@ -106,8 +106,10 @@
 		// groups
 		let stemsGroup = new THREE.Group();
 		let vidGroup = new THREE.Group();
+		let songSelectGroup = new THREE.Group();
 
 		const clock = new THREE.Clock();
+		const textureLoader = new THREE.TextureLoader();
 
 		const startButton = document.getElementById('startButton');
 		startButton.addEventListener('click', init);
@@ -139,7 +141,7 @@
 			albumTitle = playListJson.album;
 			artist = playListJson.artist;
 
-			preloadImgs([albumArt]); /// allows to load multiple sources if needed
+			albumArt = preloadImgs([albumArt]); /// allows to load multiple sources if needed
 			preloadVideos(playListJson.videos); /// loads all videos and appends them to the dom to access later
 			preloadAudio()
 		}
@@ -705,6 +707,63 @@
 			text.sync()
 		}
 
+		const initSongSelect = (playlist) => {
+			console.log('%c%s', 'color: #D20FC7', 'Loading song select');
+
+			/// Tracks text
+			const tracks = playlist.tracks;
+			for (const track in tracks) {
+				const trackText = new Text();
+				trackText.text = tracks[track].title;
+				trackText.name = tracks[track].title
+				trackText.fontSize = 2
+				trackText.font = 'https://cdn.cpixl.com/fonts/next/OTF/Next%20Book/NextBook-Medium.otf'
+				trackText.position.set(0, - track * 2.5, 0)
+				// trackText.rotateY(Math.PI)
+				trackText.color = 0xffffff
+				// trackText.anchorX = 'center';
+
+				// Update the rendering:
+				trackText.sync()
+				songSelectGroup.add(trackText)
+			}
+
+			const albumText = new Text();
+			albumText.text = playListJson.album;
+			albumText.name = playListJson.album;
+			albumText.fontSize = 3;
+			albumText.font = 'https://cdn.cpixl.com/fonts/next/OTF/Next%20Book/NextBook-Bold.otf';
+			albumText.position.set(-22, -21, 0);
+			songSelectGroup.add(albumText);
+
+			const artistText = new Text();
+			artistText.text = playListJson.artist;
+			artistText.name = playListJson.artist;
+			artistText.fontSize = 2;
+			artistText.font = 'https://cdn.cpixl.com/fonts/next/OTF/Next%20Book/NextBook-Regular.otf';
+			artistText.position.set(-22, -24, 0);
+			songSelectGroup.add(artistText);
+
+
+			/// Album art
+			let albumArtTexture = textureLoader.load(playListJson.albumArt);
+			albumArtTexture.encoding = THREE.sRGBEncoding;
+
+			const albumArtPlane = new THREE.Mesh(
+				new THREE.PlaneGeometry(20, 20),
+				new THREE.MeshBasicMaterial({ map: albumArtTexture, side: THREE.DoubleSide })
+			);
+			albumArtPlane.position.set(-12, -10, 0);
+			songSelectGroup.add(albumArtPlane)
+			// albumArtPlane.position.set(1, 1, 1)
+
+
+			songSelectGroup.name = 'songSelectGroup';
+			songSelectGroup.position.set(0, 50, -50);
+			scene.add(songSelectGroup);
+			console.log(songSelectGroup)
+		}
+
 		const initFloor = () => {
 			/////////////// shader
 			const shader = `
@@ -782,7 +841,7 @@
 
 
 			/////////////// HDRI
-			const textureLoader = new THREE.TextureLoader();
+			// const textureLoader = new THREE.TextureLoader();
 			HDRIConfig.forEach(HDRI => {
 				const currentHDRI = textureLoader.load(`textures/hdri-${HDRI}.png`);
 				currentHDRI.mapping = THREE.EquirectangularReflectionMapping;
@@ -1000,6 +1059,9 @@
 				.then(() => initControllers())
 				.then(() => initLyrics(playListJson.tracks[9]))
 				.then(() => initFloor())
+				.then(() => initSongSelect(playListJson))
+
+
 			// // unloadAudio()
 			// // loadTrack(playListJson.tracks[10])
 			// initStems(currentStems)
@@ -1010,27 +1072,27 @@
 			// // for (const stem in currentStems) { currentStems[stem].play() }
 			// initFloor()
 
-			setTimeout(() => {
-				unloadAudio()
-					.then(() => loadTrack(playListJson.tracks[10]))
-					.then(() => loadStems(currentStems))
-					.then(() => loadLyrics(playListJson.tracks[10]))
-			}, 5000);
+			// setTimeout(() => {
+			// 	unloadAudio()
+			// 		.then(() => loadTrack(playListJson.tracks[10]))
+			// 		.then(() => loadStems(currentStems))
+			// 		.then(() => loadLyrics(playListJson.tracks[10]))
+			// }, 5000);
 
-			setTimeout(() => {
-				console.log({ mats })
-				console.log({ meshes })
-				console.log({ sounds })
-				console.log({ analysers })
-				console.log(stemsGroup)
-			}, 8000);
+			// setTimeout(() => {
+			// 	console.log({ mats })
+			// 	console.log({ meshes })
+			// 	console.log({ sounds })
+			// 	console.log({ analysers })
+			// 	console.log(stemsGroup)
+			// }, 8000);
 
-			setTimeout(() => {
-				unloadAudio()
-					.then(() => loadTrack(playListJson.tracks[9]))
-					.then(() => loadStems(currentStems))
-					.then(() => loadLyrics(playListJson.tracks[9]))
-			}, 20000);
+			// setTimeout(() => {
+			// 	unloadAudio()
+			// 		.then(() => loadTrack(playListJson.tracks[9]))
+			// 		.then(() => loadStems(currentStems))
+			// 		.then(() => loadLyrics(playListJson.tracks[9]))
+			// }, 20000);
 
 
 			controls = new FirstPersonControls(camera, renderer.domElement);

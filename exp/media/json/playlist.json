@@ -1517,7 +1517,7 @@
     "videos": [
         {
             "id": "video",
-            "url": "https://cdn.cpixl.com/other/PhenomenaTV/PTVEP1-drums.mp4"
+            "url": "https://cdn.cpixl.com/other/PhenomenaTV/PTVEP3-guitars.mp4"
         },
         {
             "id": "video2",
@@ -1525,7 +1525,7 @@
         },
         {
             "id": "video3",
-            "url": "https://cdn.cpixl.com/other/PhenomenaTV/PTVEP3-guitars.mp4"
+            "url": "https://cdn.cpixl.com/other/PhenomenaTV/PTVEP1-drums.mp4"
         }
     ]
 }
