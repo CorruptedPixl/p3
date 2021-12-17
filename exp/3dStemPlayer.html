@@ -84,7 +84,7 @@
 
 		// const lyrics = await fetch('lyrics/forest-spirit-sound.json').then(response => response.json());
 
-		let camera, controls, scene, raycaster, renderer, light, listener, textureEquirec, waterTexture;
+		let camera, controls, scene, raycaster, renderer, light, listener, textureEquirec, waterTexture, noteObject;
 		let controller, controllerGrip;
 		let playListJson, albumArt, albumTitle, artist, lyrics;
 		let currentStems = [];
@@ -174,125 +174,137 @@
 		}
 
 		const loadTrack = (track) => {
-			currentStems = [];
-			const $audioContainer = document.querySelector('#audioContainer');
-			// $audioContainer.innerHTML = track.stems.map(stem => `
-			// <audio id="${stem}" loop preload="auto" style="display: none">
-			// 	<source src="${track.stemsPath}${stem}.mp3" type="audio/mpeg">
-			// </audio>`
-			// ).join(``)
-			console.log('%c%s', 'color: #9FE3FF', `Now loading: ${track.title}`);
-			track.stems.forEach(stem => {
-				const audio = new Audio();
-				audio.src = `${track.stemsPath}${stem.name}.mp3`;
-				audio.loop = true;
-				audio.name = stem.name;
-				$audioContainer.appendChild(audio);
-				audio.oncanplaythrough = (e) => {
-					const $loading = document.querySelector('#loading');
-					currentStems[audio.name] = { ...stem, "audio": audio };
-					console.log('%c%s', 'color: #4AF2FF', `Loaded ${audio.name}`);
-					if (Object.keys(currentStems).length === track.stems.length) {
-						if ($loading) $loading.innerHTML = 'Loaded all stems!'
-						console.log('%c%s', 'color: #1F8BFF', `All stems loaded.`);
+			return new Promise((resolve, reject) => {
+				currentStems = [];
+				const $audioContainer = document.querySelector('#audioContainer');
+				// $audioContainer.innerHTML = track.stems.map(stem => `
+				// <audio id="${stem}" loop preload="auto" style="display: none">
+				// 	<source src="${track.stemsPath}${stem}.mp3" type="audio/mpeg">
+				// </audio>`
+				// ).join(``)
+				console.log('%c%s', 'color: #9FE3FF', `Now loading: ${track.title}`);
+				track.stems.forEach(stem => {
+					const audio = new Audio();
+					audio.src = `${track.stemsPath}${stem.name}.mp3`;
+					audio.loop = true;
+					audio.name = stem.name;
+					$audioContainer.appendChild(audio);
+					audio.oncanplaythrough = (e) => {
+						const $loading = document.querySelector('#loading');
+						currentStems[audio.name] = { ...stem, "audio": audio };
+						console.log('%c%s', 'color: #4AF2FF', `Loaded ${audio.name}`);
+						if (Object.keys(currentStems).length === track.stems.length) {
+							if ($loading) $loading.innerHTML = 'Loaded all stems!'
+							console.log('%c%s', 'color: #1F8BFF', `All stems loaded.`);
 
-						// if (!document.getElementById('overlay')) {
-						// 	console.log(currentStems);
-						// 	initStems(currentStems);
-						// }
-					}
-				};
-				// return audio;
+							resolve();
+
+							// if (!document.getElementById('overlay')) {
+							// 	console.log(currentStems);
+							// 	initStems(currentStems);
+							// }
+						}
+					};
+					// return audio;
+				})
 			})
 		}
 
 		const unloadAudio = () => {
-			const $audioContainer = document.querySelector('#audioContainer');
-			// for (const stem in currentStems) {
-			// 	currentStems[stem].audio.pause();
-			// }
-			$audioContainer.innerHTML = '';
+
+			return new Promise((resolve, reject) => {
+				const $audioContainer = document.querySelector('#audioContainer');
+				// for (const stem in currentStems) {
+				// 	currentStems[stem].audio.pause();
+				// }
+				$audioContainer.innerHTML = '';
 
 
-			// for (const mesh in meshes) {
-			// }
-			// console.log(meshes[mesh])
-			// const object = scene.getObjectByProperty('uuid', meshes[mesh].uuid);
-			const stemsGroup = scene.getObjectByProperty('name', 'stemsGroup');
-			console.log(stemsGroup)
-			let stemsToBeRemoved = [...stemsGroup.children]; /// make a clone of the children to loop over otherwise the array will shorten during the loop and this skip every 2nd item
-			for (const stem in stemsToBeRemoved) {
-				console.log(stemsToBeRemoved[stem])
-				const stemObject = stemsToBeRemoved[stem];
-				stemObject.geometry.dispose();
-				stemObject.material.dispose();
-				// stemObject.children.forEach(child => {
-				// 	child?.source?.disconnect();
-				// });
-				delete mats[stemsToBeRemoved[stem].name]
-				delete meshes[stemsToBeRemoved[stem].name]
-				delete sounds[stemsToBeRemoved[stem].name]
-				delete analysers[stemsToBeRemoved[stem].name]
-				stemObject.removeFromParent();
-			}
-			stemsToBeRemoved = [];
+				// for (const mesh in meshes) {
+				// }
+				// console.log(meshes[mesh])
+				// const object = scene.getObjectByProperty('uuid', meshes[mesh].uuid);
+				const stemsGroup = scene.getObjectByProperty('name', 'stemsGroup');
+				console.log(stemsGroup)
+				let stemsToBeRemoved = [...stemsGroup.children]; /// make a clone of the children to loop over otherwise the array will shorten during the loop and this skip every 2nd item
+				for (const stem in stemsToBeRemoved) {
+					console.log(stemsToBeRemoved[stem])
+					const stemObject = stemsToBeRemoved[stem];
+					stemObject.geometry.dispose();
+					stemObject.material.dispose();
+					// stemObject.children.forEach(child => {
+					// 	child?.source?.disconnect();
+					// });
+					delete mats[stemsToBeRemoved[stem].name]
+					delete meshes[stemsToBeRemoved[stem].name]
+					delete sounds[stemsToBeRemoved[stem].name]
+					delete analysers[stemsToBeRemoved[stem].name]
+					stemObject.removeFromParent();
+				}
+				stemsToBeRemoved = [];
 
 
-			scene.remove(stemsGroup);
-			console.log(stemsGroup)
-			// mats = [];
-			// meshes = [];
-			// sounds = [];
-			// analysers = [];
-			renderer.renderLists.dispose();
+				scene.remove(stemsGroup);
+				console.log(stemsGroup)
+				// mats = [];
+				// meshes = [];
+				// sounds = [];
+				// analysers = [];
+				renderer.renderLists.dispose();
 
-			console.log({ mats })
-			console.log({ meshes })
-			console.log({ sounds })
-			console.log({ analysers })
+				console.log({ mats })
+				console.log({ meshes })
+				console.log({ sounds })
+				console.log({ analysers })
+				resolve();
+			})
 		}
 
 		initPlaylist();
 
 		const initScene = () => {
-			camera = new THREE.PerspectiveCamera(70, window.innerWidth / window.innerHeight, .1, 10000);
-			camera.position.set(0, 20, 0);
+			return new Promise((resolve, reject) => {
 
-			listener = new THREE.AudioListener();
-			camera.add(listener);
+				camera = new THREE.PerspectiveCamera(70, window.innerWidth / window.innerHeight, .1, 10000);
+				camera.position.set(0, 20, 0);
 
-			scene = new THREE.Scene();
-			scene.fog = new THREE.FogExp2(0x000000, 0.0025);
+				listener = new THREE.AudioListener();
+				camera.add(listener);
 
-			// const light = new THREE.HemisphereLight(0xffffbb, 0x080820, 1);
-			const light = new THREE.DirectionalLight(0xffffbb);
-			light.position.set(100, 30, -10).normalize();
-			light.castShadow = true;
-			scene.add(light);
+				scene = new THREE.Scene();
+				scene.fog = new THREE.FogExp2(0x000000, 0.0025);
 
-			/// ground
-			const helper = new THREE.GridHelper(1000, 10, 0x444444, 0x444444);
-			helper.position.y = 0.1;
-			scene.add(helper);
+				// const light = new THREE.HemisphereLight(0xffffbb, 0x080820, 1);
+				const light = new THREE.DirectionalLight(0xffffbb);
+				light.position.set(100, 30, -10).normalize();
+				light.castShadow = true;
+				scene.add(light);
 
-			/// Raycaster
-			raycaster = new THREE.Raycaster();
+				/// ground
+				const helper = new THREE.GridHelper(1000, 10, 0x444444, 0x444444);
+				helper.position.y = 0.1;
+				scene.add(helper);
 
-			///////////////////////
-			renderer = new THREE.WebGLRenderer({ antialias: true });
-			renderer.setPixelRatio(window.devicePixelRatio);
-			renderer.setSize(window.innerWidth, window.innerHeight);
-			/// enable webxr
-			renderer.outputEncoding = THREE.sRGBEncoding;
-			renderer.shadowMap.enabled = true;
-			renderer.xr.enabled = true;
-			document.body.appendChild(renderer.domElement);
-			// initStems(objConfig)
+				/// Raycaster
+				raycaster = new THREE.Raycaster();
+
+				///////////////////////
+				renderer = new THREE.WebGLRenderer({ antialias: true });
+				renderer.setPixelRatio(window.devicePixelRatio);
+				renderer.setSize(window.innerWidth, window.innerHeight);
+				/// enable webxr
+				renderer.outputEncoding = THREE.sRGBEncoding;
+				renderer.shadowMap.enabled = true;
+				renderer.xr.enabled = true;
+				document.body.appendChild(renderer.domElement);
+				// initStems(objConfig)
+				resolve();
+			})
 		}
 
 		const initStems = (currentStems) => {
 			const sphere = new THREE.SphereGeometry(20, 32, 16);
-			let note;
+			// let note;
 			/////////////// GLTF
 			const loader = new GLTFLoader().setPath('models/');
 			loader.load('note_gold.gltf', (gltf) => {
@@ -304,23 +316,22 @@
 				noteModel.children[0].material.envMap = textureEquirec;
 				// noteModel.needsUpdate = true;
 				// scene.add(noteModel);
-				note = noteModel.children[0].geometry;
-				loadStems()
+				noteObject = noteModel.children[0].geometry;
+				loadStems(currentStems).then(() => { initGui(); });
 			});
 			///////////////
+		}
 
-			const loadStems = () => {
+		const loadStems = (currentStems) => {
 
-				// init mats, sounds and analysers
-				// currentStems.forEach(stem => {
-				// console.log(currentStems)
+			return new Promise((resolve, reject) => {
 				const populateArrays = new Promise((resolve, reject) => {
 					for (const stem in currentStems) {
 						// create a new material with the color of the object
 						mats[currentStems[stem].name] = new THREE.MeshPhongMaterial({ color: currentStems[stem].color, flatShading: true, shininess: 0 });
 						// create a new mesh with that material
 						// meshes[obj.name] = new THREE.Mesh(sphere, mats[obj.name]) /// old mesh
-						meshes[currentStems[stem].name] = new THREE.Mesh(note, mats[currentStems[stem].name])
+						meshes[currentStems[stem].name] = new THREE.Mesh(noteObject, mats[currentStems[stem].name])
 						/// TODO change color of included material in gltf so the environment is reflected. 
 						meshes[currentStems[stem].name].name = currentStems[stem].name;
 						// scene.add(meshes[stem.name]); // DONT ADD EACH OBJECT INDIVIDUALLY
@@ -336,8 +347,10 @@
 						// start analysers
 						analysers[currentStems[stem].name] = new THREE.AudioAnalyser(sounds[currentStems[stem].name], 32);
 					}
+					console.log(meshes)
 					resolve()
 				})
+
 				populateArrays.then(res => {
 					console.log(meshes)
 					// set positions of objects
@@ -355,9 +368,10 @@
 				stemsGroup.name = 'stemsGroup';
 				scene.add(stemsGroup); // ADD STEMS GROUP TO THE SCENE
 
-				initGui()
+				// initGui() /// TODO GETS CALLED TWICE BECAUSE ITS NOT A PROMISE, SHOULD ONLY FIRE IN INIT
 				for (const stem in currentStems) { currentStems[stem].audio.play() } /// Finally start playing them all (as close as possible) at the same time
-			}
+				resolve();
+			})
 		}
 
 		const initVideoGroup = (vidConfig) => {
@@ -662,7 +676,7 @@
 			// scene.add(controllerGrip);
 		}
 
-		const initLyrics = (track) => {
+		const loadLyrics = (track) => {
 			lyrics = track.lyrics;
 
 			lyrics.startTime = performance.now();
@@ -671,6 +685,10 @@
 			lyrics.timeOffset = 0;
 
 			console.log(lyrics)
+		}
+
+		const initLyrics = (track) => {
+			loadLyrics(track)
 
 			scene.add(text)
 
@@ -977,36 +995,42 @@
 			console.log(currentStems)
 
 			initScene()
-			// unloadAudio()
-			// loadTrack(playListJson.tracks[10])
-			initStems(currentStems)
-			initVideoGroup(vidConfig)
-			initControllers()
-			// initGui()
-			initLyrics(playListJson.tracks[10])
-			// for (const stem in currentStems) { currentStems[stem].play() }
-
-			initFloor()
+				.then(() => initStems(currentStems))
+				.then(() => initVideoGroup(vidConfig))
+				.then(() => initControllers())
+				.then(() => initLyrics(playListJson.tracks[9]))
+				.then(() => initFloor())
+			// // unloadAudio()
+			// // loadTrack(playListJson.tracks[10])
+			// initStems(currentStems)
+			// initVideoGroup(vidConfig)
+			// initControllers()
+			// // initGui()
+			// initLyrics(playListJson.tracks[9])
+			// // for (const stem in currentStems) { currentStems[stem].play() }
+			// initFloor()
 
 			setTimeout(() => {
 				unloadAudio()
-				// loadTrack(playListJson.tracks[9])
+					.then(() => loadTrack(playListJson.tracks[10]))
+					.then(() => loadStems(currentStems))
+					.then(() => loadLyrics(playListJson.tracks[10]))
 			}, 5000);
-			setTimeout(() => {
-				loadTrack(playListJson.tracks[10])
-				// initStems(currentStems)
-			}, 7000);
-			setTimeout(() => {
-				// loadTrack(playListJson.tracks[10])
-				initStems(currentStems)
-			}, 9000);
+
 			setTimeout(() => {
 				console.log({ mats })
 				console.log({ meshes })
 				console.log({ sounds })
 				console.log({ analysers })
 				console.log(stemsGroup)
-			}, 10000);
+			}, 8000);
+
+			setTimeout(() => {
+				unloadAudio()
+					.then(() => loadTrack(playListJson.tracks[9]))
+					.then(() => loadStems(currentStems))
+					.then(() => loadLyrics(playListJson.tracks[9]))
+			}, 20000);
 
 
 			controls = new FirstPersonControls(camera, renderer.domElement);
