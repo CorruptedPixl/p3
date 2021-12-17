@@ -868,14 +868,13 @@
 			globalTime.value = clock.elapsedTime;
 
 			/// analysers
-			stemsGroup.children.forEach(obj => {
-				// console.log(obj)
-				if (!obj?.isHighlighted && mats.length > 0 && analysers.length > 0) {
-					mats[obj.name].emissive.r = analysers[obj.name].getAverageFrequency() / 256 * 2;
-					// mats[obj.name].emissive.g = analysers[obj.name].getAverageFrequency() / 256 * 2;
-					// mats[obj.name].emissive.b = analysers[obj.name].getAverageFrequency() / 256 * 2;
+			for (const obj in stemsGroup.children) {
+				if (!stemsGroup.children[obj]?.isHighlighted) {
+					mats[stemsGroup.children[obj].name].emissive.r = analysers[stemsGroup.children[obj].name].getAverageFrequency() / 256 * 2;
+					// mats[stemsGroup.children[obj].name].emissive.g = analysers[stemsGroup.children[obj].name].getAverageFrequency() / 256;
+					// mats[stemsGroup.children[obj].name].emissive.b = analysers[stemsGroup.children[obj].name].getAverageFrequency() / 256;
 				}
-			})
+			}
 
 			/// lyrics
 			lyrics.currentTime = performance.now();
