@@ -82,11 +82,11 @@
 		import { XRControllerModelFactory } from 'https://cdn.skypack.dev/three/examples/jsm/webxr/XRControllerModelFactory.js';
 		import { GLTFLoader } from 'https://cdn.skypack.dev/three/examples/jsm/loaders/GLTFLoader.js';
 
-		const lyrics = await fetch('lyrics/forest-spirit-sound.json').then(response => response.json());
+		// const lyrics = await fetch('lyrics/forest-spirit-sound.json').then(response => response.json());
 
 		let camera, controls, scene, raycaster, renderer, light, listener, textureEquirec, waterTexture;
 		let controller, controllerGrip;
-		let playListJson, albumArt, albumTitle, artist;
+		let playListJson, albumArt, albumTitle, artist, lyrics;
 		let currentStems = [];
 		let currentLyrics = [];
 		let globalTime = { value: 0 };
@@ -662,7 +662,9 @@
 			// scene.add(controllerGrip);
 		}
 
-		const initLyrics = () => {
+		const initLyrics = (track) => {
+			lyrics = track.lyrics;
+
 			lyrics.startTime = performance.now();
 			lyrics.lineIndex = 0;
 			lyrics.ended = false;
@@ -981,7 +983,7 @@
 			initVideoGroup(vidConfig)
 			initControllers()
 			// initGui()
-			initLyrics()
+			initLyrics(playListJson.tracks[10])
 			// for (const stem in currentStems) { currentStems[stem].play() }
 
 			initFloor()
