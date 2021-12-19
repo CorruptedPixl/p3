@@ -121,16 +121,16 @@
 		const HDRIConfig = ['white', 'black', 'lines', 'sat', 'sat2', 'dark_white', 'dark_black', 'dark_dark', 'dark_light', 'light_darker', 'dark_sat', 'light_darkerer']
 
 		const refDist = 50; // distance from where to start applying volume reduction 
-		const objConfig = [
-			{ name: 'atmos', color: 0xDDD3C3, sound: 'atmos', },
-			{ name: 'bass', color: 0x812ADE, sound: 'bass', },
-			{ name: 'drums', color: 0x3444E3, sound: 'drums', },
-			{ name: 'guitars', color: 0xC714D6, sound: 'guitars', },
-			{ name: 'lq', color: 0xE4406E, sound: 'lq', },
-			{ name: 'pads', color: 0xFFA211, sound: 'pads', },
-			{ name: 'plucks', color: 0xFFDE4A, sound: 'plucks', },
-			{ name: 'tags', color: 0x02D37A, sound: 'tags', },
-			{ name: 'vocals', color: 0x51C5C5, sound: 'vocals', },]
+		// const objConfig = [
+		// 	{ name: 'atmos', color: 0xDDD3C3, sound: 'atmos', },
+		// 	{ name: 'bass', color: 0x812ADE, sound: 'bass', },
+		// 	{ name: 'drums', color: 0x3444E3, sound: 'drums', },
+		// 	{ name: 'guitars', color: 0xC714D6, sound: 'guitars', },
+		// 	{ name: 'lq', color: 0xE4406E, sound: 'lq', },
+		// 	{ name: 'pads', color: 0xFFA211, sound: 'pads', },
+		// 	{ name: 'plucks', color: 0xFFDE4A, sound: 'plucks', },
+		// 	{ name: 'tags', color: 0x02D37A, sound: 'tags', },
+		// 	{ name: 'vocals', color: 0x51C5C5, sound: 'vocals', },]
 
 
 		const getPlaylist = async (url) => {
@@ -284,9 +284,16 @@
 
 				// const light = new THREE.HemisphereLight(0xffffbb, 0x080820, 1);
 				const light = new THREE.DirectionalLight(0xffffbb);
-				light.position.set(100, 30, -10).normalize();
+				light.position.set(100, 30, -100).normalize();
 				light.castShadow = true;
 				scene.add(light);
+
+				const light1 = new THREE.PointLight(0xffffff, .03, 0);
+				light1.position.set(0, 200, 0);
+				scene.add(light1);
+				const light2 = new THREE.PointLight(0xffffff, .01, 0);
+				light2.position.set(100, 10, 50);
+				scene.add(light2);
 
 				/// ground
 				const helper = new THREE.GridHelper(1000, 10, 0x444444, 0x444444);
@@ -336,7 +343,7 @@
 				const populateArrays = new Promise((resolve, reject) => {
 					for (const stem in currentStems) {
 						// create a new material with the color of the object
-						mats[currentStems[stem].name] = new THREE.MeshPhongMaterial({ color: currentStems[stem].color, flatShading: true, shininess: 0 });
+						mats[currentStems[stem].name] = new THREE.MeshPhongMaterial({ color: currentStems[stem].color, flatShading: true, shininess: .1, specular: currentStems[stem].color });
 						// create a new mesh with that material
 						// meshes[obj.name] = new THREE.Mesh(sphere, mats[obj.name]) /// old mesh
 						meshes[currentStems[stem].name] = new THREE.Mesh(noteObject, mats[currentStems[stem].name])
@@ -362,16 +369,24 @@
 
 				populateArrays.then(res => {
 					console.log(meshes)
+					let i = 0;
+					const spacer = 50;
 					// set positions of objects
-					meshes['atmos'].position.set(- 250, 30, 100);
-					meshes['bass'].position.set(- 200, 30, 100);
-					meshes['drums'].position.set(- 150, 30, 100);
-					meshes['guitars'].position.set(- 100, 30, 100);
-					meshes['lq'].position.set(- 50, 30, 100);
-					meshes['pads'].position.set(0, 30, 100);
-					meshes['plucks'].position.set(50, 30, 100);
-					meshes['tags'].position.set(100, 30, 100);
-					meshes['vocals'].position.set(150, 30, 100);
+					for (const mesh in meshes) {
+						meshes[mesh].position.set((spacer * 2.15 - (spacer * i)), 30, 100)
+						meshes[mesh].scale.set(.7, .7, .7)
+						i++
+					}
+
+					// meshes['atmos'].position.set(- 250, 30, 100);
+					// meshes['bass'].position.set(- 200, 30, 100);
+					// meshes['drums'].position.set(- 150, 30, 100);
+					// meshes['guitars'].position.set(- 100, 30, 100);
+					// meshes['lq'].position.set(- 50, 30, 100);
+					// meshes['pads'].position.set(0, 30, 100);
+					// meshes['plucks'].position.set(50, 30, 100);
+					// meshes['tags'].position.set(100, 30, 100);
+					// meshes['vocals'].position.set(150, 30, 100);
 				})
 
 				stemsGroup.name = 'stemsGroup';
@@ -518,9 +533,11 @@
 		const initGui = () => {
 			const SoundControls = function () {
 				this.master = listener.getMasterVolume();
-				objConfig.forEach(obj => {
-					this[obj.name] = sounds[obj.name].getVolume();
-				})
+				console.log(currentStems)
+				// objConfig.forEach(obj => {
+				for (const stem in currentStems) {
+					this[currentStems[stem].name] = sounds[currentStems[stem].name].getVolume();
+				}
 			};
 
 
@@ -540,11 +557,12 @@
 			});
 
 			// add controls for each sound loaded
-			objConfig.forEach(obj => {
-				volumeFolder.add(soundControls, obj.name, 0, 1, 0.01).onChange(value => {
-					sounds[obj.name].setVolume(value);
+			// objConfig.forEach(obj => {
+			for (const stem in currentStems) {
+				volumeFolder.add(soundControls, currentStems[stem].name, 0, 1, 0.01).onChange(value => {
+					sounds[currentStems[stem].name].setVolume(value);
 				});
-			})
+			}
 			volumeFolder.open();
 		}
 
