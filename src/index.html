@@ -115,7 +115,7 @@
 		startButton.addEventListener('click', init);
 
 		const vidConfig = ['video', 'video2', 'video3']
-		const HDRIConfig = ['white', 'black', 'lines', 'sat', 'sat2', 'dark_white', 'dark_black', 'dark_dark',]
+		const HDRIConfig = ['white', 'black', 'lines', 'sat', 'sat2', 'dark_white', 'dark_black', 'dark_dark', 'dark_light', 'light_darker', 'dark_sat', 'light_darkerer']
 
 		const refDist = 50; // distance from where to start applying volume reduction 
 		const objConfig = [
@@ -529,9 +529,10 @@
 			volumeFolder.add(soundControls, 'master').min(0.0).max(1.0).step(0.01).onChange(function () {
 				listener.setMasterVolume(soundControls.master);
 				////// TEMP REMOVE
-				if (soundControls.master < .3) { scene.background = HDRIS.dark_white; }
-				if (soundControls.master > .3 && soundControls.master < .6) { scene.background = HDRIS.dark_dark; }
-				if (soundControls.master > .6) { scene.background = HDRIS.sat2; }
+				if (soundControls.master < .3) { scene.background = HDRIS.light_darkerer; }
+				if (soundControls.master > .3 && soundControls.master < .6) { scene.background = HDRIS.dark_light; }
+				if (soundControls.master > .6 && soundControls.master < .8) { scene.background = HDRIS.sat2; }
+				if (soundControls.master > .8) { scene.background = HDRIS.dark_sat; }
 			});
 
 			// add controls for each sound loaded
@@ -1035,7 +1036,7 @@
 			// textureEquirec = textureLoader.load('textures/hdri-skygone.png');
 			// textureEquirec.mapping = THREE.EquirectangularReflectionMapping;
 			// textureEquirec.encoding = THREE.sRGBEncoding;
-			scene.background = HDRIS.dark_dark;
+			scene.background = HDRIS.dark_light;
 			///////////////
 
 			//////////////// Glass plane
@@ -1125,8 +1126,24 @@
 			for (const obj in stemsGroup.children) {
 				if (!stemsGroup.children[obj]?.isHighlighted) {
 					mats[stemsGroup.children[obj].name].emissive.r = analysers[stemsGroup.children[obj].name].getAverageFrequency() / 256 * 2;
+
 					// mats[stemsGroup.children[obj].name].emissive.g = analysers[stemsGroup.children[obj].name].getAverageFrequency() / 256;
 					// mats[stemsGroup.children[obj].name].emissive.b = analysers[stemsGroup.children[obj].name].getAverageFrequency() / 256;
+
+					/// change hdri based on volume
+					if (stemsGroup.children[obj].name === 'drums') {
+						// console.log(analysers[stemsGroup.children[obj].name].getAverageFrequency())
+						// console.log(analysers[stemsGroup.children[obj].name].getFrequencyData())
+						const data = analysers[stemsGroup.children[obj].name].getFrequencyData()
+
+						// if (Math.min(Math.max(analysers[stemsGroup.children[obj].name].getAverageFrequency(), 0), 100) / 100 >= .95) {
+						if ((data[0] / 255 + data[1] / 255 + data[2] / 255) / 3 >= .85) {
+							scene.background = HDRIS.light_darkerer
+						} else if (scene.background !== HDRIS.dark_light) {
+							scene.background = HDRIS.dark_light
+						}
+
+					}
 				}
 			}
 
