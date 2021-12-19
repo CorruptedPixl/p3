@@ -5,47 +5,39 @@
     "tracks": [
         {
             "title": "Strange Fiction (start)",
-            "stemsPath": "media/audio/wdyf/",
+            "stemsPath": "media/audio/phenomena-spleeter/strange-fiction/",
             "stems": [
                 {
-                    "name": "atmos",
-                    "color": "#DDD3C3"
-                },
-                {
                     "name": "bass",
-                    "color": "#812ADE"
+                    "color": "#D4FF37"
                 },
                 {
                     "name": "drums",
-                    "color": "#3444E3"
+                    "color": "#FF1ACF"
                 },
                 {
-                    "name": "guitars",
-                    "color": "#C714D6"
+                    "name": "other",
+                    "color": "#9442FF"
                 },
                 {
-                    "name": "lq",
-                    "color": "#E4406E"
-                },
-                {
-                    "name": "pads",
-                    "color": "#FFA211"
-                },
-                {
-                    "name": "plucks",
-                    "color": "#FFDE4A"
-                },
-                {
-                    "name": "tags",
-                    "color": "#02D37A"
+                    "name": "piano",
+                    "color": "#16C9FF"
                 },
                 {
                     "name": "vocals",
-                    "color": "#51C5C5"
+                    "color": "#61FF8C"
                 }
             ],
             "lyrics": {
                 "lines": [
+                    {
+                        "startTimeMs": "0",
+                        "words": "Loaded Strange Fiction (start)"
+                    },
+                    {
+                        "startTimeMs": "5000",
+                        "words": "[Intro]"
+                    },
                     {
                         "startTimeMs": "26000",
                         "words": "Why can't I talk about it?"
@@ -131,47 +123,39 @@
         },
         {
             "title": "How to Breathe in Static",
-            "stemsPath": "media/audio/wdyf/",
+            "stemsPath": "media/audio/phenomena-spleeter/how-to-breathe-in-static/",
             "stems": [
                 {
-                    "name": "atmos",
-                    "color": "#DDD3C3"
-                },
-                {
                     "name": "bass",
-                    "color": "#812ADE"
+                    "color": "#D4FF37"
                 },
                 {
                     "name": "drums",
-                    "color": "#3444E3"
+                    "color": "#FF1ACF"
                 },
                 {
-                    "name": "guitars",
-                    "color": "#C714D6"
+                    "name": "other",
+                    "color": "#9442FF"
                 },
                 {
-                    "name": "lq",
-                    "color": "#E4406E"
-                },
-                {
-                    "name": "pads",
-                    "color": "#FFA211"
-                },
-                {
-                    "name": "plucks",
-                    "color": "#FFDE4A"
-                },
-                {
-                    "name": "tags",
-                    "color": "#02D37A"
+                    "name": "piano",
+                    "color": "#16C9FF"
                 },
                 {
                     "name": "vocals",
-                    "color": "#51C5C5"
+                    "color": "#61FF8C"
                 }
             ],
             "lyrics": {
                 "lines": [
+                    {
+                        "startTimeMs": "0",
+                        "words": "Loaded How to Breathe in Static"
+                    },
+                    {
+                        "startTimeMs": "5000",
+                        "words": "[Intro]"
+                    },
                     {
                         "startTimeMs": "26000",
                         "words": "Why can't I talk about it?"
@@ -257,47 +241,39 @@
         },
         {
             "title": "Just Don't",
-            "stemsPath": "media/audio/wdyf/",
+            "stemsPath": "media/audio/phenomena-spleeter/just-dont/",
             "stems": [
                 {
-                    "name": "atmos",
-                    "color": "#DDD3C3"
-                },
-                {
                     "name": "bass",
-                    "color": "#812ADE"
+                    "color": "#D4FF37"
                 },
                 {
                     "name": "drums",
-                    "color": "#3444E3"
+                    "color": "#FF1ACF"
                 },
                 {
-                    "name": "guitars",
-                    "color": "#C714D6"
+                    "name": "other",
+                    "color": "#9442FF"
                 },
                 {
-                    "name": "lq",
-                    "color": "#E4406E"
-                },
-                {
-                    "name": "pads",
-                    "color": "#FFA211"
-                },
-                {
-                    "name": "plucks",
-                    "color": "#FFDE4A"
-                },
-                {
-                    "name": "tags",
-                    "color": "#02D37A"
+                    "name": "piano",
+                    "color": "#16C9FF"
                 },
                 {
                     "name": "vocals",
-                    "color": "#51C5C5"
+                    "color": "#61FF8C"
                 }
             ],
             "lyrics": {
                 "lines": [
+                    {
+                        "startTimeMs": "0",
+                        "words": "Loaded Just Don't"
+                    },
+                    {
+                        "startTimeMs": "5000",
+                        "words": "[Intro]"
+                    },
                     {
                         "startTimeMs": "26000",
                         "words": "Why can't I talk about it?"
@@ -383,173 +359,193 @@
         },
         {
             "title": "Temporary Nothing",
-            "stemsPath": "media/audio/wdyf/",
+            "stemsPath": "media/audio/phenomena-spleeter/temporary-nothing/",
             "stems": [
                 {
-                    "name": "atmos",
-                    "color": "#DDD3C3"
-                },
-                {
                     "name": "bass",
-                    "color": "#812ADE"
+                    "color": "#D4FF37"
                 },
                 {
                     "name": "drums",
-                    "color": "#3444E3"
+                    "color": "#FF1ACF"
                 },
                 {
-                    "name": "guitars",
-                    "color": "#C714D6"
+                    "name": "other",
+                    "color": "#9442FF"
                 },
                 {
-                    "name": "lq",
-                    "color": "#E4406E"
-                },
-                {
-                    "name": "pads",
-                    "color": "#FFA211"
-                },
-                {
-                    "name": "plucks",
-                    "color": "#FFDE4A"
-                },
-                {
-                    "name": "tags",
-                    "color": "#02D37A"
+                    "name": "piano",
+                    "color": "#16C9FF"
                 },
                 {
                     "name": "vocals",
-                    "color": "#51C5C5"
+                    "color": "#61FF8C"
                 }
             ],
             "lyrics": {
                 "lines": [
                     {
-                        "startTimeMs": "26000",
-                        "words": "Why can't I talk about it?"
+                        "startTimeMs": "0",
+                        "words": "Loaded Temporary Nothing"
                     },
                     {
-                        "startTimeMs": "29000",
-                        "words": "I don't even know what to say to you."
+                        "startTimeMs": "5000",
+                        "words": "[Intro]"
                     },
                     {
-                        "startTimeMs": "34000",
-                        "words": "(you)"
+                        "startTimeMs": "40000",
+                        "words": "Oh my mind is racing again,"
                     },
                     {
-                        "startTimeMs": "37600",
-                        "words": "All the nights I try to act."
+                        "startTimeMs": "44000",
+                        "words": "never settled the fog in my head."
                     },
                     {
-                        "startTimeMs": "40300",
-                        "words": "I don't understand my lack, of control."
+                        "startTimeMs": "48000",
+                        "words": "Cancel calls with the utmost respect."
                     },
                     {
-                        "startTimeMs": "51200",
-                        "words": "Sorry baby I can figure this out."
+                        "startTimeMs": "52000",
+                        "words": "I'll get dressed and then get into bed."
                     },
                     {
-                        "startTimeMs": "54200",
-                        "words": "Maybe I should just shut my mouth."
+                        "startTimeMs": "55200",
+                        "words": "There was hopelessness latched in my hand."
                     },
                     {
-                        "startTimeMs": "57400",
-                        "words": "In and out I'm drifting,"
+                        "startTimeMs": "60000",
+                        "words": "All these places make no fucking sense."
                     },
                     {
-                        "startTimeMs": "59500",
-                        "words": "underneath the clouds."
+                        "startTimeMs": "63200",
+                        "words": "I got nothing but my time left to spend."
                     },
                     {
-                        "startTimeMs": "63400",
-                        "words": "Sorry baby, can you figure me out?"
+                        "startTimeMs": "70200",
+                        "words": "I'm rolled up in a panic and there's nothing left."
                     },
                     {
-                        "startTimeMs": "66600",
-                        "words": "Psilocybin blur - I get around."
+                        "startTimeMs": "74000",
+                        "words": "Hold my breath and hope for the best."
                     },
                     {
-                        "startTimeMs": "69500",
-                        "words": "In and out I drift. You kiss me [as I'm]"
+                        "startTimeMs": "78800",
+                        "words": "Feeling so dependant"
                     },
                     {
-                        "startTimeMs": "72600",
-                        "words": "floating back down."
+                        "startTimeMs": "80000",
+                        "words": "I'm rewinding to death"
                     },
                     {
-                        "startTimeMs": "75200",
-                        "words": "Crop circles carved in my chest."
+                        "startTimeMs": "87000",
+                        "words": "Maybe I am nowhere?"
                     },
                     {
-                        "startTimeMs": "78400",
-                        "words": "The vines all wrap up the mess."
+                        "startTimeMs": "88000",
+                        "words": "Maybe I'm at home."
                     },
                     {
-                        "startTimeMs": "81200",
-                        "words": "I drive around in my head,"
+                        "startTimeMs": "90000",
+                        "words": "Temporary nothing,"
                     },
                     {
-                        "startTimeMs": "84400",
-                        "words": "back where I began"
+                        "startTimeMs": "93000",
+                        "words": "feeling so alone."
                     },
                     {
-                        "startTimeMs": "87200",
-                        "words": "It's all these stupid games that I play"
+                        "startTimeMs": "94500",
+                        "words": "Maybe I am nowhere,"
                     },
                     {
-                        "startTimeMs": "90100",
-                        "words": "Cause I don't wanna show you \n how the scars won't fade away."
+                        "startTimeMs": "96000",
+                        "words": "or maybe I'm alone."
                     },
                     {
-                        "startTimeMs": "116000",
-                        "words": "[Outro]"
+                        "startTimeMs": "98000",
+                        "words": "Set in contradiction,"
+                    },
+                    {
+                        "startTimeMs": "100000",
+                        "words": "there's nothing that I know."
+                    },
+                    {
+                        "startTimeMs": "102800",
+                        "words": "(nothing that I know)"
+                    },
+                    {
+                        "startTimeMs": "136500",
+                        "words": "Can you take this from me?"
+                    },
+                    {
+                        "startTimeMs": "140200",
+                        "words": "I can't seem to let this go."
+                    },
+                    {
+                        "startTimeMs": "144800",
+                        "words": "Can you tell me one thing,"
+                    },
+                    {
+                        "startTimeMs": "148800",
+                        "words": "what's it like to have control?"
+                    },
+                    {
+                        "startTimeMs": "150700",
+                        "words": "Can you take this from me?"
+                    },
+                    {
+                        "startTimeMs": "156000",
+                        "words": "I can't seem to let this go."
+                    },
+                    {
+                        "startTimeMs": "160000",
+                        "words": "Can you tell me one thing,"
+                    },
+                    {
+                        "startTimeMs": "164500",
+                        "words": "what's it like to have control?"
+                    },
+                    {
+                        "startTimeMs": "189500",
+                        "words": "[outro]"
                     }
                 ]
             }
         },
         {
             "title": "Misanthrope",
-            "stemsPath": "media/audio/wdyf/",
+            "stemsPath": "media/audio/phenomena-spleeter/misanthrope/",
             "stems": [
                 {
-                    "name": "atmos",
-                    "color": "#DDD3C3"
-                },
-                {
                     "name": "bass",
-                    "color": "#812ADE"
+                    "color": "#D4FF37"
                 },
                 {
                     "name": "drums",
-                    "color": "#3444E3"
+                    "color": "#FF1ACF"
                 },
                 {
-                    "name": "guitars",
-                    "color": "#C714D6"
+                    "name": "other",
+                    "color": "#9442FF"
                 },
                 {
-                    "name": "lq",
-                    "color": "#E4406E"
-                },
-                {
-                    "name": "pads",
-                    "color": "#FFA211"
-                },
-                {
-                    "name": "plucks",
-                    "color": "#FFDE4A"
-                },
-                {
-                    "name": "tags",
-                    "color": "#02D37A"
+                    "name": "piano",
+                    "color": "#16C9FF"
                 },
                 {
                     "name": "vocals",
-                    "color": "#51C5C5"
+                    "color": "#61FF8C"
                 }
             ],
             "lyrics": {
                 "lines": [
+                    {
+                        "startTimeMs": "0",
+                        "words": "Loaded Misanthrope"
+                    },
+                    {
+                        "startTimeMs": "5000",
+                        "words": "[Intro]"
+                    },
                     {
                         "startTimeMs": "26000",
                         "words": "Why can't I talk about it?"
@@ -635,47 +631,39 @@
         },
         {
             "title": "I Think We're All Ghosts Now",
-            "stemsPath": "media/audio/wdyf/",
+            "stemsPath": "media/audio/phenomena-spleeter/i-think-were-all-ghosts-now/",
             "stems": [
                 {
-                    "name": "atmos",
-                    "color": "#DDD3C3"
-                },
-                {
                     "name": "bass",
-                    "color": "#812ADE"
+                    "color": "#D4FF37"
                 },
                 {
                     "name": "drums",
-                    "color": "#3444E3"
+                    "color": "#FF1ACF"
                 },
                 {
-                    "name": "guitars",
-                    "color": "#C714D6"
+                    "name": "other",
+                    "color": "#9442FF"
                 },
                 {
-                    "name": "lq",
-                    "color": "#E4406E"
-                },
-                {
-                    "name": "pads",
-                    "color": "#FFA211"
-                },
-                {
-                    "name": "plucks",
-                    "color": "#FFDE4A"
-                },
-                {
-                    "name": "tags",
-                    "color": "#02D37A"
+                    "name": "piano",
+                    "color": "#16C9FF"
                 },
                 {
                     "name": "vocals",
-                    "color": "#51C5C5"
+                    "color": "#61FF8C"
                 }
             ],
             "lyrics": {
                 "lines": [
+                    {
+                        "startTimeMs": "0",
+                        "words": "Loaded I Think We're All Ghosts Now"
+                    },
+                    {
+                        "startTimeMs": "5000",
+                        "words": "[Intro]"
+                    },
                     {
                         "startTimeMs": "26000",
                         "words": "Why can't I talk about it?"
@@ -761,47 +749,39 @@
         },
         {
             "title": "Highrise",
-            "stemsPath": "media/audio/wdyf/",
+            "stemsPath": "media/audio/phenomena-spleeter/highrise/",
             "stems": [
                 {
-                    "name": "atmos",
-                    "color": "#DDD3C3"
-                },
-                {
                     "name": "bass",
-                    "color": "#812ADE"
+                    "color": "#D4FF37"
                 },
                 {
                     "name": "drums",
-                    "color": "#3444E3"
+                    "color": "#FF1ACF"
                 },
                 {
-                    "name": "guitars",
-                    "color": "#C714D6"
+                    "name": "other",
+                    "color": "#9442FF"
                 },
                 {
-                    "name": "lq",
-                    "color": "#E4406E"
-                },
-                {
-                    "name": "pads",
-                    "color": "#FFA211"
-                },
-                {
-                    "name": "plucks",
-                    "color": "#FFDE4A"
-                },
-                {
-                    "name": "tags",
-                    "color": "#02D37A"
+                    "name": "piano",
+                    "color": "#16C9FF"
                 },
                 {
                     "name": "vocals",
-                    "color": "#51C5C5"
+                    "color": "#61FF8C"
                 }
             ],
             "lyrics": {
                 "lines": [
+                    {
+                        "startTimeMs": "0",
+                        "words": "Loaded Highrise"
+                    },
+                    {
+                        "startTimeMs": "5000",
+                        "words": "[Intro]"
+                    },
                     {
                         "startTimeMs": "26000",
                         "words": "Why can't I talk about it?"
@@ -887,47 +867,39 @@
         },
         {
             "title": "Girl, Are You Impressed with Me?",
-            "stemsPath": "media/audio/wdyf/",
+            "stemsPath": "media/audio/phenomena-spleeter/girl-are-you-impressed-with-me/",
             "stems": [
                 {
-                    "name": "atmos",
-                    "color": "#DDD3C3"
-                },
-                {
                     "name": "bass",
-                    "color": "#812ADE"
+                    "color": "#D4FF37"
                 },
                 {
                     "name": "drums",
-                    "color": "#3444E3"
+                    "color": "#FF1ACF"
                 },
                 {
-                    "name": "guitars",
-                    "color": "#C714D6"
+                    "name": "other",
+                    "color": "#9442FF"
                 },
                 {
-                    "name": "lq",
-                    "color": "#E4406E"
-                },
-                {
-                    "name": "pads",
-                    "color": "#FFA211"
-                },
-                {
-                    "name": "plucks",
-                    "color": "#FFDE4A"
-                },
-                {
-                    "name": "tags",
-                    "color": "#02D37A"
+                    "name": "piano",
+                    "color": "#16C9FF"
                 },
                 {
                     "name": "vocals",
-                    "color": "#51C5C5"
+                    "color": "#61FF8C"
                 }
             ],
             "lyrics": {
                 "lines": [
+                    {
+                        "startTimeMs": "0",
+                        "words": "Loaded Girl, Are You Impressed with Me? "
+                    },
+                    {
+                        "startTimeMs": "5000",
+                        "words": "[Intro]"
+                    },
                     {
                         "startTimeMs": "26000",
                         "words": "Why can't I talk about it?"
@@ -1013,47 +985,39 @@
         },
         {
             "title": "Got It Used",
-            "stemsPath": "media/audio/wdyf/",
+            "stemsPath": "media/audio/phenomena-spleeter/got-it-used/",
             "stems": [
                 {
-                    "name": "atmos",
-                    "color": "#DDD3C3"
-                },
-                {
                     "name": "bass",
-                    "color": "#812ADE"
+                    "color": "#D4FF37"
                 },
                 {
                     "name": "drums",
-                    "color": "#3444E3"
+                    "color": "#FF1ACF"
                 },
                 {
-                    "name": "guitars",
-                    "color": "#C714D6"
+                    "name": "other",
+                    "color": "#9442FF"
                 },
                 {
-                    "name": "lq",
-                    "color": "#E4406E"
-                },
-                {
-                    "name": "pads",
-                    "color": "#FFA211"
-                },
-                {
-                    "name": "plucks",
-                    "color": "#FFDE4A"
-                },
-                {
-                    "name": "tags",
-                    "color": "#02D37A"
+                    "name": "piano",
+                    "color": "#16C9FF"
                 },
                 {
                     "name": "vocals",
-                    "color": "#51C5C5"
+                    "color": "#61FF8C"
                 }
             ],
             "lyrics": {
                 "lines": [
+                    {
+                        "startTimeMs": "0",
+                        "words": "Loaded Got It Used"
+                    },
+                    {
+                        "startTimeMs": "5000",
+                        "words": "[Intro]"
+                    },
                     {
                         "startTimeMs": "26000",
                         "words": "Why can't I talk about it?"
@@ -1139,50 +1103,38 @@
         },
         {
             "title": "Forest Spirit Sound",
-            "stemsPath": "media/audio/wdyf/",
+            "stemsPath": "media/audio/phenomena-spleeter/forest-spirit-sound/",
             "stems": [
                 {
-                    "name": "atmos",
-                    "color": "#DDD3C3"
-                },
-                {
                     "name": "bass",
-                    "color": "#812ADE"
+                    "color": "#D4FF37"
                 },
                 {
                     "name": "drums",
-                    "color": "#3444E3"
+                    "color": "#FF1ACF"
                 },
                 {
-                    "name": "guitars",
-                    "color": "#C714D6"
+                    "name": "other",
+                    "color": "#9442FF"
                 },
                 {
-                    "name": "lq",
-                    "color": "#E4406E"
-                },
-                {
-                    "name": "pads",
-                    "color": "#FFA211"
-                },
-                {
-                    "name": "plucks",
-                    "color": "#FFDE4A"
-                },
-                {
-                    "name": "tags",
-                    "color": "#02D37A"
+                    "name": "piano",
+                    "color": "#16C9FF"
                 },
                 {
                     "name": "vocals",
-                    "color": "#51C5C5"
+                    "color": "#61FF8C"
                 }
             ],
             "lyrics": {
                 "lines": [
                     {
                         "startTimeMs": "0",
-                        "words": "Forest Spirit Sound: Intro"
+                        "words": "Loaded Forest Spirit Sound"
+                    },
+                    {
+                        "startTimeMs": "5000",
+                        "words": "[Intro]"
                     },
                     {
                         "startTimeMs": "26000",
@@ -1269,47 +1221,47 @@
         },
         {
             "title": "Found Myself in Sequences",
-            "stemsPath": "media/audio/tus/",
+            "stemsPath": "media/audio/phenomena-spleeter/found-myself-in-sequences/",
             "stems": [
                 {
-                    "name": "atmos",
-                    "color": "#DDD3C3"
-                },
-                {
                     "name": "bass",
-                    "color": "#812ADE"
+                    "color": "#D4FF37"
                 },
                 {
                     "name": "drums",
-                    "color": "#3444E3"
+                    "color": "#FF1ACF"
                 },
                 {
-                    "name": "guitars",
-                    "color": "#C714D6"
+                    "name": "other",
+                    "color": "#9442FF"
                 },
                 {
-                    "name": "lq",
-                    "color": "#E4406E"
-                },
-                {
-                    "name": "pads",
-                    "color": "#FFA211"
-                },
-                {
-                    "name": "plucks",
-                    "color": "#FFDE4A"
-                },
-                {
-                    "name": "tags",
-                    "color": "#02D37A"
+                    "name": "piano",
+                    "color": "#16C9FF"
                 },
                 {
                     "name": "vocals",
-                    "color": "#51C5C5"
+                    "color": "#61FF8C"
                 }
             ],
             "lyrics": {
                 "lines": [
+                    {
+                        "startTimeMs": "0",
+                        "words": "Loaded Found Myself in Sequences"
+                    },
+                    {
+                        "startTimeMs": "5000",
+                        "words": "[Intro]"
+                    },
+                    {
+                        "startTimeMs": "0",
+                        "words": "Loaded Found Myself in Sequences"
+                    },
+                    {
+                        "startTimeMs": "5000",
+                        "words": "[Intro]"
+                    },
                     {
                         "startTimeMs": "26000",
                         "words": "Why can't I talk about it?"
@@ -1395,47 +1347,39 @@
         },
         {
             "title": "Antichrist",
-            "stemsPath": "media/audio/wdyf/",
+            "stemsPath": "media/audio/phenomena-spleeter/antichrist/",
             "stems": [
                 {
-                    "name": "atmos",
-                    "color": "#DDD3C3"
-                },
-                {
                     "name": "bass",
-                    "color": "#812ADE"
+                    "color": "#D4FF37"
                 },
                 {
                     "name": "drums",
-                    "color": "#3444E3"
+                    "color": "#FF1ACF"
                 },
                 {
-                    "name": "guitars",
-                    "color": "#C714D6"
+                    "name": "other",
+                    "color": "#9442FF"
                 },
                 {
-                    "name": "lq",
-                    "color": "#E4406E"
-                },
-                {
-                    "name": "pads",
-                    "color": "#FFA211"
-                },
-                {
-                    "name": "plucks",
-                    "color": "#FFDE4A"
-                },
-                {
-                    "name": "tags",
-                    "color": "#02D37A"
+                    "name": "piano",
+                    "color": "#16C9FF"
                 },
                 {
                     "name": "vocals",
-                    "color": "#51C5C5"
+                    "color": "#61FF8C"
                 }
             ],
             "lyrics": {
                 "lines": [
+                    {
+                        "startTimeMs": "0",
+                        "words": "Loaded Antichrist"
+                    },
+                    {
+                        "startTimeMs": "5000",
+                        "words": "[Intro]"
+                    },
                     {
                         "startTimeMs": "26000",
                         "words": "Why can't I talk about it?"
@@ -1521,47 +1465,39 @@
         },
         {
             "title": "Infinite Machine",
-            "stemsPath": "media/audio/wdyf/",
+            "stemsPath": "media/audio/phenomena-spleeter/infinite-machine/",
             "stems": [
                 {
-                    "name": "atmos",
-                    "color": "#DDD3C3"
-                },
-                {
                     "name": "bass",
-                    "color": "#812ADE"
+                    "color": "#D4FF37"
                 },
                 {
                     "name": "drums",
-                    "color": "#3444E3"
+                    "color": "#FF1ACF"
                 },
                 {
-                    "name": "guitars",
-                    "color": "#C714D6"
+                    "name": "other",
+                    "color": "#9442FF"
                 },
                 {
-                    "name": "lq",
-                    "color": "#E4406E"
-                },
-                {
-                    "name": "pads",
-                    "color": "#FFA211"
-                },
-                {
-                    "name": "plucks",
-                    "color": "#FFDE4A"
-                },
-                {
-                    "name": "tags",
-                    "color": "#02D37A"
+                    "name": "piano",
+                    "color": "#16C9FF"
                 },
                 {
                     "name": "vocals",
-                    "color": "#51C5C5"
+                    "color": "#61FF8C"
                 }
             ],
             "lyrics": {
                 "lines": [
+                    {
+                        "startTimeMs": "0",
+                        "words": "Loaded Infinite Machine"
+                    },
+                    {
+                        "startTimeMs": "5000",
+                        "words": "[Intro]"
+                    },
                     {
                         "startTimeMs": "26000",
                         "words": "Why can't I talk about it?"
@@ -1647,47 +1583,39 @@
         },
         {
             "title": "Where Do I Start?",
-            "stemsPath": "media/audio/wdyf/",
+            "stemsPath": "media/audio/phenomena-spleeter/where-do-i-start/",
             "stems": [
                 {
-                    "name": "atmos",
-                    "color": "#DDD3C3"
-                },
-                {
                     "name": "bass",
-                    "color": "#812ADE"
+                    "color": "#D4FF37"
                 },
                 {
                     "name": "drums",
-                    "color": "#3444E3"
+                    "color": "#FF1ACF"
                 },
                 {
-                    "name": "guitars",
-                    "color": "#C714D6"
+                    "name": "other",
+                    "color": "#9442FF"
                 },
                 {
-                    "name": "lq",
-                    "color": "#E4406E"
-                },
-                {
-                    "name": "pads",
-                    "color": "#FFA211"
-                },
-                {
-                    "name": "plucks",
-                    "color": "#FFDE4A"
-                },
-                {
-                    "name": "tags",
-                    "color": "#02D37A"
+                    "name": "piano",
+                    "color": "#16C9FF"
                 },
                 {
                     "name": "vocals",
-                    "color": "#51C5C5"
+                    "color": "#61FF8C"
                 }
             ],
             "lyrics": {
                 "lines": [
+                    {
+                        "startTimeMs": "0",
+                        "words": "Loaded Where Do I Start?"
+                    },
+                    {
+                        "startTimeMs": "5000",
+                        "words": "[Intro]"
+                    },
                     {
                         "startTimeMs": "26000",
                         "words": "Why can't I talk about it?"
@@ -1773,47 +1701,39 @@
         },
         {
             "title": "The Absurdity (end)",
-            "stemsPath": "media/audio/wdyf/",
+            "stemsPath": "media/audio/phenomena-spleeter/the-absurdity/",
             "stems": [
                 {
-                    "name": "atmos",
-                    "color": "#DDD3C3"
-                },
-                {
                     "name": "bass",
-                    "color": "#812ADE"
+                    "color": "#D4FF37"
                 },
                 {
                     "name": "drums",
-                    "color": "#3444E3"
+                    "color": "#FF1ACF"
                 },
                 {
-                    "name": "guitars",
-                    "color": "#C714D6"
+                    "name": "other",
+                    "color": "#9442FF"
                 },
                 {
-                    "name": "lq",
-                    "color": "#E4406E"
-                },
-                {
-                    "name": "pads",
-                    "color": "#FFA211"
-                },
-                {
-                    "name": "plucks",
-                    "color": "#FFDE4A"
-                },
-                {
-                    "name": "tags",
-                    "color": "#02D37A"
+                    "name": "piano",
+                    "color": "#16C9FF"
                 },
                 {
                     "name": "vocals",
-                    "color": "#51C5C5"
+                    "color": "#61FF8C"
                 }
             ],
             "lyrics": {
                 "lines": [
+                    {
+                        "startTimeMs": "0",
+                        "words": "Loaded The Absurdity (end)"
+                    },
+                    {
+                        "startTimeMs": "5000",
+                        "words": "[Intro]"
+                    },
                     {
                         "startTimeMs": "26000",
                         "words": "Why can't I talk about it?"
