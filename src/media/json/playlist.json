@@ -1897,15 +1897,15 @@
     "videos": [
         {
             "id": "video",
-            "url": "https://cdn.cpixl.com/other/PhenomenaTV/PTVEP3-guitars.mp4"
+            "url": "https://cdn.cpixl.com/other/PhenomenaTV/EP3.1.mp4"
         },
         {
             "id": "video2",
-            "url": "https://cdn.cpixl.com/other/PhenomenaTV/PTVEP2-synths.mp4"
+            "url": "https://cdn.cpixl.com/other/PhenomenaTV/EP2.mp4"
         },
         {
             "id": "video3",
-            "url": "https://cdn.cpixl.com/other/PhenomenaTV/PTVEP1-drums.mp4"
+            "url": "https://cdn.cpixl.com/other/PhenomenaTV/EP1.mp4"
         }
     ]
 }
