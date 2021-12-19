@@ -339,6 +339,7 @@
 						meshes[currentStems[stem].name] = new THREE.Mesh(noteObject, mats[currentStems[stem].name])
 						/// TODO change color of included material in gltf so the environment is reflected. 
 						meshes[currentStems[stem].name].name = currentStems[stem].name;
+						meshes[currentStems[stem].name].rotateY(Math.PI);
 						// scene.add(meshes[stem.name]); // DONT ADD EACH OBJECT INDIVIDUALLY
 						stemsGroup.add(meshes[currentStems[stem].name]);
 
