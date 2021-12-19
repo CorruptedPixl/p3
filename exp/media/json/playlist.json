@@ -1181,6 +1181,10 @@
             "lyrics": {
                 "lines": [
                     {
+                        "startTimeMs": "0",
+                        "words": "Forest Spirit Sound: Intro"
+                    },
+                    {
                         "startTimeMs": "26000",
                         "words": "Why can't I talk about it?"
                     },
