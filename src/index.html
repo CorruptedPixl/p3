@@ -11,56 +11,8 @@
 
 <body>
 
-	<!-- keep filesize low to avoid them from being slow -->
-	<!-- <audio id="atmos" loop preload="auto" style="display: none">
-		<source src="media/audio/wdyf/atmos.mp3" type="audio/mpeg">
-		<source src="media/audio/wdyf/atmos.wav" type="audio/wav">
-	</audio>
-	<audio id="bass" loop preload="auto" style="display: none">
-		<source src="media/audio/wdyf/bass.mp3" type="audio/mpeg">
-		<source src="media/audio/wdyf/bass.wav" type="audio/wav">
-	</audio>
-	<audio id="drums" preload="auto" style="display: none">
-		<source src="media/audio/wdyf/drums.mp3" type="audio/mpeg">
-		<source src="media/audio/wdyf/drums.wav" type="audio/wav">
-	</audio>
-	<audio id="guitars" loop preload="auto" style="display: none">
-		<source src="media/audio/wdyf/guitars.mp3" type="audio/mpeg">
-		<source src="media/audio/wdyf/guitars.wav" type="audio/wav">
-	</audio>
-	<audio id="lq" loop preload="auto" style="display: none">
-		<source src="media/audio/wdyf/lq.mp3" type="audio/mpeg">
-		<source src="media/audio/wdyf/lq.wav" type="audio/wav">
-	</audio>
-	<audio id="pads" loop preload="auto" style="display: none">
-		<source src="media/audio/wdyf/pads.mp3" type="audio/mpeg">
-		<source src="media/audio/wdyf/pads.wav" type="audio/wav">
-	</audio>
-	<audio id="plucks" loop preload="auto" style="display: none">
-		<source src="media/audio/wdyf/plucks.mp3" type="audio/mpeg">
-		<source src="media/audio/wdyf/plucks.wav" type="audio/wav">
-	</audio>
-	<audio id="tags" loop preload="auto" style="display: none">
-		<source src="media/audio/wdyf/tags.mp3" type="audio/mpeg">
-		<source src="media/audio/wdyf/tags.wav" type="audio/wav">
-	</audio>
-	<audio id="vocals" loop preload="auto" style="display: none">
-		<source src="media/audio/wdyf/vocals.mp3" type="audio/mpeg">
-		<source src="media/audio/wdyf/vocals.wav" type="audio/wav">
-	</audio> -->
-
-
 	<div id='audioContainer'></div>
 	<div id='videoContainer'></div>
-	<!-- <video id="video" preload="auto" style="display: none" crossorigin="anonymous" muted controls loop>
-		<source src="https://cdn.cpixl.com/other/PhenomenaTV/PTVEP1-drums.mp4" type="video/mp4" crossorigin="*">
-	</video>
-	<video id="video2" preload="auto" style="display: none" crossorigin="anonymous" muted controls loop>
-		<source src="https://cdn.cpixl.com/other/PhenomenaTV/PTVEP2-synths.mp4" type="video/mp4" crossorigin="*">
-	</video>
-	<video id="video3" preload="auto" style="display: none" crossorigin="anonymous" muted controls loop>
-		<source src="https://cdn.cpixl.com/other/PhenomenaTV/PTVEP3-guitars.mp4" type="video/mp4" crossorigin="*">
-	</video> -->
 
 	<div id="overlay">
 		<h1>Welcome to Phenomena: behind the music</h1>
@@ -84,8 +36,6 @@
 
 		import StarShader from './shaders/StarShader.js';
 		import FloorShader from './shaders/FloorShader.js';
-
-		// const lyrics = await fetch('lyrics/forest-spirit-sound.json').then(response => response.json());
 
 		let camera, controls, scene, raycaster, renderer, light, listener, textureEquirec, waterTexture, noteObject, skyMaterial;
 		let controller, controllerGrip;
@@ -121,17 +71,6 @@
 		const HDRIConfig = ['white', 'black', 'lines', 'sat', 'sat2', 'dark_white', 'dark_black', 'dark_dark', 'dark_light', 'light_darker', 'dark_sat', 'light_darkerer']
 
 		const refDist = 50; // distance from where to start applying volume reduction 
-		// const objConfig = [
-		// 	{ name: 'atmos', color: 0xDDD3C3, sound: 'atmos', },
-		// 	{ name: 'bass', color: 0x812ADE, sound: 'bass', },
-		// 	{ name: 'drums', color: 0x3444E3, sound: 'drums', },
-		// 	{ name: 'guitars', color: 0xC714D6, sound: 'guitars', },
-		// 	{ name: 'lq', color: 0xE4406E, sound: 'lq', },
-		// 	{ name: 'pads', color: 0xFFA211, sound: 'pads', },
-		// 	{ name: 'plucks', color: 0xFFDE4A, sound: 'plucks', },
-		// 	{ name: 'tags', color: 0x02D37A, sound: 'tags', },
-		// 	{ name: 'vocals', color: 0x51C5C5, sound: 'vocals', },]
-
 
 		const getPlaylist = async (url) => {
 			// playListJson = await fetch(url).then(response => response.json());
