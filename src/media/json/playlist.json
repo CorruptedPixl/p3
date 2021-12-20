@@ -1106,23 +1106,23 @@
             "stemsPath": "media/audio/phenomena-spleeter/forest-spirit-sound/",
             "stems": [
                 {
-                    "name": "bass",
+                    "name": "FSS-bass",
                     "color": "#D4FF37"
                 },
                 {
-                    "name": "drums",
+                    "name": "FSS-drums",
                     "color": "#FF1ACF"
                 },
                 {
-                    "name": "other",
+                    "name": "FSS-little-sounds",
                     "color": "#9442FF"
                 },
                 {
-                    "name": "piano",
+                    "name": "FSS-guitars",
                     "color": "#16C9FF"
                 },
                 {
-                    "name": "vocals",
+                    "name": "FSS-vocals",
                     "color": "#61FF8C"
                 }
             ],
