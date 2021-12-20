@@ -590,7 +590,7 @@
 			// });
 
 			/// Uncomment for Oculus build (replaces shader with static texture for performance)
-			const floorTex = textureLoader.load(`textures/floor.png`);
+			const floorTex = textureLoader.load(`textures/floor.jpg`);
 			floorTex.magFilter = THREE.NearestFilter;
 			floorTex.wrapT = THREE.RepeatWrapping;
 			floorTex.wrapS = THREE.RepeatWrapping;
@@ -629,7 +629,7 @@
 
 			/// Load HDRI's
 			HDRIConfig.forEach(HDRI => {
-				const currentHDRI = textureLoader.load(`textures/hdri-${HDRI}.png`);
+				const currentHDRI = textureLoader.load(`textures/hdri-${HDRI}.jpg`);
 				currentHDRI.mapping = THREE.EquirectangularReflectionMapping;
 				currentHDRI.encoding = THREE.sRGBEncoding;
 				HDRIS[HDRI] = currentHDRI;
