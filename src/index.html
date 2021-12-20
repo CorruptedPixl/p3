@@ -67,9 +67,8 @@
 		const startButton = document.getElementById('startButton');
 		startButton.addEventListener('click', init);
 
-		// const vidConfig = ['video', 'video2', 'video3']
 		const vidConfig = []
-		const HDRIConfig = ['dark_sat', 'sat2', 'dark_light', 'light_darker', 'light_darkerer', 'light_darkerer_oculus', 'dark_light_oculus'] // TODO remove all but two
+		const HDRIConfig = ['dark_sat', 'sat2', 'dark_light', 'light_darkerer',]
 
 		const refDist = 50; // distance from where to start applying volume reduction 
 
@@ -395,23 +394,6 @@
 				const intersectsVidGroup = raycaster.intersectObjects(vidGroup.children, false);
 				const intersectsSongSelect = raycaster.intersectObjects(songSelectGroup.children, false);
 
-				// /// Standalone objects
-				// if (intersects.length > 0) {
-				// 	intersects.forEach(obj => {
-				// 		if (!obj.object.userData?.isDraggable) { return } /// Early return if object is not draggable
-				// 		else if (obj.object.parent.userData?.isDraggable) { /// To attach grouped objects like the video group. This needs to be here or you'd only move the faces of the video group
-				// 			const object = obj.object;
-				// 			controller.attach(object);
-				// 			controller.userData.selected = object;
-				// 		}
-				// 		else { /// For all other objects
-				// 			const object = obj.object;
-				// 			controller.attach(object);
-				// 			controller.userData.selected = object;
-				// 		}
-				// 	})
-				// }
-
 				/// Double click (un)mute video checks
 				if (intersectsVidGroup.length > 0) {
 					if (this.userData?.videoGroup?.lastVideoObj === intersectsVidGroup[0].object && performance.now() - this.userData?.videoGroup?.lastClick <= 400) { /// Two clicks within the last [400]ms?
@@ -579,53 +561,53 @@
 		}
 
 		const initFloor = () => {
-			// /// Create floor shader material
-			// const material = new THREE.ShaderMaterial({
-			// 	uniforms: {
-			// 		time: globalTime,
-			// 		resolution: { value: new THREE.Vector2(window.innerWidth, window.innerHeight) }
-			// 	},
-			// 	vertexShader: FloorShader.vertex,
-			// 	fragmentShader: FloorShader.fragment
-			// });
+			/// Create floor shader material
+			const material = new THREE.ShaderMaterial({
+				uniforms: {
+					time: globalTime,
+					resolution: { value: new THREE.Vector2(window.innerWidth, window.innerHeight) }
+				},
+				vertexShader: FloorShader.vertex,
+				fragmentShader: FloorShader.fragment
+			});
 
-			/// Uncomment for Oculus build (replaces shader with static texture for performance)
-			const floorTex = textureLoader.load(`textures/floor.jpg`);
-			floorTex.magFilter = THREE.NearestFilter;
-			floorTex.wrapT = THREE.RepeatWrapping;
-			floorTex.wrapS = THREE.RepeatWrapping;
-			floorTex.repeat.set(1, 1);
-			const material = new THREE.MeshBasicMaterial({ map: floorTex, side: THREE.DoubleSide });
+			// /// Uncomment for Oculus build (replaces shader with static texture for performance)
+			// const floorTex = textureLoader.load(`textures/floor.jpg`);
+			// floorTex.magFilter = THREE.NearestFilter;
+			// floorTex.wrapT = THREE.RepeatWrapping;
+			// floorTex.wrapS = THREE.RepeatWrapping;
+			// floorTex.repeat.set(1, 1);
+			// const material = new THREE.MeshBasicMaterial({ map: floorTex, side: THREE.DoubleSide });
 
 			const FloorShaderPlane = new THREE.Mesh(new THREE.PlaneGeometry(10000, 10000), material);
 			scene.add(FloorShaderPlane);
 			FloorShaderPlane.rotateX(- Math.PI / 2)
 			FloorShaderPlane.position.set(0, -150, 0)
 
-			// /// Create starry sky shader material
-			// const skyDomeRadius = 5000.01; /// Since this is used in calculations inside the shader, we add a .01 to make sure its a float and not an int.
-			// skyMaterial = new THREE.ShaderMaterial({
-			// 	uniforms: {
-			// 		time: { value: 0 },
-			// 		skyRadius: { value: skyDomeRadius },
-			// 		env_c1: { value: new THREE.Color('#000000') }, /// set to black for blending later
-			// 		env_c2: { value: new THREE.Color('#000000') }, /// set to black for blending later
-			// 		noiseOffset: { value: new THREE.Vector3(100.01, 100.01, 100.01) },
-			// 		starSize: { value: 0.004 },
-			// 		starDensity: { value: 0.09 },
-			// 		clusterStrength: { value: 0.1 },
-			// 		clusterSize: { value: 0.2 },
-			// 	},
-			// 	vertexShader: StarShader.vertex,
-			// 	fragmentShader: StarShader.fragment,
-			// 	side: THREE.DoubleSide, /// We're viewing the inside so we need to render both sides
-			// 	transparent: true, /// Doesnt actually do anything but let Three.js know we want to do something with transparency. This tells the render to render possible transparency.
-			// 	blending: THREE.AdditiveBlending, /// Here we actually create transparent pixels, wont work without 'transparent' being set to true
-			// });
+			/// Create starry sky shader material
+			const skyDomeRadius = 5000.01; /// Since this is used in calculations inside the shader, we add a .01 to make sure its a float and not an int.
+			skyMaterial = new THREE.ShaderMaterial({
+				uniforms: {
+					time: { value: 0 },
+					skyRadius: { value: skyDomeRadius },
+					env_c1: { value: new THREE.Color('#000000') }, /// set to black for blending later
+					env_c2: { value: new THREE.Color('#000000') }, /// set to black for blending later
+					noiseOffset: { value: new THREE.Vector3(100.01, 100.01, 100.01) },
+					starSize: { value: 0.004 },
+					starDensity: { value: 0.09 },
+					clusterStrength: { value: 0.1 },
+					clusterSize: { value: 0.2 },
+				},
+				vertexShader: StarShader.vertex,
+				fragmentShader: StarShader.fragment,
+				side: THREE.DoubleSide, /// We're viewing the inside so we need to render both sides
+				transparent: true, /// Doesnt actually do anything but let Three.js know we want to do something with transparency. This tells the render to render possible transparency.
+				blending: THREE.AdditiveBlending, /// Here we actually create transparent pixels, wont work without 'transparent' being set to true
+			});
 
-			// const sphereGeometry = new THREE.SphereGeometry(skyDomeRadius, 20, 20);
-			// const skyDome = new THREE.Mesh(sphereGeometry, skyMaterial);
-			// scene.add(skyDome);
+			const sphereGeometry = new THREE.SphereGeometry(skyDomeRadius, 20, 20);
+			const skyDome = new THREE.Mesh(sphereGeometry, skyMaterial);
+			scene.add(skyDome);
 
 			/// Load HDRI's
 			HDRIConfig.forEach(HDRI => {
@@ -642,33 +624,33 @@
 			waterTexture.wrapS = THREE.RepeatWrapping;
 			waterTexture.repeat.set(800, 2000.5);
 
-			scene.background = HDRIS.dark_light_oculus; /// Apply the HDRI as the background of the scene. This renders it correctly since we mapped it to the equirectangular mapping.
+			scene.background = HDRIS.dark_light; /// Apply the HDRI as the background of the scene. This renders it correctly since we mapped it to the equirectangular mapping.
 
-			// /// Glass floor physical material
-			// const glassPlane = new THREE.Mesh(
-			// 	new THREE.PlaneGeometry(2000, 2000),
-			// 	new THREE.MeshPhysicalMaterial({
-			// 		color: 0xffffff,
-			// 		metalness: 0,
-			// 		roughness: 1,
-			// 		ior: 1.1,
-			// 		alphaMap: waterTexture,
-			// 		envMap: HDRIS.dark_light,
-			// 		envMapIntensity: 1,
-			// 		transmission: 1,
-			// 		specularIntensity: 1,
-			// 		specularColor: 0xffffff,
-			// 		opacity: 1,
-			// 		thickness: 2,
-			// 		side: THREE.DoubleSide,
-			// 		transparent: true,
-			// 		clearcoat: 1,
-			// 		clearcoatMap: waterTexture,
+			/// Glass floor physical material
+			const glassPlane = new THREE.Mesh(
+				new THREE.PlaneGeometry(2000, 2000),
+				new THREE.MeshPhysicalMaterial({
+					color: 0xffffff,
+					metalness: 0,
+					roughness: 1,
+					ior: 1.1,
+					alphaMap: waterTexture,
+					envMap: HDRIS.dark_light,
+					envMapIntensity: 1,
+					transmission: 1,
+					specularIntensity: 1,
+					specularColor: 0xffffff,
+					opacity: 1,
+					thickness: 2,
+					side: THREE.DoubleSide,
+					transparent: true,
+					clearcoat: 1,
+					clearcoatMap: waterTexture,
 
-			// 	}))
+				}))
 
-			// glassPlane.rotateX(- Math.PI / 2)
-			// scene.add(glassPlane);
+			glassPlane.rotateX(- Math.PI / 2)
+			scene.add(glassPlane);
 		}
 
 		const buildController = (data) => {
@@ -705,7 +687,7 @@
 			controls.update(delta);
 
 			globalTime.value = clock.elapsedTime; /// Floor shader
-			// skyMaterial.uniforms.time.value = clock.getElapsedTime(); /// Sky shader
+			skyMaterial.uniforms.time.value = clock.getElapsedTime(); /// Sky shader
 
 			/// Analysers
 			for (const obj in stemsGroup.children) {
@@ -719,9 +701,9 @@
 
 						/// Use the first 3 data points and normalize the volume. The first three are the lowese frequencies so this will only fire when kicks or low snares are hit. We dont want to fire on each hi-hat, that would be too much. This is a nice balance.
 						if ((data[0] / 255 + data[1] / 255 + data[2] / 255) / 3 >= .85) { /// [.85] is the normalized threshold
-							scene.background = HDRIS.light_darkerer_oculus
-						} else if (scene.background !== HDRIS.dark_light_oculus) {
-							scene.background = HDRIS.dark_light_oculus
+							scene.background = HDRIS.light_darkerer
+						} else if (scene.background !== HDRIS.dark_light) {
+							scene.background = HDRIS.dark_light
 						}
 					}
 				}
