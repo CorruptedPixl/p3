@@ -67,16 +67,14 @@
 		const startButton = document.getElementById('startButton');
 		startButton.addEventListener('click', init);
 
-		const vidConfig = ['video', 'video2', 'video3']
-		const HDRIConfig = ['white', 'black', 'lines', 'sat', 'sat2', 'dark_white', 'dark_black', 'dark_dark', 'dark_light', 'light_darker', 'dark_sat', 'light_darkerer']
+		// const vidConfig = ['video', 'video2', 'video3']
+		const vidConfig = []
+		const HDRIConfig = ['white', 'black', 'lines', 'sat', 'sat2', 'dark_white', 'dark_black', 'dark_dark', 'dark_light', 'light_darker', 'dark_sat', 'light_darkerer'] // TODO remove all but two
 
 		const refDist = 50; // distance from where to start applying volume reduction 
 
-		const getPlaylist = async (url) => {
-			// playListJson = await fetch(url).then(response => response.json());
-			// return playListJson;
-			return await fetch(url).then(response => response.json());
-		}
+		const getPlaylist = async (url) => { return await fetch(url).then(response => response.json()); }
+
 		const initPlaylist = async () => {
 			playListJson = await getPlaylist('media/json/playlist.json');
 			albumArt = playListJson.albumArt;
@@ -89,6 +87,7 @@
 		}
 
 		const preloadImgs = async (imgs) => {
+			/// Whether or not this image is actually used or not does not matter, since it'll be cached anyway
 			imgs.forEach(async img => {
 				const image = new Image();
 				image.src = img;
@@ -97,17 +96,10 @@
 		}
 
 		const preloadVideos = (videos) => {
-			// videos.map(video => {
-			// 	const video = new Video();
-			// 	image.src = img;
-			// 	console.log(image)
-			// 	document.querySelector('body').appendChild(image);
-			// 	return image;
-			// })
-
-			/// TODO ADD VIDEOS TO VIDCONFIG HERE
-
 			const $videoContainer = document.querySelector('#videoContainer');
+
+			videos.forEach(video => { vidConfig.push(video.id) })
+
 			$videoContainer.innerHTML = videos.map(video => `
 			<video id="${video.id}" preload="auto" style="display: none" crossorigin="anonymous" muted controls loop>
 				<source src="${video.url}" type="video/mp4" crossorigin="*">
@@ -124,35 +116,26 @@
 			return new Promise((resolve, reject) => {
 				currentStems = [];
 				const $audioContainer = document.querySelector('#audioContainer');
-				// $audioContainer.innerHTML = track.stems.map(stem => `
-				// <audio id="${stem}" loop preload="auto" style="display: none">
-				// 	<source src="${track.stemsPath}${stem}.mp3" type="audio/mpeg">
-				// </audio>`
-				// ).join(``)
 				console.log('%c%s', 'color: #9FE3FF', `Now loading: ${track.title}`);
+
 				track.stems.forEach(stem => {
 					const audio = new Audio();
 					audio.src = `${track.stemsPath}${stem.name}.mp3`;
 					audio.loop = true;
 					audio.name = stem.name;
 					$audioContainer.appendChild(audio);
+
+					/// This event fires when the browser thinks it can play the file without having to buffer, is not always reliable but it's the best we can do.
 					audio.oncanplaythrough = (e) => {
 						const $loading = document.querySelector('#loading');
-						currentStems[audio.name] = { ...stem, "audio": audio };
+						currentStems[audio.name] = { ...stem, "audio": audio }; /// Add the audio object to the existing currentStems object
 						console.log('%c%s', 'color: #4AF2FF', `Loaded ${audio.name}`);
 						if (Object.keys(currentStems).length === track.stems.length) {
 							if ($loading) $loading.innerHTML = 'Loaded all stems!'
 							console.log('%c%s', 'color: #1F8BFF', `All stems loaded.`);
-
 							resolve();
-
-							// if (!document.getElementById('overlay')) {
-							// 	console.log(currentStems);
-							// 	initStems(currentStems);
-							// }
 						}
 					};
-					// return audio;
 				})
 			})
 		}
@@ -160,58 +143,40 @@
 		const unloadAudio = () => {
 
 			return new Promise((resolve, reject) => {
+				/// Remove all previous audio files
 				const $audioContainer = document.querySelector('#audioContainer');
-				// for (const stem in currentStems) {
-				// 	currentStems[stem].audio.pause();
-				// }
 				$audioContainer.innerHTML = '';
 
-
-				// for (const mesh in meshes) {
-				// }
-				// console.log(meshes[mesh])
-				// const object = scene.getObjectByProperty('uuid', meshes[mesh].uuid);
 				const stemsGroup = scene.getObjectByProperty('name', 'stemsGroup');
-				console.log(stemsGroup)
-				let stemsToBeRemoved = [...stemsGroup.children]; /// make a clone of the children to loop over otherwise the array will shorten during the loop and this skip every 2nd item
+				let stemsToBeRemoved = [...stemsGroup.children]; /// Make a clone of the children to loop over otherwise the array will shorten during the loop and this skip every 2nd item
+
 				for (const stem in stemsToBeRemoved) {
-					console.log(stemsToBeRemoved[stem])
 					const stemObject = stemsToBeRemoved[stem];
+					/// We dispose of the geometry and materials first to free up memory in Three.js
 					stemObject.geometry.dispose();
 					stemObject.material.dispose();
-					// stemObject.children.forEach(child => {
-					// 	child?.source?.disconnect();
-					// });
+
+					/// Then we remove these entries fron the objects we stored them in
 					delete mats[stemsToBeRemoved[stem].name]
 					delete meshes[stemsToBeRemoved[stem].name]
 					delete sounds[stemsToBeRemoved[stem].name]
 					delete analysers[stemsToBeRemoved[stem].name]
+
+					/// And finally remove the object itself from the scene
 					stemObject.removeFromParent();
 				}
 				stemsToBeRemoved = [];
-
-
 				scene.remove(stemsGroup);
-				console.log(stemsGroup)
-				// mats = [];
-				// meshes = [];
-				// sounds = [];
-				// analysers = [];
-				renderer.renderLists.dispose();
+				renderer.renderLists.dispose(); /// Force Three.js to clear up the memory
 
-				console.log({ mats })
-				console.log({ meshes })
-				console.log({ sounds })
-				console.log({ analysers })
 				resolve();
 			})
 		}
 
-		initPlaylist();
+		initPlaylist(); /// Fetch the playlist data and preload images, sounds and videos
 
 		const initScene = () => {
 			return new Promise((resolve, reject) => {
-
 				camera = new THREE.PerspectiveCamera(70, window.innerWidth / window.innerHeight, .1, 10000);
 				camera.position.set(0, 20, 0);
 
@@ -219,9 +184,9 @@
 				camera.add(listener);
 
 				scene = new THREE.Scene();
-				// scene.fog = new THREE.FogExp2(0x000000, 0.0025);
+				// scene.fog = new THREE.FogExp2(0x000000, 0.005);
 
-				// const light = new THREE.HemisphereLight(0xffffbb, 0x080820, 1);
+				/// Lights for the notes
 				const light = new THREE.DirectionalLight(0xffffbb);
 				light.position.set(100, 30, -100).normalize();
 				light.castShadow = true;
@@ -230,50 +195,41 @@
 				const light1 = new THREE.PointLight(0xffffff, .03, 0);
 				light1.position.set(0, 200, 0);
 				scene.add(light1);
+
 				const light2 = new THREE.PointLight(0xffffff, .01, 0);
 				light2.position.set(100, 10, 50);
 				scene.add(light2);
 
-				/// ground
-				const helper = new THREE.GridHelper(1000, 10, 0x444444, 0x444444);
-				helper.position.y = 0.1;
-				scene.add(helper);
+				// /// Ground grid
+				// const helper = new THREE.GridHelper(1000, 10, 0x444444, 0x444444);
+				// helper.position.y = 0.1;
+				// scene.add(helper);
 
-				/// Raycaster
+				/// Raycaster for controllers
 				raycaster = new THREE.Raycaster();
 
-				///////////////////////
+				/// Render setup
 				renderer = new THREE.WebGLRenderer({ antialias: true });
 				renderer.setPixelRatio(window.devicePixelRatio);
 				renderer.setSize(window.innerWidth, window.innerHeight);
-				/// enable webxr
 				renderer.outputEncoding = THREE.sRGBEncoding;
 				renderer.shadowMap.enabled = true;
+				/// enable webxr
 				renderer.xr.enabled = true;
 				document.body.appendChild(renderer.domElement);
-				// initStems(objConfig)
+
 				resolve();
 			})
 		}
 
 		const initStems = (currentStems) => {
-			const sphere = new THREE.SphereGeometry(20, 32, 16);
-			// let note;
-			/////////////// GLTF
+			/// Loading GLTF note model
 			const loader = new GLTFLoader().setPath('models/');
 			loader.load('note_gold.gltf', (gltf) => {
-				// console.log(gltf)
 				const noteModel = gltf.scene;
-				// const noteModel = new THREE.Mesh(gltf.scene.children[0], new THREE.MeshLambertMaterial({ color: 0xDDD3C3, envMap: textureEquirec, reflectivity: 1 }));
-				noteModel.envMap = textureEquirec;
-				// noteModel.children[0].material = new THREE.MeshLambertMaterial({ color: 0xDDD3C3, envMap: textureEquirec, reflectivity: 1 });
-				noteModel.children[0].material.envMap = textureEquirec;
-				// noteModel.needsUpdate = true;
-				// scene.add(noteModel);
-				noteObject = noteModel.children[0].geometry;
-				loadStems(currentStems).then(() => { initGui(); });
+				noteObject = noteModel.children[0].geometry; /// Get the raw geometry
+				loadStems(currentStems).then(() => { initGui(); }); /// Now that the model is fully loaded, we can continue to load the stems and then the GUI, which depends on the stems
 			});
-			///////////////
 		}
 
 		const loadStems = (currentStems) => {
@@ -281,96 +237,56 @@
 			return new Promise((resolve, reject) => {
 				const populateArrays = new Promise((resolve, reject) => {
 					for (const stem in currentStems) {
-						// create a new material with the color of the object
+						// Create a new material with the color of the object
 						mats[currentStems[stem].name] = new THREE.MeshPhongMaterial({ color: currentStems[stem].color, flatShading: true, shininess: .1, specular: currentStems[stem].color });
-						// create a new mesh with that material
-						// meshes[obj.name] = new THREE.Mesh(sphere, mats[obj.name]) /// old mesh
+						// Create a new mesh with that material and the note model
 						meshes[currentStems[stem].name] = new THREE.Mesh(noteObject, mats[currentStems[stem].name])
-						/// TODO change color of included material in gltf so the environment is reflected. 
 						meshes[currentStems[stem].name].name = currentStems[stem].name;
 						meshes[currentStems[stem].name].rotateY(Math.PI);
-						// scene.add(meshes[stem.name]); // DONT ADD EACH OBJECT INDIVIDUALLY
-						stemsGroup.add(meshes[currentStems[stem].name]);
+						stemsGroup.add(meshes[currentStems[stem].name]); /// Add it to a group to make life easier later on when we load new stems
 
-						// create audio sources, load from html and add to stemects
+						// Create audio sources, load from html and add to stems
 						sounds[currentStems[stem].name] = new THREE.PositionalAudio(listener);
-						// const currentSound = document.querySelector(`#${currentStems[stem].name}`) /// old loading func
 						const currentSound = currentStems[stem].audio;
 						sounds[currentStems[stem].name].setMediaElementSource(currentSound).setRefDistance(refDist);
-						// currentSound.play(); /// dont play here but after everything's loaded
 						meshes[currentStems[stem].name].add(sounds[currentStems[stem].name]);
-						// start analysers
-						analysers[currentStems[stem].name] = new THREE.AudioAnalyser(sounds[currentStems[stem].name], 32);
+
+						analysers[currentStems[stem].name] = new THREE.AudioAnalyser(sounds[currentStems[stem].name], 32); // Start analysers
 					}
-					console.log(meshes)
+
 					resolve()
 				})
 
 				populateArrays.then(res => {
-					console.log(meshes)
 					let i = 0;
 					const spacer = 50;
 					// set positions of objects
 					for (const mesh in meshes) {
-						meshes[mesh].position.set((spacer * 2.15 - (spacer * i)), 30, 100)
+						meshes[mesh].position.set((spacer * 2 - (spacer * i)), 30, 100)
 						meshes[mesh].scale.set(.7, .7, .7)
 						i++
 					}
-
-					// meshes['atmos'].position.set(- 250, 30, 100);
-					// meshes['bass'].position.set(- 200, 30, 100);
-					// meshes['drums'].position.set(- 150, 30, 100);
-					// meshes['guitars'].position.set(- 100, 30, 100);
-					// meshes['lq'].position.set(- 50, 30, 100);
-					// meshes['pads'].position.set(0, 30, 100);
-					// meshes['plucks'].position.set(50, 30, 100);
-					// meshes['tags'].position.set(100, 30, 100);
-					// meshes['vocals'].position.set(150, 30, 100);
 				})
 
 				stemsGroup.name = 'stemsGroup';
-				scene.add(stemsGroup); // ADD STEMS GROUP TO THE SCENE
+				scene.add(stemsGroup); // Add stems group to the scene
 
-				// initGui() /// TODO GETS CALLED TWICE BECAUSE ITS NOT A PROMISE, SHOULD ONLY FIRE IN INIT
-				for (const stem in currentStems) { currentStems[stem].audio.play() } /// Finally start playing them all (as close as possible) at the same time
+				for (const stem in currentStems) { currentStems[stem].audio.play() } /// Finally start playing them all at the same time (or as close as possible)
 				resolve();
 			})
 		}
 
 		const initVideoGroup = (vidConfig) => {
-			// VIDEOooo
 			const vidTextures = [];
 
+			/// Create video materials from the preloaded vids in the html
 			vidConfig.forEach(video => {
 				const currentVid = document.querySelector(`#${video}`);
-				// videos[video] = currentVid;
 				videos.push(currentVid);
 				vidTextures.push(new THREE.MeshBasicMaterial({ map: new THREE.VideoTexture(currentVid), }));
-				// console.log(currentVid)
-				// console.log(videos)
 			});
-			// const video = document.querySelector('#video');
-			// const video2 = document.querySelector('#video2');
-			// const video3 = document.querySelector('#video3');
 
-
-
-			// const vidTextures = [
-			// 	new THREE.MeshBasicMaterial({ map: new THREE.VideoTexture(video), }), /// side: THREE.DoubleSide  can prob be omitted (NEEDS TESTING)
-			// 	new THREE.MeshBasicMaterial({ map: new THREE.VideoTexture(video2), }), ///  side: THREE.DoubleSide can prob be omitted (NEEDS TESTING)
-			// 	new THREE.MeshBasicMaterial({ map: new THREE.VideoTexture(video3), }), ///  side: THREE.DoubleSide can prob be omitted (NEEDS TESTING)
-			// ];
-
-			// const vidTex = new THREE.VideoTexture(video);
-			// // vidTex.needsUpdate;
-			// vidTex.minFilter = THREE.LinearFilter;
-			// vidTex.magFilter = THREE.LinearFilter;
-			// vidTex.format = THREE.RGBFormat;
-			// // vidTex.wrapS = THREE.CubeReflectionMapping;
-			// // vidTex.wrapT = THREE.CubeReflectionMapping;
-			// vidTex.repeat.set(100, 100);
-			// // video.crossOrigin = 'anonymous';
-
+			/// Create a triangle for the sides of the object
 			const triangleSize = .5;
 			const triangle = new THREE.Shape(); // create a triangle
 			triangle.moveTo(10 * triangleSize, 0); // right point
@@ -386,38 +302,10 @@
 				new THREE.ExtrudeGeometry(triangle, { steps: 1, depth: .1, }),
 				new THREE.MeshBasicMaterial({ color: 0xffbb00 })
 			)
-			vidShapeSideOne.position.set(10, 10.08, -14.85);
+			vidShapeSideOne.position.set(10, 10.08, -14.85); /// Align perfectly with videos
 			vidShapeSideTwo.position.set(-10, 10.08, -14.85);
-			vidShapeSideOne.rotateY(Math.PI / 2); // 180° radians
-			vidShapeSideTwo.rotateY(Math.PI / 2); // 180° radians
-			// scene.add(vidShapeSideOne);
-			// scene.add(vidShapeSideTwo);
-
-			// let vidMesh = new THREE.Mesh(
-			// 	// new THREE.PlaneGeometry(20, 10),
-			// 	new THREE.ExtrudeGeometry(triangle, { steps: 1, depth: 30, }), // extrude triangle
-			// 	// new THREE.MeshBasicMaterial({ map: vidTex }));
-			// 	// extrudedTriangle,
-			// 	[
-			// 		// new THREE.MeshBasicMaterial({ map: new THREE.VideoTexture(video) }),
-			// 		// new THREE.MeshBasicMaterial({ map: new THREE.VideoTexture(video2) }),
-			// 		// new THREE.MeshBasicMaterial({ map: new THREE.VideoTexture(video3) }),
-			// 		// new THREE.MeshBasicMaterial({ map: new THREE.VideoTexture(video3) }),
-			// 		// new THREE.MeshBasicMaterial({ map: new THREE.VideoTexture(video3) }),
-			// 		new THREE.MeshBasicMaterial({ color: 0xffbb00 }),
-			// 		new THREE.MeshBasicMaterial({ color: 0x00bb00 }),
-			// 		new THREE.MeshBasicMaterial({ color: 0x00ff00 }),
-			// 		new THREE.MeshBasicMaterial({ color: 0x0000ff }),
-			// 		new THREE.MeshBasicMaterial({ color: 0xffffff }),
-			// 	]);
-			// // new THREE.MeshFaceMaterial(vidTextures));
-			// // new THREE.MeshBasicMaterial({ color: 0xffbb00 }));
-
-			// vidMesh.position.set(0, 0, -4);
-			// vidMesh.userData.isDraggable = true;
-			// vidMesh.name = 'e-triangle'
-			// vidMesh.scale.set(.05, .05, .05);
-			// scene.add(vidMesh)
+			vidShapeSideOne.rotateY(Math.PI / 2); // 90° radians
+			vidShapeSideTwo.rotateY(Math.PI / 2);
 
 			/// Video mesh group
 			let vidSideAlpha = new THREE.Mesh(
@@ -429,29 +317,32 @@
 			vidSideAlpha.rotateZ(Math.PI); // 180° radians
 			vidSideAlpha.rotateX(0.523599); // 30° in radians (formula deg to rad: angle * π / 180)
 			vidSideAlpha.material.side = THREE.DoubleSide; // render both sides
+
 			let vidSideBeta = new THREE.Mesh(
 				new THREE.PlaneGeometry(20, 10),
 				vidTextures[1]);
 			vidSideBeta.name = 'vidSideBeta';
 			vidSideBeta.position.set(0, 10, -15);
 			vidSideBeta.rotateX(1.5708); // 90° in radians
+
 			let vidSideGamma = new THREE.Mesh(
 				new THREE.PlaneGeometry(20, 10),
 				vidTextures[2]);
 			vidSideGamma.name = 'vidSideGamma';
 			vidSideGamma.position.set(0, 14.33, -12.5);
-			vidSideGamma.rotateX(-0.523599); // 30° in radians (formula deg to rad: angle * π / 180)
+			vidSideGamma.rotateX(-0.523599); // 30° in radians
+
+			/// Add them all together
 			vidGroup.add(vidSideAlpha);
 			vidGroup.add(vidSideBeta);
 			vidGroup.add(vidSideGamma);
 			vidGroup.add(vidShapeSideOne);
 			vidGroup.add(vidShapeSideTwo);
-			vidGroup.userData.isDraggable = true;
+			vidGroup.userData.isDraggable = true; /// Enable dragging (custom property)
 			vidGroup.name = 'vidGroup';
 			vidGroup.scale.set(.1, .1, .1);
-
-			vidGroup.position.set(1.2774114085134398, 0.6355997895828723, -0.4851377603984951)
-			vidGroup.rotation.set(-0.46588650970294515, -1.1860233074386377, -0.44803679405802344)
+			vidGroup.position.set(1.2774114085134398, 0.6355997895828723, -0.4851377603984951) /// I aligned the object in VR and then logged the coordinates, this is why they might seem random
+			vidGroup.rotation.set(-0.46588650970294515, -1.1860233074386377, -0.44803679405802344) /// Same but with Euler angles
 
 			scene.add(vidGroup);
 
@@ -459,36 +350,21 @@
 				video.load();
 				video.play();
 			});
-
-			// video.load();
-			// video.play();
-			// video2.load();
-			// video2.play();
-			// video3.load();
-			// video3.play();
-
 		}
 
 		const initGui = () => {
 			const SoundControls = function () {
 				this.master = listener.getMasterVolume();
-				console.log(currentStems)
-				// objConfig.forEach(obj => {
-				for (const stem in currentStems) {
-					this[currentStems[stem].name] = sounds[currentStems[stem].name].getVolume();
-				}
+				for (const stem in currentStems) { this[currentStems[stem].name] = sounds[currentStems[stem].name].getVolume(); }
 			};
-
 
 			const gui = new GUI();
 			const soundControls = new SoundControls();
-			// const generatorControls = new GeneratorControls();
 			const volumeFolder = gui.addFolder('sound volume');
-			// const generatorFolder = gui.addFolder('sound generator');
 
 			volumeFolder.add(soundControls, 'master').min(0.0).max(1.0).step(0.01).onChange(function () {
 				listener.setMasterVolume(soundControls.master);
-				////// TEMP REMOVE
+				////// TODO TEMP REMOVE
 				if (soundControls.master < .3) { scene.background = HDRIS.light_darkerer; }
 				if (soundControls.master > .3 && soundControls.master < .6) { scene.background = HDRIS.dark_light; }
 				if (soundControls.master > .6 && soundControls.master < .8) { scene.background = HDRIS.sat2; }
@@ -496,60 +372,49 @@
 			});
 
 			// add controls for each sound loaded
-			// objConfig.forEach(obj => {
 			for (const stem in currentStems) {
 				volumeFolder.add(soundControls, currentStems[stem].name, 0, 1, 0.01).onChange(value => {
 					sounds[currentStems[stem].name].setVolume(value);
 				});
 			}
-			volumeFolder.open();
+			volumeFolder.open(); /// Open the GUI controls for desktop users.
 		}
 
 		const initControllers = () => {
-			/// webxr stuff
+			/// Callback functions for when events fire
 			function onSelectStart(e) {
 				this.userData.isSelecting = true;
-
-
 				const controller = e.target;
 
 				tempMatrix.identity().extractRotation(controller.matrixWorld);
-
 				raycaster.ray.origin.setFromMatrixPosition(controller.matrixWorld);
 				raycaster.ray.direction.set(0, 0, - 1).applyMatrix4(tempMatrix);
 
-				///! could be optimized slightly by adding all draggable objects to a group and only checking intersections on that group instead of the whole scene
+				///! Could be optimized slightly by adding all draggable objects to a group and only checking intersections on that group instead of the whole scene
 				const intersects = raycaster.intersectObjects(scene.children, false);
 				const intersectsVidGroup = raycaster.intersectObjects(vidGroup.children, false);
 				const intersectsSongSelect = raycaster.intersectObjects(songSelectGroup.children, false);
-				// console.log({ intersectsVidGroup })
 
-				/// standalone objects
-				if (intersects.length > 0) {
-					intersects.forEach(obj => {
-						if (!obj.object.userData?.isDraggable) { return }
-						else if (obj.object.parent.userData?.isDraggable) {
-							const object = obj.object;
-							controller.attach(object);
+				// /// Standalone objects
+				// if (intersects.length > 0) {
+				// 	intersects.forEach(obj => {
+				// 		if (!obj.object.userData?.isDraggable) { return } /// Early return if object is not draggable
+				// 		else if (obj.object.parent.userData?.isDraggable) { /// To attach grouped objects like the video group. This needs to be here or you'd only move the faces of the video group
+				// 			const object = obj.object;
+				// 			controller.attach(object);
+				// 			controller.userData.selected = object;
+				// 		}
+				// 		else { /// For all other objects
+				// 			const object = obj.object;
+				// 			controller.attach(object);
+				// 			controller.userData.selected = object;
+				// 		}
+				// 	})
+				// }
 
-							controller.userData.selected = object;
-						}
-						else {
-							console.log('Dragging', { obj })
-							const object = obj.object;
-							controller.attach(object);
-							controller.userData.selected = object;
-						}
-					})
-
-				}
-
-				/// video group obj
+				/// Double click (un)mute video checks
 				if (intersectsVidGroup.length > 0) {
-
-					if (this.userData?.videoGroup?.lastVideoObj === intersectsVidGroup[0].object && performance.now() - this.userData?.videoGroup?.lastClick <= 400) {
-						// console.log(parseInt(performance.now()))
-						// console.log(this.userData.videoGroup)
+					if (this.userData?.videoGroup?.lastVideoObj === intersectsVidGroup[0].object && performance.now() - this.userData?.videoGroup?.lastClick <= 400) { /// Two clicks within the last [400]ms?
 						switch (intersectsVidGroup[0].object.name) {
 							case 'vidSideAlpha':
 								videos[0].muted = !videos[0].muted;
@@ -560,22 +425,19 @@
 							case 'vidSideGamma':
 								videos[2].muted = !videos[2].muted;
 								break;
-
 							default:
 								break;
 						}
 					}
 
 					intersectsVidGroup.forEach(obj => {
-						if (!obj.object.parent.userData?.isDraggable) { return }
-						else if (obj.object.parent.userData?.isDraggable) {
+						if (!obj.object.parent.userData?.isDraggable) { return } /// Early return if object is not draggable
+						else if (obj.object.parent.userData?.isDraggable) { /// To attach grouped objects like the video group. This needs to be here or you'd only move the faces of the video
 							const object = obj.object.parent;
 							controller.attach(object);
-
 							controller.userData.selected = object;
 						}
 						else {
-							console.log('Dragging', { obj })
 							const object = obj.object;
 							controller.attach(object);
 							controller.userData.selected = object;
@@ -589,12 +451,12 @@
 				}
 
 
-				/// Stem selector
+				/// Song selector
 				if (intersectsSongSelect.length > 0) {
-					if (!playListJson.tracks.some(track => track.title === intersectsSongSelect[0].object.name)) { return }
+					if (!playListJson.tracks.some(track => track.title === intersectsSongSelect[0].object.name)) { return } /// Are we selecting a song that is part of the current album?
 					else {
 						const selectedTrack = playListJson.tracks.findIndex(track => track.title === intersectsSongSelect[0].object.name);
-						console.log('selected track', selectedTrack)
+						/// Load new stems
 						unloadAudio()
 							.then(() => loadTrack(playListJson.tracks[selectedTrack]))
 							.then(() => loadStems(currentStems))
@@ -607,27 +469,22 @@
 			function onSelectEnd(e) {
 				/// 'this' is the controller group
 				this.userData.isSelecting = false;
-
 				const controller = e.target;
 
 				if (controller.userData.selected !== undefined) {
-
 					const object = controller.userData.selected;
-					scene.attach(object);
-
+					scene.attach(object); /// Attach the obj back to the scene (free from controller)
 					controller.userData.selected = undefined;
-
 				}
 			}
 
-			/// init & render controller models
-			/// populate the groups
+			/// Init & render controller models
+			/// Populate the groups
 			controllers = [renderer.xr.getController(0), renderer.xr.getController(1)]
 			controllerGrips = [renderer.xr.getControllerGrip(0), renderer.xr.getControllerGrip(1)]
 			const controllerModelFactory = new XRControllerModelFactory();
-			// controller = renderer.xr.getController(0);
 
-			/// adding event listeners
+			/// Adding the event listeners
 			controllers.forEach(controller => {
 				controller.addEventListener('selectstart', onSelectStart);
 				controller.addEventListener('selectend', onSelectEnd);
@@ -640,44 +497,24 @@
 				scene.add(controller);
 			})
 
-			/// adding models so they're visible
+			/// Adding models so they're visible
 			controllerGrips.forEach(controllerGrip => {
 				controllerGrip.add(controllerModelFactory.createControllerModel(controllerGrip));
 				scene.add(controllerGrip);
 			});
-
-			// controller.addEventListener('selectstart', onSelectStart);
-			// controller.addEventListener('selectend', onSelectEnd);
-			// controller.addEventListener('connected', function (event) {
-			// 	this.add(buildController(event.data));
-			// });
-			// controller.addEventListener('disconnected', function () {
-			// 	this.remove(this.children[0]);
-			// });
-			// scene.add(controller);
-
-
-			// controllerGrip = renderer.xr.getControllerGrip(0);
-			// controllerGrip.add(controllerModelFactory.createControllerModel(controllerGrip));
-			// scene.add(controllerGrip);
 		}
 
 		const loadLyrics = (track) => {
+			/// Reset the timer and lyrics obj
 			lyrics = track.lyrics;
-
 			lyrics.startTime = performance.now();
 			lyrics.lineIndex = 0;
 			lyrics.ended = false;
 			lyrics.timeOffset = 0;
-
-			console.log(lyrics)
 		}
 
 		const initLyrics = (track) => {
-			loadLyrics(track)
-
-			scene.add(text)
-
+			loadLyrics(track) /// Get the lyrics, reset the object and restart the timer
 			// Set properties to configure:
 			text.text = 'Loading lyrics'
 			text.fontSize = 3
@@ -687,14 +524,13 @@
 			text.color = 0xffbb00
 			text.anchorX = 'center';
 
-			// Update the rendering:
-			text.sync()
+			scene.add(text)
+
+			text.sync() // Force update the rendering
 		}
 
 		const initSongSelect = (playlist) => {
-			console.log('%c%s', 'color: #D20FC7', 'Loading song select');
-
-			/// Tracks text
+			/// Add title of each track
 			const tracks = playlist.tracks;
 			for (const track in tracks) {
 				const trackText = new Text();
@@ -703,15 +539,12 @@
 				trackText.fontSize = 2
 				trackText.font = 'https://cdn.cpixl.com/fonts/next/OTF/Next%20Book/NextBook-Medium.otf'
 				trackText.position.set(0, - track * 2.5, 0)
-				// trackText.rotateY(Math.PI)
 				trackText.color = 0xffffff
-				// trackText.anchorX = 'center';
-
-				// Update the rendering:
-				trackText.sync()
+				trackText.sync() // Force update the rendering
 				songSelectGroup.add(trackText)
 			}
 
+			/// Add name of the album
 			const albumText = new Text();
 			albumText.text = playListJson.album;
 			albumText.name = playListJson.album;
@@ -720,6 +553,7 @@
 			albumText.position.set(-22, -21, 0);
 			songSelectGroup.add(albumText);
 
+			/// Add name of the artist
 			const artistText = new Text();
 			artistText.text = playListJson.artist;
 			artistText.name = playListJson.artist;
@@ -728,10 +562,9 @@
 			artistText.position.set(-22, -24, 0);
 			songSelectGroup.add(artistText);
 
-
-			/// Album art
+			/// Add the album art
 			let albumArtTexture = textureLoader.load(playListJson.albumArt);
-			albumArtTexture.encoding = THREE.sRGBEncoding;
+			albumArtTexture.encoding = THREE.sRGBEncoding; ///! THIS IS REALLY IMPORTANT. Since we set the renderer to sRGB, we need to set the texture to sRGB too otherwise the colors WILL BE WRONG!
 
 			const albumArtPlane = new THREE.Mesh(
 				new THREE.PlaneGeometry(20, 20),
@@ -739,42 +572,30 @@
 			);
 			albumArtPlane.position.set(-12, -10, 0);
 			songSelectGroup.add(albumArtPlane)
-			// albumArtPlane.position.set(1, 1, 1)
-
 
 			songSelectGroup.name = 'songSelectGroup';
 			songSelectGroup.position.set(0, 40, -50);
 			scene.add(songSelectGroup);
-			console.log(songSelectGroup)
 		}
 
 		const initFloor = () => {
-			/////////////// shader
-			// const shader = FloorShader.fragment;
-
+			/// Create floor shader material
 			const material = new THREE.ShaderMaterial({
 				uniforms: {
-
 					time: globalTime,
 					resolution: { value: new THREE.Vector2(window.innerWidth, window.innerHeight) }
-
 				},
 				vertexShader: FloorShader.vertex,
 				fragmentShader: FloorShader.fragment
 			});
 
-			const testPlane = new THREE.Mesh(
-				new THREE.PlaneGeometry(10000, 10000),
-				material
-			);
+			const FloorShaderPlane = new THREE.Mesh(new THREE.PlaneGeometry(10000, 10000), material);
+			scene.add(FloorShaderPlane);
+			FloorShaderPlane.rotateX(- Math.PI / 2)
+			FloorShaderPlane.position.set(0, -150, 0)
 
-			scene.add(testPlane);
-			testPlane.rotateX(- Math.PI / 2)
-			testPlane.position.set(0, -150, 0)
-			////////////////
-
-			////////////////////////////
-			var skyDomeRadius = 5000.01;
+			/// Create starry sky shader material
+			const skyDomeRadius = 5000.01; /// Since this is used in calculations inside the shader, we add a .01 to make sure its a float and not an int.
 			skyMaterial = new THREE.ShaderMaterial({
 				uniforms: {
 					time: { value: 0 },
@@ -789,47 +610,33 @@
 				},
 				vertexShader: StarShader.vertex,
 				fragmentShader: StarShader.fragment,
-				side: THREE.DoubleSide,
-				transparent: true,
-				blending: THREE.AdditiveBlending,
+				side: THREE.DoubleSide, /// We're viewing the inside so we need to render both sides
+				transparent: true, /// Doesnt actually do anything but let Three.js know we want to do something with transparency. This tells the render to render possible transparency.
+				blending: THREE.AdditiveBlending, /// Here we actually create transparent pixels, wont work without 'transparent' being set to true
 			});
-			var sphereGeometry = new THREE.SphereGeometry(skyDomeRadius, 20, 20);
-			var skyDome = new THREE.Mesh(sphereGeometry, skyMaterial);
+
+			const sphereGeometry = new THREE.SphereGeometry(skyDomeRadius, 20, 20);
+			const skyDome = new THREE.Mesh(sphereGeometry, skyMaterial);
 			scene.add(skyDome);
-			////////////////////////////
 
-
-			/////////////// HDRI
-			// const textureLoader = new THREE.TextureLoader();
+			/// Load HDRI's
 			HDRIConfig.forEach(HDRI => {
 				const currentHDRI = textureLoader.load(`textures/hdri-${HDRI}.png`);
 				currentHDRI.mapping = THREE.EquirectangularReflectionMapping;
 				currentHDRI.encoding = THREE.sRGBEncoding;
-
 				HDRIS[HDRI] = currentHDRI;
 			})
 
-			//// remove skydome hdri
-			// var sphereGeometry = new THREE.SphereGeometry(5000, 20, 20);
-			// var skyMaterial = new THREE.MeshBasicMaterial({ envMap: HDRIS.dark_dark, side: THREE.BackSide });
-			// var skyDome = new THREE.Mesh(sphereGeometry, skyMaterial);
-			// scene.add(skyDome);
-
-			/////////// WATER TEXTURE
+			/// Load water texture for glass floor
 			waterTexture = textureLoader.load(`textures/waternormals.jpg`);
 			waterTexture.magFilter = THREE.NearestFilter;
 			waterTexture.wrapT = THREE.RepeatWrapping;
 			waterTexture.wrapS = THREE.RepeatWrapping;
 			waterTexture.repeat.set(800, 2000.5);
 
-			// const textureLoader = new THREE.TextureLoader();
-			// textureEquirec = textureLoader.load('textures/hdri-skygone.png');
-			// textureEquirec.mapping = THREE.EquirectangularReflectionMapping;
-			// textureEquirec.encoding = THREE.sRGBEncoding;
-			scene.background = HDRIS.dark_light;
-			///////////////
+			scene.background = HDRIS.dark_light; /// Apply the HDRI as the background of the scene. This renders it correctly since we mapped it to the equirectangular mapping.
 
-			//////////////// Glass plane
+			/// Glass floor physical material
 			const glassPlane = new THREE.Mesh(
 				new THREE.PlaneGeometry(2000, 2000),
 				new THREE.MeshPhysicalMaterial({
@@ -837,9 +644,8 @@
 					metalness: 0,
 					roughness: 1,
 					ior: 1.1,
-					alpha: .5,
 					alphaMap: waterTexture,
-					envMap: HDRIS.dark_white,
+					envMap: HDRIS.dark_light,
 					envMapIntensity: 1,
 					transmission: 1,
 					specularIntensity: 1,
@@ -854,145 +660,110 @@
 				}))
 
 			glassPlane.rotateX(- Math.PI / 2)
-			// glassPlane.receiveShadow
 			scene.add(glassPlane);
-			///////////////
 		}
 
 		const buildController = (data) => {
-
+			/// Native three.js code that creates the controller or dot on the screen in case of Google Cardboard VR
 			let geometry, material;
-
 			switch (data.targetRayMode) {
-
 				case 'tracked-pointer':
-
 					geometry = new THREE.BufferGeometry();
 					geometry.setAttribute('position', new THREE.Float32BufferAttribute([0, 0, 0, 0, 0, - 1], 3));
 					geometry.setAttribute('color', new THREE.Float32BufferAttribute([0.5, 0.5, 0.5, 0, 0, 0], 3));
-
 					material = new THREE.LineBasicMaterial({ vertexColors: true, blending: THREE.AdditiveBlending });
-
 					return new THREE.Line(geometry, material);
-
 				case 'gaze':
-
 					geometry = new THREE.RingGeometry(0.02, 0.04, 32).translate(0, 0, - 1);
 					material = new THREE.MeshBasicMaterial({ opacity: 0.5, transparent: true });
 					return new THREE.Mesh(geometry, material);
-
 			}
-
 		}
 
 		const onWindowResize = () => {
-
 			camera.aspect = window.innerWidth / window.innerHeight;
 			camera.updateProjectionMatrix();
-
 			renderer.setSize(window.innerWidth, window.innerHeight);
-
 			controls.handleResize();
-
 		}
 
 		const animate = () => {
-
-			// requestAnimationFrame(animate);
-			// render();
-
+			/// For desktop rendering 'requestAnimationFrame(animate)' would be used, but this needs to change to the below for VR and related stuff. Keeps working on desktop too though. 
 			renderer.setAnimationLoop(render);
-
 		}
 
 		const render = () => {
 			const delta = clock.getDelta();
 			controls.update(delta);
 
-			globalTime.value = clock.elapsedTime;
-			skyMaterial.uniforms.time.value = clock.getElapsedTime();
+			globalTime.value = clock.elapsedTime; /// Floor shader
+			skyMaterial.uniforms.time.value = clock.getElapsedTime(); /// Sky shader
 
-			/// analysers
+			/// Analysers
 			for (const obj in stemsGroup.children) {
 				if (!stemsGroup.children[obj]?.isHighlighted) {
+					/// Update the red emissive channel, this seems to be the most visible one of the tree
 					mats[stemsGroup.children[obj].name].emissive.r = analysers[stemsGroup.children[obj].name].getAverageFrequency() / 256 * 2;
 
-					// mats[stemsGroup.children[obj].name].emissive.g = analysers[stemsGroup.children[obj].name].getAverageFrequency() / 256;
-					// mats[stemsGroup.children[obj].name].emissive.b = analysers[stemsGroup.children[obj].name].getAverageFrequency() / 256;
+					/// Change HDRI based on volume (flash on loud drum hits)
+					if (stemsGroup.children[obj].name === 'drums' || stemsGroup.children[obj].name === 'FSS-drums') {
+						const data = analysers[stemsGroup.children[obj].name].getFrequencyData() /// Get the raw data array
 
-					/// change hdri based on volume
-					if (stemsGroup.children[obj].name === 'drums') {
-						// console.log(analysers[stemsGroup.children[obj].name].getAverageFrequency())
-						// console.log(analysers[stemsGroup.children[obj].name].getFrequencyData())
-						const data = analysers[stemsGroup.children[obj].name].getFrequencyData()
-
-						// if (Math.min(Math.max(analysers[stemsGroup.children[obj].name].getAverageFrequency(), 0), 100) / 100 >= .95) {
-						if ((data[0] / 255 + data[1] / 255 + data[2] / 255) / 3 >= .85) {
+						/// Use the first 3 data points and normalize the volume. The first three are the lowese frequencies so this will only fire when kicks or low snares are hit. We dont want to fire on each hi-hat, that would be too much. This is a nice balance.
+						if ((data[0] / 255 + data[1] / 255 + data[2] / 255) / 3 >= .85) { /// [.85] is the normalized threshold
 							scene.background = HDRIS.light_darkerer
 						} else if (scene.background !== HDRIS.dark_light) {
 							scene.background = HDRIS.dark_light
 						}
-
 					}
 				}
 			}
 
-			/// lyrics
+			/// Lyrics
 			lyrics.currentTime = performance.now();
 			lyrics.timeDelta = parseInt(lyrics.currentTime - lyrics.startTime);
 
+			/// Check if between the last frame and now a line needs to be shown based on the timing in the lyrics json
 			if ((lyrics.timeDelta + lyrics.timeOffset) >= lyrics.lines[lyrics.lineIndex]?.startTimeMs && !lyrics.ended) {
-				console.log(lyrics.lines[lyrics.lineIndex].words);
-
 				text.text = lyrics.lines[lyrics.lineIndex].words;
 				text.sync();
 				lyrics.lineIndex++;
 			}
-			if (typeof lyrics.lines[lyrics.lineIndex] == 'undefined') { lyrics.ended = true }
-			///
+			if (typeof lyrics.lines[lyrics.lineIndex] == 'undefined') { lyrics.ended = true } /// Stop checking the timing each frame if the lyrics have ended. Every little bit of performance counts
 
-			/// controller code
-			/// find intersections
+			/// Controller code
+			/// Find intersections
 			controllers.forEach(controller => {
 				/// 'controller' is the controller object aka 'this' in the event listeners
 				tempMatrix.identity().extractRotation(controller.matrixWorld);
-
 				raycaster.ray.origin.setFromMatrixPosition(controller.matrixWorld);
 				raycaster.ray.direction.set(0, 0, - 1).applyMatrix4(tempMatrix);
-
 				const intersects = raycaster.intersectObjects(stemsGroup.children, false);
 
 				if (intersects.length > 0) {
-					/// is the object we're pointing at the same as the previous frame?
+					/// Is the object we're pointing at the same as the previous frame?
 					if (controller.userData.INTERSECTED != intersects[0].object) {
-						/// if not, remove the highlight from the previous object (if it exists)
+						/// If not, remove the highlight from the previous object (if it exists)
 						if (controller.userData.INTERSECTED != undefined) { controller.userData.INTERSECTED.isHighlighted = false; }
-
-						/// set the color of the old object back to what it was
+						/// Set the color of the old object back to what it was
 						if (controller.userData.INTERSECTED) controller.userData.INTERSECTED.material.emissive.setHex(controller.userData.INTERSECTED.currentHex);
-
-						/// set the current object to be the new INTERSECTED object
-						controller.userData.INTERSECTED = intersects[0].object;
-						/// get the current color to revert to later when deselecting
-						controller.userData.INTERSECTED.currentHex = controller.userData.INTERSECTED.material.emissive.getHex();
-						/// modify the color of the object (apply highlight)
-						controller.userData.INTERSECTED.material.emissive.setHex(0xffbb00);
-						/// finally set object state to be highlighted
-						controller.userData.INTERSECTED.isHighlighted = true;
+						controller.userData.INTERSECTED = intersects[0].object; /// Set the current object to be the new INTERSECTED object
+						controller.userData.INTERSECTED.currentHex = controller.userData.INTERSECTED.material.emissive.getHex();/// Get the current color to revert to later when deselecting
+						controller.userData.INTERSECTED.material.emissive.setHex(0xffbb00); /// Modify the color of the object (apply highlight)
+						controller.userData.INTERSECTED.isHighlighted = true; /// Finally set object state to be highlighted
 					}
 
-					/// is this the first time we're clicking on the object? (and are we not dragging an object)
+					/// Is this the first time we're clicking on the object? (and are we not dragging an object)
 					if (controller.userData.isSelecting && !controller.userData.isHolding && !controller.userData.selected) {
-						/// set for next frame
+						/// Set for next frame
 						controller.userData.isHolding = true;
 						controller.userData.intent = { holdLog: [], action: 0 };
 
 						const volume = sounds[controller.userData.INTERSECTED.name].getVolume();
-
 						switch (volume) {
 							case 0:
 								sounds[controller.userData.INTERSECTED.name].setVolume(1);
-								controller.userData.intent.action = 1; /// update action if unmuting
+								controller.userData.intent.action = 1; /// Update action if unmuting
 								break;
 							case 1:
 								sounds[controller.userData.INTERSECTED.name].setVolume(0);
@@ -1005,9 +776,8 @@
 						controller.userData.isHolding = false;
 					}
 
-					/// checks for user intent
+					/// Checks for user intent
 					if (controller.userData.isSelecting && controller.userData.isHolding && !controller.userData.selected) {
-
 						if (controller.userData.intent?.holdLog.at(-1) != intersects[0].object) {
 							if (controller.userData.intent.holdLog == undefined) {
 								controller.userData.intent.holdLog = [];
@@ -1015,26 +785,26 @@
 							controller.userData.intent.holdLog.push(intersects[0].object)
 						} else {
 							sounds[controller.userData.INTERSECTED.name].setVolume(controller.userData.intent.action);
-
 						}
 					}
 
 				} else {
-					/// clean up and reset currently highlighted objects to their original color/state
+					/// Clean up and reset currently highlighted objects to their original color/state
 					if (controller.userData.INTERSECTED != undefined) { controller.userData.INTERSECTED.isHighlighted = false; }
 					if (controller.userData.INTERSECTED) controller.userData.INTERSECTED.material.emissive.setHex(controller.userData.INTERSECTED.currentHex);
 					controller.userData.INTERSECTED = undefined;
 				}
 			})
-
+			/// Render the scene
 			renderer.render(scene, camera);
 		}
 
 		function init() {
+			/// Remove the overlay
 			const overlay = document.getElementById('overlay');
 			overlay.remove();
-			console.log(currentStems)
 
+			/// Create and load the scene, stems, lyrics etc...
 			initScene()
 				.then(() => initStems(currentStems))
 				.then(() => initVideoGroup(vidConfig))
@@ -1043,50 +813,12 @@
 				.then(() => initFloor())
 				.then(() => initSongSelect(playListJson))
 
-
-			// // unloadAudio()
-			// // loadTrack(playListJson.tracks[10])
-			// initStems(currentStems)
-			// initVideoGroup(vidConfig)
-			// initControllers()
-			// // initGui()
-			// initLyrics(playListJson.tracks[9])
-			// // for (const stem in currentStems) { currentStems[stem].play() }
-			// initFloor()
-
-			// setTimeout(() => {
-			// 	unloadAudio()
-			// 		.then(() => loadTrack(playListJson.tracks[10]))
-			// 		.then(() => loadStems(currentStems))
-			// 		.then(() => loadLyrics(playListJson.tracks[10]))
-			// }, 5000);
-
-			// setTimeout(() => {
-			// 	console.log({ mats })
-			// 	console.log({ meshes })
-			// 	console.log({ sounds })
-			// 	console.log({ analysers })
-			// 	console.log(stemsGroup)
-			// }, 8000);
-
-			// setTimeout(() => {
-			// 	unloadAudio()
-			// 		.then(() => loadTrack(playListJson.tracks[9]))
-			// 		.then(() => loadStems(currentStems))
-			// 		.then(() => loadLyrics(playListJson.tracks[9]))
-			// }, 20000);
-
-
+			/// Add desktop controls
 			controls = new FirstPersonControls(camera, renderer.domElement);
-			controls.movementSpeed = 100;
+			controls.movementSpeed = 70;
 			controls.lookSpeed = 0.30;
 			controls.noFly = false;
 			controls.lookVertical = true;
-
-			console.log({ mats })
-			console.log({ meshes })
-			console.log({ sounds })
-			console.log({ analysers })
 
 			window.addEventListener('resize', onWindowResize);
 			document.body.appendChild(VRButton.createButton(renderer));
