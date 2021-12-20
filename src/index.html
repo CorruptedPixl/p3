@@ -510,7 +510,7 @@
 			lyrics.startTime = performance.now();
 			lyrics.lineIndex = 0;
 			lyrics.ended = false;
-			lyrics.timeOffset = 0;
+			lyrics.timeOffset = track.lyrics.timeOffset || 0;
 		}
 
 		const initLyrics = (track) => {
